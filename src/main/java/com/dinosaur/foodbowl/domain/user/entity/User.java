@@ -26,10 +26,10 @@ import lombok.ToString;
 @ToString(of = {"loginId", "nickname", "introduce"})
 public class User extends BaseEntity {
 
-  public static final int MAX_LOGIN_ID_LENGTH = 40;
-  public static final int MAX_PASSWORD_LENGTH = 512;
-  public static final int MAX_NICKNAME_LENGTH = 40;
-  public static final int MAX_INTRODUCE_LENGTH = 255;
+  private static final int MAX_LOGIN_ID_LENGTH = 40;
+  private static final int MAX_PASSWORD_LENGTH = 512;
+  private static final int MAX_NICKNAME_LENGTH = 40;
+  private static final int MAX_INTRODUCE_LENGTH = 255;
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
@@ -40,16 +40,16 @@ public class User extends BaseEntity {
   @ManyToOne(fetch = LAZY, cascade = ALL)
   private Thumbnail thumbnail;
 
-  @Column(name = "login_id", nullable = false, unique = true, length = 40)
+  @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
   private String loginId;
 
-  @Column(name = "password", nullable = false, length = 512)
+  @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
   private String password;
 
-  @Column(name = "nickname", nullable = false, unique = true, length = 40)
+  @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
   private String nickname;
 
-  @Column(name = "introduce", unique = true, length = 255)
+  @Column(name = "introduce", unique = true, length = MAX_INTRODUCE_LENGTH)
   private String introduce;
 
   @Builder

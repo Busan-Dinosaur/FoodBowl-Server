@@ -1,9 +1,5 @@
 package com.dinosaur.foodbowl.domain.user.dao;
 
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_PASSWORD_LENGTH;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -17,8 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class UserRepositoryTest extends RepositoryTest {
 
+  private static final int MAX_LOGIN_ID_LENGTH = 40;
+  private static final int MAX_PASSWORD_LENGTH = 512;
+  private static final int MAX_NICKNAME_LENGTH = 40;
+  private static final int MAX_INTRODUCE_LENGTH = 255;
+
   @Autowired
-  UserRepository userRepository;
+  private UserRepository userRepository;
 
   private User user;
   private final String loginId = getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH);
