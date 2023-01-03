@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.user.repository;
+package com.dinosaur.foodbowl.domain.user.dao;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
@@ -7,7 +7,6 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_PASSWORD_LENGTH;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.dao.RepositoryTest;
 import java.util.UUID;
