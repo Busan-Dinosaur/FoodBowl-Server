@@ -36,7 +36,7 @@ public class Follow extends BaseEntity {
   private User follower;
 
   @Builder
-  public Follow(User following, User follower) {
+  private Follow(User following, User follower) {
     this.following = following;
     this.follower = follower;
   }
