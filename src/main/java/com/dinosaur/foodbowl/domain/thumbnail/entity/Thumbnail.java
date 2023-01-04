@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -28,6 +29,7 @@ public class Thumbnail extends BaseEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
+  @Getter
   @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
   private String path;
 
