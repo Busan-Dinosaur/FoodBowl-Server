@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -37,5 +38,12 @@ public class Store extends BaseEntity {
 
   @Column(name = "store_name", length = MAX_STORE_NAME_LENGTH)
   private String storeName;
+
+  @Builder
+  private Store(Address address, Category category, String storeName) {
+    this.address = address;
+    this.category = category;
+    this.storeName = storeName;
+  }
 
 }
