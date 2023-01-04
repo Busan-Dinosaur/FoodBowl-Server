@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends BaseEntity {
+
   private static final int MAX_STORE_NAME_LENGTH = 100;
 
   @Id
