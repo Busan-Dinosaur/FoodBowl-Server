@@ -44,6 +44,9 @@ out/
 **/._.appication.yml
 src/main/resources/application.yml
 
+### API Docs ###
+src/main/resources/static/docs/**/*.html
+
 ### Mac ###
 .DS_Store
 *.DS_Store
