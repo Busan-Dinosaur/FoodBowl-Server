@@ -13,10 +13,8 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
 @Table(name = "photo")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
