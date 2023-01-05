@@ -37,7 +37,7 @@ public class Store extends BaseEntity {
   @JoinColumn(name="category_id", nullable = false)
   private Category category;
 
-  @Column(name = "store_name", length = MAX_STORE_NAME_LENGTH)
+  @Column(name = "store_name", length = MAX_STORE_NAME_LENGTH, nullable = false)
   private String storeName;
 
   @Builder
