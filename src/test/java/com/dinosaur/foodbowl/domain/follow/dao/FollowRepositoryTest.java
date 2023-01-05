@@ -42,11 +42,11 @@ class FollowRepositoryTest extends RepositoryTest {
     }
   }
 
-  private GivenBuilder builder() {
-    return new GivenBuilder();
+  private FollowBuilder builder() {
+    return new FollowBuilder();
   }
 
-  private final class GivenBuilder {
+  private final class FollowBuilder {
 
     private User following;
     private User follower;
@@ -62,21 +62,21 @@ class FollowRepositoryTest extends RepositoryTest {
       return userRepository.save(user);
     }
 
-    private GivenBuilder setUpFollowing(
+    private FollowBuilder setUpFollowing(
         String loginId, String password, String nickname, String introduce
     ) {
       this.following = setUpUser(loginId, password, nickname, introduce);
       return this;
     }
 
-    private GivenBuilder setUpFollower(
+    private FollowBuilder setUpFollower(
         String loginId, String password, String nickname, String introduce
     ) {
       this.follower = setUpUser(loginId, password, nickname, introduce);
       return this;
     }
 
-    private GivenBuilder doFollow() {
+    private FollowBuilder doFollow() {
       Follow follow = Follow.builder()
           .following(following)
           .follower(follower)
