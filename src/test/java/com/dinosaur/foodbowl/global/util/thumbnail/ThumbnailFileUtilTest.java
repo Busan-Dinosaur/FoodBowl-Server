@@ -7,6 +7,8 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,24 @@ class ThumbnailFileUtilTest {
 
   @Autowired
   private ThumbnailFileUtil thumbnailFileUtil;
+
+  @Nested
+  class deleteTest {
+
+    @Test
+    void should_deleteSuccessfully_when_existFile() throws IOException {
+      MockMultipartFile validMultipartFile = new MockMultipartFile("image",
+          "testImage_210x210.png", "image/png",
+          new FileInputStream("src/test/resources/images/testImage_210x210.png"));
+      Thumbnail savedThumbnail = thumbnailFileUtil.save(validMultipartFile);
+
+      assertThat(Files.exists(Path.of(ROOT_PATH + savedThumbnail.getPath()))).isTrue();
+
+      thumbnailFileUtil.delete(savedThumbnail);
+
+      assertThat(Files.exists(Path.of(ROOT_PATH + savedThumbnail.getPath()))).isFalse();
+    }
+  }
 
   @Nested
   class SaveTest {

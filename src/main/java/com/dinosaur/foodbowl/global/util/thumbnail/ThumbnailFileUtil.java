@@ -4,6 +4,7 @@ import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.ROO
 
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.global.util.thumbnail.exception.ThumbnailException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,19 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
   private final ThumbnailRepository thumbnailRepository;
 
   @Override
-  protected Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
+  public Thumbnail save(MultipartFile multipartFile, ThumbnailType type) {
+    try {
+      return trySave(multipartFile, type);
+    } catch (IllegalArgumentException e) {
+      throw e;
+    } catch (IOException e) {
+      String message = "썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: " + multipartFile.getOriginalFilename();
+      log.warn(message, e);
+      throw new ThumbnailException(message, e);
+    }
+  }
+
+  private Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
     ThumbnailInfoDto thumbnail = ThumbnailInfoDto.from(file);
     tryResizingAndSave(thumbnail, type);
     return saveThumbnailEntity(thumbnail.getFullPath());
@@ -59,5 +72,20 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
       thumbnailURI = thumbnailFullPath.substring(ROOT_PATH.length());
     }
     return thumbnailURI;
+  }
+
+  @Override
+  protected void deleteEntity(Thumbnail thumbnail) {
+    thumbnailRepository.delete(thumbnail);
+  }
+
+  @Override
+  protected void deleteFile(Thumbnail thumbnail) {
+    String thumbnailFilePath = ROOT_PATH + thumbnail.getPath();
+    try {
+      Files.deleteIfExists(Path.of(thumbnailFilePath));
+    } catch (IOException e) {
+      throw new RuntimeException("파일 삭제 도중 문제가 발생했습니다. 파일 삭제 Entity: " + thumbnail);
+    }
   }
 }

@@ -3,7 +3,6 @@ package com.dinosaur.foodbowl.global.util.thumbnail;
 import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType.DEFAULT;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.exception.ThumbnailException;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,17 +25,17 @@ public abstract class ThumbnailUtil {
    * @throws IllegalArgumentException 이미지 파일이 아니거나 파일 이름의 길이가 너무 길 경우 발생합니다.
    * @throws IOException              `ThumbnailUtil` 자체에 문제가 있을 경우 발생합니다.
    */
-  public Thumbnail save(MultipartFile multipartFile, ThumbnailType type) {
-    try {
-      return trySave(multipartFile, type);
-    } catch (IllegalArgumentException e) {
-      throw e;
-    } catch (IOException e) {
-      String message = "썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: " + multipartFile.getOriginalFilename();
-      log.warn(message, e);
-      throw new ThumbnailException(message, e);
-    }
+  public abstract Thumbnail save(MultipartFile multipartFile, ThumbnailType type);
+
+  /**
+   * 저장된 썸네일 파일과 Entity 모두 삭제합니다.
+   */
+  public void deleteFileAndEntity(Thumbnail thumbnail) {
+    deleteEntity(thumbnail);
+    deleteFile(thumbnail);
   }
 
-  protected abstract Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException;
+  protected abstract void deleteFile(Thumbnail thumbnail);
+
+  protected abstract void deleteEntity(Thumbnail thumbnail);
 }
