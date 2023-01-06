@@ -5,10 +5,10 @@ import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType.DEFAULT;
 
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.global.util.thumbnail.exception.ThumbnailException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,23 +22,25 @@ public class ThumbnailUtil {
 
   private final ThumbnailRepository thumbnailRepository;
 
-  public Optional<Thumbnail> save(MultipartFile multipartFile) {
+  public Thumbnail save(MultipartFile multipartFile) {
     return this.save(multipartFile, DEFAULT);
   }
 
-  public Optional<Thumbnail> save(MultipartFile multipartFile, ThumbnailType type) {
+  public Thumbnail save(MultipartFile multipartFile, ThumbnailType type) {
     try {
       return trySave(multipartFile, type);
     } catch (IllegalArgumentException | IOException e) {
-      log.warn("썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: {}", multipartFile.getOriginalFilename(), e);
-      return Optional.empty();
+      String exceptionMessage = "썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: "
+          + multipartFile.getOriginalFilename();
+      log.warn(exceptionMessage, e);
+      throw new ThumbnailException(exceptionMessage, e);
     }
   }
 
-  private Optional<Thumbnail> trySave(MultipartFile file, ThumbnailType type) throws IOException {
+  private Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
     ThumbnailInfoDto thumbnail = ThumbnailInfoDto.from(file);
     tryResizingAndSave(thumbnail, type);
-    return Optional.of(saveThumbnailEntity(thumbnail.getFullPath()));
+    return saveThumbnailEntity(thumbnail.getFullPath());
   }
 
   private static void tryResizingAndSave(ThumbnailInfoDto thumbnailInfoDto, ThumbnailType type)
