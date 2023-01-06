@@ -45,7 +45,7 @@ class ThumbnailInfoDto {
 
   private static void checkInvalidImageFile(MultipartFile file) throws IOException {
     if (isNotImageFile(file)) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("파일이 이미지가 아닙니다. 파일 이름: " + file.getOriginalFilename());
     }
   }
 
