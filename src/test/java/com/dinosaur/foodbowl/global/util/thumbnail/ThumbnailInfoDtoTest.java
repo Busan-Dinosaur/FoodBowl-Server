@@ -22,5 +22,14 @@ class ThumbnailInfoDtoTest {
       assertThatThrownBy(() -> ThumbnailInfoDto.from(tooLongFileNameMultipartFile))
           .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void should_throwException_when_notImageMultipartFile() throws IOException {
+      final MockMultipartFile fakeImageFile = new MockMultipartFile("image",
+          "fakeImage.png", "image/png",
+          new FileInputStream("src/test/resources/images/fakeImage.png"));
+      assertThatThrownBy(() -> ThumbnailInfoDto.from(fakeImageFile))
+          .isInstanceOf(IllegalArgumentException.class);
+    }
   }
 }

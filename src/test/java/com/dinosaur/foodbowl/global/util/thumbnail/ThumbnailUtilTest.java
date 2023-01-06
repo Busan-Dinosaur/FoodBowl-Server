@@ -2,10 +2,8 @@ package com.dinosaur.foodbowl.global.util.thumbnail;
 
 import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.ROOT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.exception.ThumbnailException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,10 +28,6 @@ class ThumbnailUtilTest {
         "testImage_210x210.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_210x210.png"));
 
-    private final MockMultipartFile fakeImageFile = new MockMultipartFile("image",
-        "fakeImage.png", "image/png",
-        new FileInputStream("src/test/resources/images/fakeImage.png"));
-
     SaveTest() throws IOException {
     }
 
@@ -41,7 +35,6 @@ class ThumbnailUtilTest {
     void should_saveSuccessfully_when_validMultipartFile() {
       Thumbnail result = thumbnailUtil.save(validMultipartFile);
       assertThat(result).isNotNull();
-
       deleteTestFile(result);
     }
 
@@ -49,12 +42,6 @@ class ThumbnailUtilTest {
       File thumbnailFile = new File(ROOT_PATH + thumbnail.getPath());
       assertThat(thumbnailFile).exists();
       assertThat(thumbnailFile.delete()).isTrue();
-    }
-
-    @Test
-    void should_throwException_when_notImageMultipartFile() {
-      assertThatThrownBy(() -> thumbnailUtil.save(fakeImageFile))
-          .isInstanceOf(ThumbnailException.class);
     }
   }
 }
