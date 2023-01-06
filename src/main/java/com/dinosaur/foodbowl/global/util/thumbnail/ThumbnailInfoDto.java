@@ -29,12 +29,12 @@ class ThumbnailInfoDto {
 
   static ThumbnailInfoDto from(MultipartFile file) throws IOException {
     String thumbnailFullPath = generateThumbnailFullPath(file);
-    checkIsInvalidImageFile(file);
+    checkInvalidImageFile(file);
     InputStream inputStream = new BufferedInputStream(file.getInputStream());
     return new ThumbnailInfoDto(thumbnailFullPath, inputStream);
   }
 
-  private static void checkIsInvalidImageFile(MultipartFile file) throws IOException {
+  private static void checkInvalidImageFile(MultipartFile file) throws IOException {
     if (isNotImageFile(file)) {
       throw new IllegalArgumentException();
     }
