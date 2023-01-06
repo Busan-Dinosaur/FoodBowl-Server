@@ -7,6 +7,8 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ThumbnailFileUtil extends ThumbnailUtil {
 
   private final ThumbnailRepository thumbnailRepository;
-  
+
   @Override
   protected Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
     ThumbnailInfoDto thumbnail = ThumbnailInfoDto.from(file);
@@ -35,7 +37,16 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
     ImageIO.write(resizingBufferedImage, "jpeg", thumbnail);
   }
 
-  private Thumbnail saveThumbnailEntity(String thumbnailFullPath) {
+  private Thumbnail saveThumbnailEntity(String thumbnailFullPath) throws IOException {
+    try {
+      return trySaveThumbnailEntity(thumbnailFullPath);
+    } catch (RuntimeException e) {
+      Files.deleteIfExists(Path.of(thumbnailFullPath));
+      throw e;
+    }
+  }
+
+  private Thumbnail trySaveThumbnailEntity(String thumbnailFullPath) {
     String thumbnailURI = getThumbnailURI(thumbnailFullPath);
     return thumbnailRepository.save(Thumbnail.builder()
         .path(thumbnailURI)
