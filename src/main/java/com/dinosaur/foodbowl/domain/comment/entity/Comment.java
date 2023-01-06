@@ -27,7 +27,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Comment extends BaseEntity {
 
-  private static final int MESSAGE_LENGTH = 255;
+  private static final int MAX_MESSAGE_LENGTH = 255;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +46,7 @@ public class Comment extends BaseEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @Column(name = "message", nullable = false, length = MESSAGE_LENGTH)
+  @Column(name = "message", nullable = false, length = MAX_MESSAGE_LENGTH)
   private String message;
 
   @LastModifiedDate
