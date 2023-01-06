@@ -29,7 +29,7 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
       return trySave(multipartFile, type);
     } catch (IllegalArgumentException e) {
       throw e;
-    } catch (IOException e) {
+    } catch (RuntimeException | IOException e) {
       String message = "썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: " + multipartFile.getOriginalFilename();
       log.warn(message, e);
       throw new ThumbnailException(message, e);
