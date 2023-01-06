@@ -4,11 +4,13 @@ import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.ROO
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ class ThumbnailFileUtilTest {
 
       assertThat(Files.exists(Path.of(ROOT_PATH + savedThumbnail.getPath()))).isTrue();
 
-      thumbnailFileUtil.delete(savedThumbnail);
+      thumbnailFileUtil.deleteFileAndEntity(savedThumbnail);
 
       assertThat(Files.exists(Path.of(ROOT_PATH + savedThumbnail.getPath()))).isFalse();
     }
@@ -62,6 +64,20 @@ class ThumbnailFileUtilTest {
       File thumbnailFile = new File(ROOT_PATH + thumbnail.getPath());
       assertThat(thumbnailFile).exists();
       assertThat(thumbnailFile.delete()).isTrue();
+    }
+
+    @Test
+    void should_resizingWell_when_validMultipartFile() throws IOException {
+      Thumbnail savedThumbnailEntity = thumbnailFileUtil.save(validMultipartFile);
+      File result = new File(ROOT_PATH + savedThumbnailEntity.getPath());
+
+      assertThat(result).exists();
+      BufferedImage image = ImageIO.read(result);
+      assertThat(image).isNotNull();
+      assertThat(image.getHeight()).isEqualTo(200);
+      assertThat(image.getWidth()).isEqualTo(200);
+
+      deleteTestFile(savedThumbnailEntity);
     }
   }
 }
