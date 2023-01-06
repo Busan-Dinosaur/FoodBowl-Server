@@ -18,14 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ThumbnailUtil {
+public class ThumbnailFileUtil {
 
   private final ThumbnailRepository thumbnailRepository;
 
   /**
    * 타입은 기본적으로 {@link  ThumbnailType#DEFAULT} 가 들어갑니다. 그 외에는 {@code @see}를 참고해주세요.
    *
-   * @see ThumbnailUtil#save(MultipartFile, ThumbnailType)
+   * @see ThumbnailFileUtil#save(MultipartFile, ThumbnailType)
    */
   public Thumbnail save(MultipartFile multipartFile) {
     return this.save(multipartFile, DEFAULT);

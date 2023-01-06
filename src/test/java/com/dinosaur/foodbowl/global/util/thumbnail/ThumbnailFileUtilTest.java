@@ -16,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class ThumbnailUtilTest {
+class ThumbnailFileUtilTest {
 
   @Autowired
-  private ThumbnailUtil thumbnailUtil;
+  private ThumbnailFileUtil thumbnailFileUtil;
 
   @Nested
   class SaveTest {
@@ -33,7 +33,7 @@ class ThumbnailUtilTest {
 
     @Test
     void should_saveSuccessfully_when_validMultipartFile() {
-      Thumbnail result = thumbnailUtil.save(validMultipartFile);
+      Thumbnail result = thumbnailFileUtil.save(validMultipartFile);
       assertThat(result).isNotNull();
       deleteTestFile(result);
     }
