@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.global.util.thumbnail;
 
+import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.ROOT_PATH;
 import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType.DEFAULT;
 
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
@@ -49,8 +50,17 @@ public class ThumbnailUtil {
   }
 
   private Thumbnail saveThumbnailEntity(String thumbnailFullPath) {
+    String thumbnailURI = getThumbnailURI(thumbnailFullPath);
     return thumbnailRepository.save(Thumbnail.builder()
-        .path(thumbnailFullPath)
+        .path(thumbnailURI)
         .build());
+  }
+
+  private String getThumbnailURI(String thumbnailFullPath) {
+    String thumbnailURI = thumbnailFullPath;
+    if (thumbnailFullPath.startsWith(ROOT_PATH)) {
+      thumbnailURI = thumbnailFullPath.substring(ROOT_PATH.length());
+    }
+    return thumbnailURI;
   }
 }
