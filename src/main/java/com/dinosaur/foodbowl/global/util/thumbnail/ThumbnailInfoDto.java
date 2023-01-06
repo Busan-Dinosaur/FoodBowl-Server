@@ -52,7 +52,7 @@ class ThumbnailInfoDto {
   }
 
   private static String getThumbnailUploadPath(LocalDate fileUploadDate) {
-    String thumbnailUploadPath = DEFAULT_THUMBNAIL_PATH + separator + fileUploadDate + separator;
+    String thumbnailUploadPath = DEFAULT_THUMBNAIL_PATH + fileUploadDate + separator;
     createDirectoryWhenIsNotExist(thumbnailUploadPath);
     return thumbnailUploadPath;
   }
@@ -65,7 +65,7 @@ class ThumbnailInfoDto {
   }
 
   private static String generateFullPath(String thumbnailUploadPath, String fileName) {
-    return thumbnailUploadPath + separator + getRandomThumbnailName(fileName);
+    return thumbnailUploadPath + getRandomThumbnailName(fileName);
   }
 
   private static String getRandomThumbnailName(String fileName) {
