@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.domain.clip.entity;
 
+import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import javax.persistence.Column;

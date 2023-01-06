@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.domain.photo.entity;
 
+import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
