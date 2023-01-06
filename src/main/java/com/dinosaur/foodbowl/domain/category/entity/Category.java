@@ -17,14 +17,14 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"})
 public class Category {
 
-  private static final int NAME_LENGTH = 45;
+  private static final int MAX_NAME_LENGTH = 45;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "name", nullable = false, unique = true, length = NAME_LENGTH)
+  @Column(name = "name", nullable = false, unique = true, length = MAX_NAME_LENGTH)
   private String name;
 
   @Builder
