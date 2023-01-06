@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.global.util.thumbnail;
 
+import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
 import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.DEFAULT_THUMBNAIL_PATH;
 import static java.io.File.separator;
 
@@ -29,9 +30,17 @@ class ThumbnailInfoDto {
 
   static ThumbnailInfoDto from(MultipartFile file) throws IOException {
     String thumbnailFullPath = generateThumbnailFullPath(file);
+    checkThumbnailFullPathLength(thumbnailFullPath, file.getOriginalFilename());
     checkInvalidImageFile(file);
     InputStream inputStream = new BufferedInputStream(file.getInputStream());
     return new ThumbnailInfoDto(thumbnailFullPath, inputStream);
+  }
+
+  private static void checkThumbnailFullPathLength(String thumbnailFullPath, String fileName) {
+    if (thumbnailFullPath.length() > MAX_PATH_LENGTH) {
+      throw new IllegalArgumentException("파일 이름 길이가 너무 깁니다. 가능한 파일 이름 길이: " +
+          (MAX_PATH_LENGTH - thumbnailFullPath.length() + fileName.length()));
+    }
   }
 
   private static void checkInvalidImageFile(MultipartFile file) throws IOException {

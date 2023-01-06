@@ -22,7 +22,7 @@ import lombok.ToString;
 @ToString(of = {"path"})
 public class Thumbnail extends BaseEntity {
 
-  private static final int MAX_PATH_LENGTH = 512;
+  public static final int MAX_PATH_LENGTH = 512;
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
