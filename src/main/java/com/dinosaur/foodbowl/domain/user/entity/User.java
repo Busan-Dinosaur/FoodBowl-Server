@@ -36,8 +36,8 @@ public class User extends BaseEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @JoinColumn
   @ManyToOne(fetch = LAZY, cascade = ALL)
+  @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
   @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
