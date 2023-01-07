@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.domain.photo.entity;
 
+import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"})
 public class Photo extends BaseEntity {
 
-  private static final int PATH_LENGTH = 512;
+  private static final int MAX_PATH_LENGTH = 512;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +33,7 @@ public class Photo extends BaseEntity {
   @JoinColumn(name = "post_id", nullable = false)
   private Post post;
 
-  @Column(name = "path", nullable = false, length = PATH_LENGTH)
+  @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
   private String path;
 
   @Builder

@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,11 +29,11 @@ public class Store extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="address_id", nullable = false)
+  @JoinColumn(name = "address_id", nullable = false)
   private Address address;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="category_id", nullable = false)
+  @JoinColumn(name = "category_id", nullable = false)
   private Category category;
 
   @Column(name = "store_name", length = MAX_STORE_NAME_LENGTH, nullable = false)
