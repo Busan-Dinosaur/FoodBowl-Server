@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -18,16 +19,17 @@ import lombok.ToString;
 @Table(name = "thumbnail")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"path"})
+@ToString(of = {"id", "path"})
 public class Thumbnail extends BaseEntity {
 
-  private static final int MAX_PATH_LENGTH = 512;
+  public static final int MAX_PATH_LENGTH = 512;
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
+  @Getter
   @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
   private String path;
 
