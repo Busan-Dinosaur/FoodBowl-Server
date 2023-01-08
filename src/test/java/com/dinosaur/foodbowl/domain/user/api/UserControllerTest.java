@@ -133,7 +133,7 @@ class UserControllerTest extends IntegrationTest {
     private MockMultipartFile getThumbnailFile() throws IOException {
       return new MockMultipartFile("thumbnail",
           "testImage_210x210.png", "image/png",
-          new FileInputStream("src/test/resources/images/testImage_210x210.png"));
+          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
     }
   }
 }
