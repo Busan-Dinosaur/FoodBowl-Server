@@ -5,6 +5,9 @@ import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.entity.role.Role;
+import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,6 +58,9 @@ public class User extends BaseEntity {
   @Column(name = "introduce", unique = true, length = MAX_INTRODUCE_LENGTH)
   private String introduce;
 
+  @OneToOne(mappedBy = "user", cascade = ALL)
+  private UserRole userRole;
+
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
       String introduce) {
@@ -62,5 +69,13 @@ public class User extends BaseEntity {
     this.password = password;
     this.nickname = nickname;
     this.introduce = introduce;
+    this.assignRole(RoleType.USER);
+  }
+
+  public void assignRole(RoleType roleType) {
+    this.userRole = UserRole.builder()
+        .user(this)
+        .role(Role.getRoleBy(roleType))
+        .build();
   }
 }
