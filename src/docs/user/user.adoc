@@ -31,6 +31,26 @@ include::{snippets}/signup/request-parts.adoc[]
 
 === 응답
 
+==== Response
+
+include::{snippets}/signup/http-response.adoc[]
+
 ==== Response Fields
 
 include::{snippets}/signup/response-fields.adoc[]
+
+== *회원탈퇴*
+
+NOTE: Authorization 헤더에 자신의 JWT access token이 필요합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/user-delete/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/user-delete/http-response.adoc[]
