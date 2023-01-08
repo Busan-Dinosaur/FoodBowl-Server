@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -24,12 +25,13 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 @ToString(of = {"loginId", "nickname", "introduce"})
+@Getter
 public class User extends BaseEntity {
 
-  private static final int MAX_LOGIN_ID_LENGTH = 40;
-  private static final int MAX_PASSWORD_LENGTH = 512;
-  private static final int MAX_NICKNAME_LENGTH = 40;
-  private static final int MAX_INTRODUCE_LENGTH = 255;
+  public static final int MAX_LOGIN_ID_LENGTH = 40;
+  public static final int MAX_PASSWORD_LENGTH = 512;
+  public static final int MAX_NICKNAME_LENGTH = 40;
+  public static final int MAX_INTRODUCE_LENGTH = 255;
 
   @Id
   @GeneratedValue(strategy = IDENTITY)

@@ -30,6 +30,10 @@ public class JwtTokenProvider {
     secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
   }
 
+  public String createToken(Long userPk, String role) {
+    return createToken(String.valueOf(userPk), role, DEFAULT_TOKEN_VALID_MILLISECOND);
+  }
+
   public String createToken(String userPk, String role) {
     return createToken(userPk, role, DEFAULT_TOKEN_VALID_MILLISECOND);
   }
