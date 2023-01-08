@@ -3,7 +3,6 @@ package com.dinosaur.foodbowl.domain.user.dto.request;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_PASSWORD_LENGTH;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -22,7 +21,6 @@ public class SignupRequestDto {
 
   @Length(max = MAX_LOGIN_ID_LENGTH)
   private String loginId;
-  @Length(max = MAX_PASSWORD_LENGTH)
   private String password;
   @Length(max = MAX_NICKNAME_LENGTH)
   private String nickname;
