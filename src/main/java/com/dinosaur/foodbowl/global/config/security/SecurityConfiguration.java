@@ -25,7 +25,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-        .antMatchers("/exception/*", "/docs/*", "/user/**", "/thumbnail/**").permitAll()
+        .antMatchers("/docs/*", "/user/**", "/thumbnail/**").permitAll()
         .anyRequest().hasRole("USER")
         .and()
         .httpBasic().disable()
