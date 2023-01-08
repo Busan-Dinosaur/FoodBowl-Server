@@ -1,9 +1,23 @@
 package com.dinosaur.foodbowl.global.config.security;
 
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.EMPTY;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.EXPIRED;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.MALFORMED;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.UNKNOWN;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.UNSUPPORTED;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.VALID;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.WRONG_FORMAT;
+import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.WRONG_SIGNATURE;
+
+import com.dinosaur.foodbowl.global.config.security.exception.EmptyJwtException;
+import com.dinosaur.foodbowl.global.config.security.exception.WrongFormatJwtException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Base64;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -58,29 +72,47 @@ public class JwtTokenProvider {
   }
 
   private Claims getClaim(String token) {
-    return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    return Jwts.parser().setSigningKey(secretKey)
+        .parseClaimsJws(token)
+        .getBody();
+  }
+
+  public TokenValidationDto tryCheckTokenValid(HttpServletRequest req) {
+    try {
+      String token = resolveToken(req);
+      Long.parseLong(Jwts.parser()
+          .setSigningKey(secretKey)
+          .parseClaimsJws(token)
+          .getBody()
+          .getSubject());
+      return TokenValidationDto.of(true, VALID, token);
+    } catch (MalformedJwtException e) {
+      return TokenValidationDto.of(false, MALFORMED);
+    } catch (ExpiredJwtException e) {
+      return TokenValidationDto.of(false, EXPIRED);
+    } catch (UnsupportedJwtException e) {
+      return TokenValidationDto.of(false, UNSUPPORTED);
+    } catch (SignatureException e) {
+      return TokenValidationDto.of(false, WRONG_SIGNATURE);
+    } catch (EmptyJwtException e) {
+      return TokenValidationDto.of(false, EMPTY);
+    } catch (WrongFormatJwtException e) {
+      return TokenValidationDto.of(false, WRONG_FORMAT);
+    } catch (Exception e) {
+      return TokenValidationDto.of(false, UNKNOWN);
+    }
   }
 
   public String resolveToken(HttpServletRequest req) {
     String requestHeader = req.getHeader("Authorization");
     if (requestHeader == null || requestHeader.isEmpty()) {
-      return null;
+      throw new EmptyJwtException();
     }
     String[] parts = requestHeader.split(" ");
     String type = parts[0];
     if (parts.length != 2 || !type.equals(TOKEN_TYPE)) {
-      return null;
+      throw new WrongFormatJwtException();
     }
-    String token = parts[1];
-    return token;
-  }
-
-  public boolean validateToken(String jwtToken) {
-    try {
-      Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-      return !claims.getBody().getExpiration().before(new Date());
-    } catch (Exception e) {
-      return false;
-    }
+    return parts[1];
   }
 }
