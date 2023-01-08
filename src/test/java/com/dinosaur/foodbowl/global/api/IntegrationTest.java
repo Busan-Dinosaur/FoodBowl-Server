@@ -49,4 +49,15 @@ public class IntegrationTest {
         )
         .build();
   }
+
+  @AfterAll
+  static void deleteAllThumbnails() throws IOException {
+    FileUtils.cleanDirectory(new File(getTodayThumbnailFilesPath()));
+  }
+
+  private static String getTodayThumbnailFilesPath() {
+    return new ClassPathResource("static").getPath() + separator +
+        "thumbnail" + separator +
+        LocalDate.now();
+  }
 }
