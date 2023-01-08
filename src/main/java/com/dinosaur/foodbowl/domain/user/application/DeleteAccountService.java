@@ -2,7 +2,7 @@ package com.dinosaur.foodbowl.domain.user.application;
 
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.auth.AuthService;
+import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DeleteAccountService {
 
-  private final AuthService authService;
+  private final AuthUtil authUtil;
   private final UserRepository userRepository;
 
   @Transactional
   public void deleteMySelf() {
-    User me = authService.getUserByJWT();
+    User me = authUtil.getUserByJWT();
     userRepository.delete(me);
   }
 }
