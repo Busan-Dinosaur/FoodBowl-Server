@@ -10,17 +10,24 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.api.IntegrationTest;
+import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
+import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,6 +35,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class UserControllerTest extends IntegrationTest {
+
+  @Autowired
+  ThumbnailUtil thumbnailUtil;
+
+  @Autowired
+  UserRepository userRepository;
+
+  @Autowired
+  JwtTokenProvider jwtTokenProvider;
 
   @Nested
   class Signup {
@@ -134,6 +150,56 @@ class UserControllerTest extends IntegrationTest {
       return new MockMultipartFile("thumbnail",
           "testImage_210x210.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+    }
+  }
+
+  @Nested
+  class deleteAccount {
+
+    private User user;
+    private String userToken;
+
+    @BeforeEach
+    void setupUser() throws IOException {
+      User userWithThumbnail = User.builder()
+          .loginId("loginId")
+          .nickname("nickname")
+          .password("password")
+          .introduce("introduce")
+          .thumbnail(thumbnailUtil.save(getThumbnailFile()))
+          .build();
+      user = userRepository.save(userWithThumbnail);
+      userToken = jwtTokenProvider.createToken(user.getId(), RoleType.USER.getName());
+    }
+
+    private MockMultipartFile getThumbnailFile() throws IOException {
+      return new MockMultipartFile("thumbnail",
+          "testImage_1x1.png", "image/png",
+          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+    }
+
+    @Test
+    void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
+      mockMvc.perform(delete("/user")
+              .header("Authorization", userToken))
+          .andExpect(status().isOk())
+          .andDo(print())
+          .andDo(document("user-delete"));
+    }
+
+    @Test
+    void should_deleteFailed_when_noToken() throws Exception {
+      mockMvc.perform(delete("/user"))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+
+    @Test
+    void should_deleteFailed_when_invalidToken() throws Exception {
+      mockMvc.perform(delete("/user")
+              .header("Authorization", userToken + "haha"))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
     }
   }
 }
