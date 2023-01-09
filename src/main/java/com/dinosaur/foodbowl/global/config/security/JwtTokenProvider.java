@@ -66,8 +66,8 @@ public class JwtTokenProvider {
 
   public Authentication getAuthentication(String token) {
     Claims claims = getClaim(token);
-    String roleString = claims.get("role").toString();
-    UserDetails userDetails = new JwtUserEntity(claims.getSubject(), roleString);
+    String role = claims.get("role").toString();
+    UserDetails userDetails = new JwtUserEntity(claims.getSubject(), role);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
