@@ -9,6 +9,7 @@ import com.dinosaur.foodbowl.domain.user.entity.role.Role;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +30,6 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 @ToString(of = {"loginId", "nickname", "introduce"})
-@Getter
 public class User extends BaseEntity {
 
   public static final int MAX_LOGIN_ID_LENGTH = 40;
@@ -40,6 +40,7 @@ public class User extends BaseEntity {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
+  @Getter
   private Long id;
 
   @ManyToOne(fetch = LAZY, cascade = ALL)
@@ -47,18 +48,23 @@ public class User extends BaseEntity {
   private Thumbnail thumbnail;
 
   @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
+  @Getter
   private String loginId;
 
   @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
+  @Getter
   private String password;
 
   @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
+  @Getter
   private String nickname;
 
   @Column(name = "introduce", unique = true, length = MAX_INTRODUCE_LENGTH)
+  @Getter
   private String introduce;
 
   @OneToOne(mappedBy = "user", cascade = ALL)
+  @Getter
   private UserRole userRole;
 
   @Builder
@@ -77,5 +83,10 @@ public class User extends BaseEntity {
         .user(this)
         .role(Role.getRoleBy(roleType))
         .build();
+  }
+
+
+  public Optional<String> getThumbnailURL() {
+    return thumbnail == null ? Optional.empty() : Optional.of(thumbnail.getPath());
   }
 }

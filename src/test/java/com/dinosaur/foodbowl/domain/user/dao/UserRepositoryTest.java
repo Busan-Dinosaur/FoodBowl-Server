@@ -177,7 +177,8 @@ class UserRepositoryTest extends RepositoryTest {
     }
 
     private String getUserThumbnailPath(User userWithThumbnail) {
-      return userWithThumbnail.getThumbnail().getPath();
+      return userWithThumbnail.getThumbnailURL()
+          .orElseThrow();
     }
   }
 }

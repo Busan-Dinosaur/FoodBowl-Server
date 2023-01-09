@@ -1,6 +1,5 @@
 package com.dinosaur.foodbowl.domain.user.dto.response;
 
-import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,13 +20,9 @@ public class SignUpResponseDto {
         .loginId(user.getLoginId())
         .nickname(user.getNickname())
         .introduce(user.getIntroduce())
-        .thumbnailURL(getThumbnailURL(user.getThumbnail()))
+        .thumbnailURL(user.getThumbnailURL().orElse(null))
         .accessToken(accessToken)
         .build();
-  }
-
-  private static String getThumbnailURL(Thumbnail thumbnail) {
-    return thumbnail == null ? null : thumbnail.getPath();
   }
 
   @Builder
