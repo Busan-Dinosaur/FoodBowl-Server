@@ -4,6 +4,8 @@ import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +18,10 @@ public class DeleteAccountService {
   private final UserRepository userRepository;
 
   @Transactional
-  public void deleteMySelf() {
+  public ResponseEntity<Void> deleteMySelf() {
     User me = authUtil.getUserByJWT();
     userRepository.delete(me);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        .build();
   }
 }

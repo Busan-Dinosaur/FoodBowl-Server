@@ -182,7 +182,7 @@ class UserControllerTest extends IntegrationTest {
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
       mockMvc.perform(delete("/user")
               .header("Authorization", userToken))
-          .andExpect(status().isOk())
+          .andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("user-delete"));
     }
