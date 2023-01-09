@@ -28,7 +28,7 @@ public class SignupService {
   public SignupResponseDto signup(SignupRequestDto request) {
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
-    String accessToken = jwtTokenProvider.createToken(user.getId(), RoleType.USER.getName());
+    String accessToken = jwtTokenProvider.createToken(user.getId(), RoleType.USER);
     return SignupResponseDto.of(user, accessToken);
   }
 

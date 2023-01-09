@@ -9,6 +9,7 @@ import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.VAL
 import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.WRONG_FORMAT;
 import static com.dinosaur.foodbowl.global.config.security.JwtValidationType.WRONG_SIGNATURE;
 
+import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.config.security.exception.EmptyJwtException;
 import com.dinosaur.foodbowl.global.config.security.exception.WrongFormatJwtException;
 import io.jsonwebtoken.Claims;
@@ -44,8 +45,8 @@ public class JwtTokenProvider {
     secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
   }
 
-  public String createToken(Long userPk, String role) {
-    return createToken(String.valueOf(userPk), role, DEFAULT_TOKEN_VALID_MILLISECOND);
+  public String createToken(Long userPk, RoleType role) {
+    return createToken(String.valueOf(userPk), role.getName(), DEFAULT_TOKEN_VALID_MILLISECOND);
   }
 
   public String createToken(String userPk, String role) {
