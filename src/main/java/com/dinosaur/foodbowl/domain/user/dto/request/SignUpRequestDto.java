@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SignupRequestDto {
+public class SignUpRequestDto {
 
   @Length(max = MAX_LOGIN_ID_LENGTH)
   private String loginId;

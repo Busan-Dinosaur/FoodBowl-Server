@@ -1,12 +1,11 @@
 package com.dinosaur.foodbowl.domain.user.api;
 
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
-import com.dinosaur.foodbowl.domain.user.application.SignupService;
-import com.dinosaur.foodbowl.domain.user.dto.request.SignupRequestDto;
-import com.dinosaur.foodbowl.domain.user.dto.response.SignupResponseDto;
+import com.dinosaur.foodbowl.domain.user.application.SignUpService;
+import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-  private final SignupService signupService;
+  private final SignUpService signUpService;
   private final DeleteAccountService deleteAccountService;
 
-  @PostMapping("/signup")
-  public ResponseEntity<SignupResponseDto> signup(@Valid @ModelAttribute SignupRequestDto request) {
-    return signupService.signup(request);
+  @PostMapping("/sign-up")
+  public ResponseEntity<SignUpResponseDto> signUp(@Valid @ModelAttribute SignUpRequestDto request) {
+    return signUpService.signUp(request);
   }
 
   @Secured("ROLE_USER")

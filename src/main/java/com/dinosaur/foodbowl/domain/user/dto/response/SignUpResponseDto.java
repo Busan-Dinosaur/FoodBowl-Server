@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class SignupResponseDto {
+public class SignUpResponseDto {
 
   private Long userId;
   private String loginId;
@@ -15,8 +15,8 @@ public class SignupResponseDto {
   private String thumbnailURL;
   private String accessToken;
 
-  public static SignupResponseDto of(User user, String accessToken) {
-    return SignupResponseDto.builder()
+  public static SignUpResponseDto of(User user, String accessToken) {
+    return SignUpResponseDto.builder()
         .userId(user.getId())
         .loginId(user.getLoginId())
         .nickname(user.getNickname())
@@ -31,7 +31,7 @@ public class SignupResponseDto {
   }
 
   @Builder
-  public SignupResponseDto(Long userId, String loginId, String nickname, String introduce,
+  public SignUpResponseDto(Long userId, String loginId, String nickname, String introduce,
       String thumbnailURL, String accessToken) {
     this.userId = userId;
     this.loginId = loginId;

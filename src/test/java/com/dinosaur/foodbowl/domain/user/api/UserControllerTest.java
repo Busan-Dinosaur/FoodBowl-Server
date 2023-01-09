@@ -46,7 +46,7 @@ class UserControllerTest extends IntegrationTest {
   JwtTokenProvider jwtTokenProvider;
 
   @Nested
-  class Signup {
+  class SignUp {
 
     private MockMultipartFile thumbnail;
     private MultiValueMap<String, String> params;
@@ -71,7 +71,7 @@ class UserControllerTest extends IntegrationTest {
           .andExpect(jsonPath("$.introduce").value("introduce"))
           .andExpect(jsonPath("$.thumbnailURL").exists())
           .andExpect(jsonPath("$.accessToken").exists())
-          .andDo(document("signup",
+          .andDo(document("sign-up",
               requestParameters(
                   parameterWithName("loginId")
                       .description("로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH),
@@ -124,7 +124,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
-      return mockMvc.perform(multipart("/user/signup")
+      return mockMvc.perform(multipart("/user/sign-up")
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .with(request -> {
@@ -135,7 +135,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApi() throws Exception {
-      return mockMvc.perform(multipart("/user/signup")
+      return mockMvc.perform(multipart("/user/sign-up")
               .file(thumbnail)
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)

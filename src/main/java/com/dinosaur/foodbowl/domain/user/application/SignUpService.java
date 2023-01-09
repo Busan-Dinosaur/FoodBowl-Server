@@ -2,8 +2,8 @@ package com.dinosaur.foodbowl.domain.user.application;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
-import com.dinosaur.foodbowl.domain.user.dto.request.SignupRequestDto;
-import com.dinosaur.foodbowl.domain.user.dto.response.SignupResponseDto;
+import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SignupService {
+public class SignUpService {
 
   private final ThumbnailUtil thumbnailUtil;
   private final UserRepository userRepository;
@@ -27,13 +27,13 @@ public class SignupService {
   private final PasswordEncoder passwordEncoder;
 
   @Transactional
-  public ResponseEntity<SignupResponseDto> signup(SignupRequestDto request) {
+  public ResponseEntity<SignUpResponseDto> signUp(SignUpRequestDto request) {
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
     String accessToken = jwtTokenProvider.createToken(user.getId(), RoleType.USER);
-    SignupResponseDto signupResponseDto = SignupResponseDto.of(user, accessToken);
+    SignUpResponseDto signUpResponseDto = SignUpResponseDto.of(user, accessToken);
     return ResponseEntity.created(URI.create("/users/" + user.getId()))
-        .body(signupResponseDto);
+        .body(signUpResponseDto);
   }
 
   private Thumbnail saveThumbnailIfExist(MultipartFile thumbnail) {

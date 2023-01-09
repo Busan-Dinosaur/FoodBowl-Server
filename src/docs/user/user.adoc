@@ -19,25 +19,25 @@ link:../foodbowl.html[API 목록으로 돌아가기]
 
 ==== Request
 
-include::{snippets}/signup/http-request.adoc[]
+include::{snippets}/sign-up/http-request.adoc[]
 
 ==== Path Parameters
 
-include::{snippets}/signup/request-parameters.adoc[]
+include::{snippets}/sign-up/request-parameters.adoc[]
 
 ==== Request Parts
 
-include::{snippets}/signup/request-parts.adoc[]
+include::{snippets}/sign-up/request-parts.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/signup/http-response.adoc[]
+include::{snippets}/sign-up/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/signup/response-fields.adoc[]
+include::{snippets}/sign-up/response-fields.adoc[]
 
 == *회원탈퇴*
 
