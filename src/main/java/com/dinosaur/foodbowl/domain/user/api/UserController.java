@@ -6,6 +6,7 @@ import com.dinosaur.foodbowl.domain.user.dto.request.SignupRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignupResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,7 +23,7 @@ public class UserController {
   private final DeleteAccountService deleteAccountService;
 
   @PostMapping("/signup")
-  public SignupResponseDto signup(@Valid @ModelAttribute SignupRequestDto request) {
+  public ResponseEntity<SignupResponseDto> signup(@Valid @ModelAttribute SignupRequestDto request) {
     return signupService.signup(request);
   }
 

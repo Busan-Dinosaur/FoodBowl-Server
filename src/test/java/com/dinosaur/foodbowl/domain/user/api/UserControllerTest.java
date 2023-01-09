@@ -64,7 +64,7 @@ class UserControllerTest extends IntegrationTest {
     @Test
     void should_successfully_when_validRequest() throws Exception {
       callSignUpApi()
-          .andExpect(status().isOk())
+          .andExpect(status().isCreated())
           .andExpect(jsonPath("$.userId").exists())
           .andExpect(jsonPath("$.loginId").value("loginId"))
           .andExpect(jsonPath("$.nickname").value("nickname"))
@@ -120,7 +120,7 @@ class UserControllerTest extends IntegrationTest {
     @Test
     void should_returnIsOK_when_thumbnailIsNull() throws Exception {
       callSignUpApiWithoutThumbnail()
-          .andExpect(status().isOk());
+          .andExpect(status().isCreated());
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
