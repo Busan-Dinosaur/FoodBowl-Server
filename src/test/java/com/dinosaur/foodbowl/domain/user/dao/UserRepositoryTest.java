@@ -128,10 +128,7 @@ class UserRepositoryTest extends RepositoryTest {
       em.flush();
       em.clear();
 
-      UserRole userRole = user.getUserRole();
-      assertThat(userRole.getUser()).isEqualTo(user);
-      assertThat(userRole.getRole().getId()).isEqualTo(RoleType.USER.getId());
-      assertThat(userRole.getRole().getName()).isEqualTo(RoleType.USER.getName());
+      assertThat(user.containsRole(RoleType.USER)).isTrue();
     }
   }
 

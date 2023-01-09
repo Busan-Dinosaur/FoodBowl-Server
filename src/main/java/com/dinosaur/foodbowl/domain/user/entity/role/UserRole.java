@@ -10,7 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,7 +22,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"id"}, callSuper = false)
+@EqualsAndHashCode(of = {"user", "role"}, callSuper = false)
 @ToString(of = {"user", "role"})
 @Getter
 public class UserRole extends BaseEntity {
@@ -32,11 +32,11 @@ public class UserRole extends BaseEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false, updatable = false)
   private User user;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "role_id", nullable = false, updatable = false)
   private Role role;
 

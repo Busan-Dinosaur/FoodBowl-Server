@@ -9,6 +9,8 @@ import com.dinosaur.foodbowl.domain.user.entity.role.Role;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,9 +65,8 @@ public class User extends BaseEntity {
   @Getter
   private String introduce;
 
-  @OneToOne(mappedBy = "user", cascade = ALL)
-  @Getter
-  private UserRole userRole;
+  @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
+  private final List<UserRole> userRole = new ArrayList<>();
 
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
@@ -79,14 +80,20 @@ public class User extends BaseEntity {
   }
 
   public void assignRole(RoleType roleType) {
-    this.userRole = UserRole.builder()
+    this.userRole.add(UserRole.builder()
         .user(this)
         .role(Role.getRoleBy(roleType))
-        .build();
+        .build());
   }
-
 
   public Optional<String> getThumbnailURL() {
     return thumbnail == null ? Optional.empty() : Optional.of(thumbnail.getPath());
+  }
+
+  public boolean containsRole(RoleType roleType) {
+    return userRole.contains(UserRole.builder()
+        .user(this)
+        .role(Role.getRoleBy(roleType))
+        .build());
   }
 }
