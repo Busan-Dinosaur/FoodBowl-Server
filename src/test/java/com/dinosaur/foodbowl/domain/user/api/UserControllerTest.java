@@ -124,7 +124,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
-      return mockMvc.perform(multipart("/user/sign-up")
+      return mockMvc.perform(multipart("/users/sign-up")
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .with(request -> {
@@ -135,7 +135,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApi() throws Exception {
-      return mockMvc.perform(multipart("/user/sign-up")
+      return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -180,7 +180,7 @@ class UserControllerTest extends IntegrationTest {
 
     @Test
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
-      mockMvc.perform(delete("/user")
+      mockMvc.perform(delete("/users")
               .header("Authorization", userToken))
           .andExpect(status().isNoContent())
           .andDo(print())
@@ -189,14 +189,14 @@ class UserControllerTest extends IntegrationTest {
 
     @Test
     void should_deleteFailed_when_noToken() throws Exception {
-      mockMvc.perform(delete("/user"))
+      mockMvc.perform(delete("/users"))
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
 
     @Test
     void should_deleteFailed_when_invalidToken() throws Exception {
-      mockMvc.perform(delete("/user")
+      mockMvc.perform(delete("/users")
               .header("Authorization", userToken + "haha"))
           .andExpect(status().isUnauthorized())
           .andDo(print());
