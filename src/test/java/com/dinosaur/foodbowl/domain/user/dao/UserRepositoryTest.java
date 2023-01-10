@@ -7,7 +7,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
 import com.dinosaur.foodbowl.global.dao.RepositoryTest;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailFileUtil;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
@@ -128,7 +127,7 @@ class UserRepositoryTest extends RepositoryTest {
       em.flush();
       em.clear();
 
-      assertThat(user.containsRole(RoleType.USER)).isTrue();
+      assertThat(user.containsRole(RoleType.ROLE_회원)).isTrue();
     }
   }
 

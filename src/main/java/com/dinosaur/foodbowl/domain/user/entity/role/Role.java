@@ -4,6 +4,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -18,7 +20,7 @@ import lombok.ToString;
 @Table(name = "role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"name"})
+@ToString(of = {"roleType"})
 @Getter
 public class Role {
 
@@ -27,33 +29,31 @@ public class Role {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
+  @Enumerated(value = EnumType.STRING)
   @Column(name = "name")
-  private String name;
+  private RoleType roleType;
 
   public static Role getRoleBy(RoleType type) {
     return Role.builder()
         .id(type.id)
-        .name(type.name)
+        .roleType(type)
         .build();
   }
 
   @Builder
-  private Role(Long id, String name) {
+  private Role(Long id, RoleType roleType) {
     this.id = id;
-    this.name = name;
+    this.roleType = roleType;
   }
 
-  @Getter
   public enum RoleType {
-    USER(1, "ROLE_USER"),
-    ADMIN(2, "ROLE_ADMIN");
+    ROLE_회원(1),
+    ROLE_관리자(2);
 
     private final long id;
-    private final String name;
 
-    RoleType(long id, String name) {
+    RoleType(long id) {
       this.id = id;
-      this.name = name;
     }
   }
 }

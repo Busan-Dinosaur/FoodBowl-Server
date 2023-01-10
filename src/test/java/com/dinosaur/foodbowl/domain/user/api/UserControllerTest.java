@@ -169,7 +169,7 @@ class UserControllerTest extends IntegrationTest {
           .thumbnail(thumbnailUtil.save(getThumbnailFile()))
           .build();
       user = userRepository.save(userWithThumbnail);
-      userToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.USER);
+      userToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
     }
 
     private MockMultipartFile getThumbnailFile() throws IOException {

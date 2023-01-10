@@ -49,7 +49,7 @@ public class JwtTokenProvider {
 
   public String createAccessToken(Long userPk, RoleType... roles) {
     return createAccessToken(String.valueOf(userPk), Arrays.stream(roles)
-        .map(RoleType::getName)
+        .map(RoleType::name)
         .toArray(String[]::new));
   }
 

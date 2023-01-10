@@ -29,10 +29,11 @@ class JwtTokenProviderTest {
   @Test
   void createAccessToken() {
     long userPk = 1;
-    RoleType[] roleType = new RoleType[]{RoleType.USER, RoleType.ADMIN};
+    RoleType[] roleType = new RoleType[]{RoleType.ROLE_회원, RoleType.ROLE_관리자};
 
     String accessToken = jwtTokenProvider.createAccessToken(userPk, roleType);
     accessToken = removePrefix(accessToken);
+    System.out.println(accessToken);
     Claims claims = Jwts.parser().setSigningKey(TEST_SECRET_KEY)
         .parseClaimsJws(accessToken)
         .getBody();
@@ -40,7 +41,7 @@ class JwtTokenProviderTest {
     long resultUserPK = Long.parseLong(claims.getSubject());
     String roles = claims.get("roles").toString();
     assertThat(resultUserPK).isEqualTo(userPk);
-    assertThat(roles).isEqualTo("ROLE_USER,ROLE_ADMIN");
+    assertThat(roles).isEqualTo("ROLE_회원,ROLE_관리자");
   }
 
   private String removePrefix(String accessToken) {
@@ -51,9 +52,9 @@ class JwtTokenProviderTest {
   void getAuthentication() {
     /**
      * PK: 1
-     * ROLE: USER, ADMIN
+     * ROLE: 회원, 관리자
      */
-    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX1VTRVIsUk9MRV9BRE1JTiIsImlhdCI6MTY3MzMwOTg3MSwiZXhwIjoxNjczMzEzNDcxfQ.pSVOJM9LuBVXOmwF5PAmEhSASUE5HeSJZpQ15gGd2o0";
+    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3MzMxMTM1NywiZXhwIjoxNjczMzE0OTU3fQ.Mo9rkbXxASlMtqyDrUnthGvS6cKda3Ri0jJH-7z4Ed8";
 
     Authentication authentication = jwtTokenProvider.getAuthentication(validToken);
 
@@ -62,6 +63,6 @@ class JwtTokenProviderTest {
     List<String> authorities = authentication.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .collect(Collectors.toList());
-    assertThat(authorities).containsAll(List.of("ROLE_USER", "ROLE_ADMIN"));
+    assertThat(authorities).containsAll(List.of("ROLE_회원", "ROLE_관리자"));
   }
 }

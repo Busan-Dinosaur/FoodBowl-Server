@@ -30,7 +30,7 @@ public class SignUpService {
   public ResponseEntity<SignUpResponseDto> signUp(SignUpRequestDto request) {
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
-    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.USER);
+    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
     SignUpResponseDto signUpResponseDto = SignUpResponseDto.of(user, accessToken);
     return ResponseEntity.created(URI.create("/users/" + user.getId()))
         .body(signUpResponseDto);

@@ -76,7 +76,7 @@ public class User extends BaseEntity {
     this.password = password;
     this.nickname = nickname;
     this.introduce = introduce;
-    this.assignRole(RoleType.USER);
+    this.assignRole(RoleType.ROLE_회원);
   }
 
   public void assignRole(RoleType roleType) {
