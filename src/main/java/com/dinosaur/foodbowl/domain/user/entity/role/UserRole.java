@@ -4,6 +4,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -22,8 +22,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"user", "role"}, callSuper = false)
-@ToString(of = {"user", "role"})
+@ToString(of = {"role"})
 @Getter
 public class UserRole extends BaseEntity {
 
@@ -44,5 +43,23 @@ public class UserRole extends BaseEntity {
   public UserRole(User user, Role role) {
     this.user = user;
     this.role = role;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    UserRole userRole = (UserRole) o;
+    return Objects.equals(user.getId(), userRole.getUser().getId()) &&
+        Objects.equals(role.getId(), userRole.getRole().getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(user.getId(), role.getId());
   }
 }

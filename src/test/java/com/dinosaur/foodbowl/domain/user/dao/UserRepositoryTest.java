@@ -53,7 +53,7 @@ class UserRepositoryTest extends RepositoryTest {
         .password(password)
         .introduce(introduce)
         .build();
-    userRepository.save(user);
+    user = userRepository.save(user);
   }
 
   private static String getRandomUUIDLengthWith(int length) {
@@ -127,7 +127,22 @@ class UserRepositoryTest extends RepositoryTest {
       em.flush();
       em.clear();
 
+      user = userRepository.findById(user.getId()).orElseThrow();
+
       assertThat(user.containsRole(RoleType.ROLE_회원)).isTrue();
+    }
+
+    @Test
+    void should_nothingHappens_when_duplicateRoles() {
+      em.flush();
+      em.clear();
+
+      user = userRepository.findById(user.getId()).orElseThrow();
+      user.assignRole(RoleType.ROLE_회원);
+
+      assertThat(user.containsRole(RoleType.ROLE_회원)).isTrue();
+      assertThatNoException().isThrownBy(() -> userRoleRepository.findByUser(user));
+      assertThat(userRoleRepository.findByUser(user)).isNotEmpty();
     }
   }
 

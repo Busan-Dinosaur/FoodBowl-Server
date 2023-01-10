@@ -9,9 +9,9 @@ import com.dinosaur.foodbowl.domain.user.entity.role.Role;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +31,7 @@ import lombok.ToString;
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"loginId", "nickname", "introduce"})
+@ToString(of = {"loginId", "nickname", "introduce", "userRole"})
 public class User extends BaseEntity {
 
   public static final int MAX_LOGIN_ID_LENGTH = 40;
@@ -65,8 +65,9 @@ public class User extends BaseEntity {
   @Getter
   private String introduce;
 
+  @Getter
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
-  private final List<UserRole> userRole = new ArrayList<>();
+  private final Set<UserRole> userRole = new HashSet<>();
 
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
