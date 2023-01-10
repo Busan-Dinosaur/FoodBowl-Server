@@ -33,7 +33,6 @@ class JwtTokenProviderTest {
 
     String accessToken = jwtTokenProvider.createAccessToken(userPk, roleType);
     accessToken = removePrefix(accessToken);
-    System.out.println(accessToken);
     Claims claims = Jwts.parser().setSigningKey(TEST_SECRET_KEY)
         .parseClaimsJws(accessToken)
         .getBody();
@@ -53,8 +52,9 @@ class JwtTokenProviderTest {
     /**
      * PK: 1
      * ROLE: 회원, 관리자
+     * expired: 2073년 1월 10일
      */
-    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3MzMxMTM1NywiZXhwIjoxNjczMzE0OTU3fQ.Mo9rkbXxASlMtqyDrUnthGvS6cKda3Ri0jJH-7z4Ed8";
+    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3MzMyNDU0NSwiZXhwIjozMjUwMTI0NTQ1fQ.SP9RXwAP8OQzX5FYBTZC240Kp34pmEx8vkR6rWFj4w4";
 
     Authentication authentication = jwtTokenProvider.getAuthentication(validToken);
 
