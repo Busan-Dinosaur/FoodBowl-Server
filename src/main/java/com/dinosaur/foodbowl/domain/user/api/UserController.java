@@ -7,7 +7,6 @@ import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +26,6 @@ public class UserController {
     return signUpService.signUp(request);
   }
 
-  @Secured("ROLE_USER")
   @DeleteMapping
   public ResponseEntity<Void> deleteAccount() {
     return deleteAccountService.deleteMySelf();
