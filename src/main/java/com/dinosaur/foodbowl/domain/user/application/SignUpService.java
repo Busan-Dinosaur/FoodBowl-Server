@@ -8,9 +8,7 @@ import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +25,11 @@ public class SignUpService {
   private final PasswordEncoder passwordEncoder;
 
   @Transactional
-  public ResponseEntity<SignUpResponseDto> signUp(SignUpRequestDto request) {
+  public SignUpResponseDto signUp(SignUpRequestDto request) {
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
-    SignUpResponseDto signUpResponseDto = SignUpResponseDto.of(user, accessToken);
-    return ResponseEntity.created(URI.create("/users/" + user.getId()))
-        .body(signUpResponseDto);
+    return SignUpResponseDto.of(user, accessToken);
   }
 
   private Thumbnail saveThumbnailIfExist(MultipartFile thumbnail) {
