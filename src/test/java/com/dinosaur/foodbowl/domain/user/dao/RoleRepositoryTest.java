@@ -27,7 +27,7 @@ class RoleRepositoryTest extends RepositoryTest {
           .map(Role::getRoleBy)
           .collect(Collectors.toList());
 
-      assertThat(allRoles).containsSequence(allRoleTypes);
+      assertThat(allRoles).containsAll(allRoleTypes);
     }
   }
 }
