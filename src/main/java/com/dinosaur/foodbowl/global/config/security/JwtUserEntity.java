@@ -12,12 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class JwtUserEntity implements UserDetails {
 
   private final String id;
-  private final String memberJob;
+  private final List<String> memberJobs;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> roles = new ArrayList<>();
-    roles.add(new SimpleGrantedAuthority(memberJob));
+    for (String memberJob : memberJobs) {
+      roles.add(new SimpleGrantedAuthority(memberJob));
+    }
     return roles;
   }
 

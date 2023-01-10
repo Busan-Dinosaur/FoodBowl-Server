@@ -19,8 +19,10 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -45,31 +47,36 @@ public class JwtTokenProvider {
     secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
   }
 
-  public String createToken(Long userPk, RoleType role) {
-    return createToken(String.valueOf(userPk), role.getName(), DEFAULT_TOKEN_VALID_MILLISECOND);
+  public String createAccessToken(Long userPk, RoleType... roles) {
+    return createAccessToken(String.valueOf(userPk), Arrays.stream(roles)
+        .map(RoleType::getName)
+        .toArray(String[]::new));
   }
 
-  public String createToken(String userPk, String role) {
-    return createToken(userPk, role, DEFAULT_TOKEN_VALID_MILLISECOND);
-  }
-
-  public String createToken(String userPk, String role, long tokenValidMillisecond) {
+  public String createAccessToken(String userPk, String... roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
-    claims.put("role", role);
+    claims.put("roles", String.join(",", roles));
     Date now = new Date();
     return TOKEN_TYPE + " " + Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
+        .setExpiration(new Date(now.getTime() + DEFAULT_TOKEN_VALID_MILLISECOND))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
 
   public Authentication getAuthentication(String token) {
     Claims claims = getClaim(token);
-    String role = claims.get("role").toString();
-    UserDetails userDetails = new JwtUserEntity(claims.getSubject(), role);
+    List<String> roles = getRolesBy(claims);
+    UserDetails userDetails = new JwtUserEntity(claims.getSubject(), roles);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+  }
+
+  private static List<String> getRolesBy(Claims claims) {
+    String[] roles = claims.get("roles")
+        .toString()
+        .split(",");
+    return List.of(roles);
   }
 
   private Claims getClaim(String token) {
