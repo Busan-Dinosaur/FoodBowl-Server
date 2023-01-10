@@ -57,7 +57,8 @@ class ThumbnailInfoDto {
   private static String generateThumbnailFullPath(MultipartFile multipartFile) {
     LocalDate fileUploadDate = LocalDate.now();
     String thumbnailUploadPath = getThumbnailUploadPath(fileUploadDate);
-    return generateFullPath(thumbnailUploadPath, multipartFile.getOriginalFilename());
+    String fileExt = ".jpeg";
+    return generateFullPath(thumbnailUploadPath, multipartFile.getOriginalFilename()) + fileExt;
   }
 
   private static String getThumbnailUploadPath(LocalDate fileUploadDate) {

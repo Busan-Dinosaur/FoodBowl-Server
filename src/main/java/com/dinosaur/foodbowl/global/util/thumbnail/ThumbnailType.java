@@ -6,7 +6,9 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import lombok.Getter;
 
+@Getter
 public enum ThumbnailType {
   DEFAULT(200, 200);
 

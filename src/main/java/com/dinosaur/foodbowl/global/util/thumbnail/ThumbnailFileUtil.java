@@ -39,7 +39,7 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
   private Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
     ThumbnailInfoDto thumbnail = ThumbnailInfoDto.from(file);
     tryResizingAndSave(thumbnail, type);
-    return saveThumbnailEntity(thumbnail.getFullPath());
+    return saveThumbnailEntity(thumbnail.getFullPath(), type);
   }
 
   private static void tryResizingAndSave(ThumbnailInfoDto thumbnailInfoDto, ThumbnailType type)
@@ -50,19 +50,22 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
     ImageIO.write(resizingBufferedImage, "jpeg", thumbnail);
   }
 
-  private Thumbnail saveThumbnailEntity(String thumbnailFullPath) throws IOException {
+  private Thumbnail saveThumbnailEntity(String thumbnailFullPath, ThumbnailType type)
+      throws IOException {
     try {
-      return trySaveThumbnailEntity(thumbnailFullPath);
+      return trySaveThumbnailEntity(thumbnailFullPath, type);
     } catch (RuntimeException e) {
       Files.deleteIfExists(Path.of(thumbnailFullPath));
       throw e;
     }
   }
 
-  private Thumbnail trySaveThumbnailEntity(String thumbnailFullPath) {
+  private Thumbnail trySaveThumbnailEntity(String thumbnailFullPath, ThumbnailType type) {
     String thumbnailURI = getThumbnailURI(thumbnailFullPath);
     return thumbnailRepository.save(Thumbnail.builder()
         .path(thumbnailURI)
+        .width(type.getWidthPixel())
+        .height(type.getHeightPixel())
         .build());
   }
 

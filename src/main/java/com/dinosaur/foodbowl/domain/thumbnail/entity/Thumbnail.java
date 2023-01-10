@@ -33,8 +33,16 @@ public class Thumbnail extends BaseEntity {
   @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
   private String path;
 
+  @Column(name = "width", nullable = false)
+  private Integer width;
+
+  @Column(name = "height", nullable = false)
+  private Integer height;
+
   @Builder
-  private Thumbnail(String path) {
+  private Thumbnail(String path, Integer width, Integer height) {
     this.path = path;
+    this.width = width;
+    this.height = height;
   }
 }

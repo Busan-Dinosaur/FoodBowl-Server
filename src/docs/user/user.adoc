@@ -1,0 +1,56 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= USER API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../foodbowl.html[API 목록으로 돌아가기]
+
+== *회원가입*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/sign-up/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/sign-up/request-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/sign-up/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/sign-up/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/sign-up/response-fields.adoc[]
+
+== *회원탈퇴*
+
+NOTE: Authorization 헤더에 자신의 JWT access token이 필요합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/user-delete/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/user-delete/http-response.adoc[]
