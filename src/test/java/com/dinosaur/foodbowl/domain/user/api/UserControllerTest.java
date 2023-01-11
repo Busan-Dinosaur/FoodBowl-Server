@@ -29,6 +29,7 @@ import com.dinosaur.foodbowl.global.api.ControllerTest;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -49,6 +50,7 @@ class UserControllerTest extends ControllerTest {
   DeleteAccountService deleteAccountService;
 
   @Nested
+  @DisplayName("회원가입")
   class SignUp {
 
     private final Long userId = 1L;
@@ -120,9 +122,11 @@ class UserControllerTest extends ControllerTest {
     }
 
     @Nested
+    @DisplayName("회원가입 성공")
     class SignUpSuccess {
 
       @Test
+      @DisplayName("썸네일이 있을 경우 회원가입은 성공한다.")
       void should_successfully_when_validRequest() throws Exception {
         callSignUpApi()
             .andExpect(status().isCreated())
@@ -164,6 +168,7 @@ class UserControllerTest extends ControllerTest {
       }
 
       @Test
+      @DisplayName("썸네일이 없어도 회원가입은 성공한다.")
       void should_returnIsOK_when_thumbnailIsNull() throws Exception {
         callSignUpApiWithoutThumbnail()
             .andExpect(status().isCreated());
@@ -171,9 +176,11 @@ class UserControllerTest extends ControllerTest {
     }
 
     @Nested
+    @DisplayName("회원가입 유효성 검사")
     class SignUpValidation {
 
       @Test
+      @DisplayName("너무 긴 요청 값일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_tooLongParameter() throws Exception {
         params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
         callSignUpApi().andExpect(status().isBadRequest());
@@ -191,12 +198,14 @@ class UserControllerTest extends ControllerTest {
   }
 
   @Nested
+  @DisplayName("회원 탈퇴")
   class deleteAccount {
 
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
     @Test
+    @DisplayName("본인의 JWT로 회원 탈퇴는 성공한다.")
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
       doNothing().when(deleteAccountService).deleteMySelf();
       mockMvc.perform(delete("/users")
@@ -207,6 +216,7 @@ class UserControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("토큰이 없을 경우 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_noToken() throws Exception {
       mockMvc.perform(delete("/users"))
           .andExpect(status().isUnauthorized())
@@ -214,6 +224,7 @@ class UserControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("잘못된 토큰으로 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_invalidToken() throws Exception {
       mockMvc.perform(delete("/users")
               .header("Authorization", userToken + "haha"))
