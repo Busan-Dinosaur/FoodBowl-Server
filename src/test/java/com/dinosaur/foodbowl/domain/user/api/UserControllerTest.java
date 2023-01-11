@@ -61,68 +61,6 @@ class UserControllerTest extends IntegrationTest {
       params.add("introduce", "introduce");
     }
 
-    @Test
-    void should_successfully_when_validRequest() throws Exception {
-      callSignUpApi()
-          .andExpect(status().isCreated())
-          .andExpect(jsonPath("$.userId").exists())
-          .andExpect(jsonPath("$.loginId").value("loginId"))
-          .andExpect(jsonPath("$.nickname").value("nickname"))
-          .andExpect(jsonPath("$.introduce").value("introduce"))
-          .andExpect(jsonPath("$.thumbnailURL").exists())
-          .andExpect(jsonPath("$.accessToken").exists())
-          .andDo(document("sign-up",
-              requestParameters(
-                  parameterWithName("loginId")
-                      .description("로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH),
-                  parameterWithName("password")
-                      .description("비밀번호 (최대 가능 길이 : 해싱해서 사용하기 때문에 없음"),
-                  parameterWithName("nickname")
-                      .description("유저 닉네임 (최대 가능 길이 :" + MAX_NICKNAME_LENGTH),
-                  parameterWithName("introduce")
-                      .description("유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
-              ),
-              requestParts(
-                  partWithName("thumbnail").description("유저가 등록할 썸네일").optional()
-              ),
-              responseFields(
-                  fieldWithPath("userId")
-                      .description("DB에 저장된 user의 고유 ID 값"),
-                  fieldWithPath("loginId")
-                      .description("저장된 로그인 아이디"),
-                  fieldWithPath("nickname")
-                      .description("저장된 닉네임"),
-                  fieldWithPath("introduce")
-                      .description("저장된 소개글"),
-                  fieldWithPath("thumbnailURL")
-                      .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음."),
-                  fieldWithPath("accessToken")
-                      .description("사용자 인증에 필요한 access token.\r\n"
-                          + " API 호출 시 Authorization 헤더에 넣어서 보내주면 됨")
-              )));
-    }
-
-    @Test
-    void should_returnBadRequest_when_tooLongParameter() throws Exception {
-      params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
-      callSignUpApi().andExpect(status().isBadRequest());
-      params.set("loginId", "loginId");
-
-      params.set("nickname", "a".repeat(MAX_NICKNAME_LENGTH + 1));
-      callSignUpApi().andExpect(status().isBadRequest());
-      params.set("nickname", "nickname");
-
-      params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
-      callSignUpApi().andExpect(status().isBadRequest());
-      params.set("introduce", "introduce");
-    }
-
-    @Test
-    void should_returnIsOK_when_thumbnailIsNull() throws Exception {
-      callSignUpApiWithoutThumbnail()
-          .andExpect(status().isCreated());
-    }
-
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
       return mockMvc.perform(multipart("/users/sign-up")
               .params(params)
@@ -150,6 +88,76 @@ class UserControllerTest extends IntegrationTest {
       return new MockMultipartFile("thumbnail",
           "testImage_210x210.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+    }
+
+    @Nested
+    class SignUpSuccess {
+
+      @Test
+      void should_successfully_when_validRequest() throws Exception {
+        callSignUpApi()
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.userId").exists())
+            .andExpect(jsonPath("$.loginId").value("loginId"))
+            .andExpect(jsonPath("$.nickname").value("nickname"))
+            .andExpect(jsonPath("$.introduce").value("introduce"))
+            .andExpect(jsonPath("$.thumbnailURL").exists())
+            .andExpect(jsonPath("$.accessToken").exists())
+            .andDo(document("sign-up",
+                requestParameters(
+                    parameterWithName("loginId")
+                        .description("로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH),
+                    parameterWithName("password")
+                        .description("비밀번호 (최대 가능 길이 : 해싱해서 사용하기 때문에 없음"),
+                    parameterWithName("nickname")
+                        .description("유저 닉네임 (최대 가능 길이 :" + MAX_NICKNAME_LENGTH),
+                    parameterWithName("introduce")
+                        .description("유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
+                ),
+                requestParts(
+                    partWithName("thumbnail").description("유저가 등록할 썸네일").optional()
+                ),
+                responseFields(
+                    fieldWithPath("userId")
+                        .description("DB에 저장된 user의 고유 ID 값"),
+                    fieldWithPath("loginId")
+                        .description("저장된 로그인 아이디"),
+                    fieldWithPath("nickname")
+                        .description("저장된 닉네임"),
+                    fieldWithPath("introduce")
+                        .description("저장된 소개글"),
+                    fieldWithPath("thumbnailURL")
+                        .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음."),
+                    fieldWithPath("accessToken")
+                        .description("사용자 인증에 필요한 access token.\r\n"
+                            + " API 호출 시 Authorization 헤더에 넣어서 보내주면 됨")
+                )));
+      }
+
+      @Test
+      void should_returnIsOK_when_thumbnailIsNull() throws Exception {
+        callSignUpApiWithoutThumbnail()
+            .andExpect(status().isCreated());
+      }
+    }
+
+    @Nested
+    class SignUpValidation {
+
+      @Test
+      void should_returnBadRequest_when_tooLongParameter() throws Exception {
+        params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
+        callSignUpApi().andExpect(status().isBadRequest());
+        params.set("loginId", "loginId");
+
+        params.set("nickname", "a".repeat(MAX_NICKNAME_LENGTH + 1));
+        callSignUpApi().andExpect(status().isBadRequest());
+        params.set("nickname", "nickname");
+
+        params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
+        callSignUpApi().andExpect(status().isBadRequest());
+        params.set("introduce", "introduce");
+      }
     }
   }
 
