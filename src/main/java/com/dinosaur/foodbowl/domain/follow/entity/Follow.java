@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "follow")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Follow extends BaseEntity {
 
   @Id
@@ -28,11 +28,11 @@ public class Follow extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "following_id", nullable = false)
+  @JoinColumn(name = "following_id", nullable = false, updatable = false)
   private User following;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "follower_id", nullable = false)
+  @JoinColumn(name = "follower_id", nullable = false, updatable = false)
   private User follower;
 
   @Builder

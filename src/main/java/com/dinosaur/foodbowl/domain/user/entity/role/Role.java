@@ -24,13 +24,15 @@ import lombok.ToString;
 @Getter
 public class Role {
 
+  private static final int MAX_NAME_LENGTH = 45;
+
   @Id
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
   @Enumerated(value = EnumType.STRING)
-  @Column(name = "name")
+  @Column(name = "name", nullable = false, updatable = false, unique = true, length = MAX_NAME_LENGTH)
   private RoleType roleType;
 
   public static Role getRoleBy(RoleType type) {
