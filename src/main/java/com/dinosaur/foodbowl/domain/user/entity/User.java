@@ -34,9 +34,9 @@ import lombok.ToString;
 @ToString(of = {"loginId", "nickname", "introduce", "userRole"})
 public class User extends BaseEntity {
 
-  public static final int MAX_LOGIN_ID_LENGTH = 40;
+  public static final int MAX_LOGIN_ID_LENGTH = 45;
   public static final int MAX_PASSWORD_LENGTH = 512;
-  public static final int MAX_NICKNAME_LENGTH = 40;
+  public static final int MAX_NICKNAME_LENGTH = 45;
   public static final int MAX_INTRODUCE_LENGTH = 255;
 
   @Id
@@ -61,7 +61,7 @@ public class User extends BaseEntity {
   @Getter
   private String nickname;
 
-  @Column(name = "introduce", unique = true, length = MAX_INTRODUCE_LENGTH)
+  @Column(name = "introduce", length = MAX_INTRODUCE_LENGTH)
   @Getter
   private String introduce;
 
