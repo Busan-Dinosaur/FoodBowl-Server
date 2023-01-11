@@ -70,7 +70,10 @@ public class ControllerTest {
 
   @AfterAll
   static void deleteAllThumbnails() throws IOException {
-    FileUtils.cleanDirectory(new File(getTodayThumbnailFilesPath()));
+    File todayThumbnailDirectory = new File(getTodayThumbnailFilesPath());
+    if (todayThumbnailDirectory.exists()) {
+      FileUtils.cleanDirectory(todayThumbnailDirectory);
+    }
   }
 
   private static String getTodayThumbnailFilesPath() {
