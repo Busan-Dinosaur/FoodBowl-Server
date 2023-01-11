@@ -37,6 +37,13 @@ public class UserExceptionAdvice {
         .body(ErrorResponse.from(errorMessage));
   }
 
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorResponse> userNotFoundException(UserNotFoundException e) {
+    String errorMessage = getErrorMessage(String.valueOf(e.getUserId()), "userId", e.getMessage());
+    return ResponseEntity.status(e.getHttpStatus())
+        .body(ErrorResponse.from(errorMessage));
+  }
+
   private static String getErrorMessage(BindException e) {
     BindingResult bindingResult = e.getBindingResult();
 
