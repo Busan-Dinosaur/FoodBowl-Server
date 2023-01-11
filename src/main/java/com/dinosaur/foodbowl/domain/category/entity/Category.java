@@ -10,8 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -54,8 +56,11 @@ public class Category {
       this.name = name;
     }
 
-    @Override
-    public String toString() {
+    public long getId() {
+      return id;
+    }
+
+    public String getName() {
       return name;
     }
   }
