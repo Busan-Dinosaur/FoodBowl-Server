@@ -27,6 +27,7 @@ import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
 import com.dinosaur.foodbowl.domain.user.exception.signup.LoginIdDuplicateException;
 import com.dinosaur.foodbowl.domain.user.exception.signup.NicknameDuplicateException;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
@@ -214,7 +215,8 @@ class UserControllerTest extends ControllerTest {
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(SignUpRequestDto.LOGIN_ID_INVALID));
+                .value(UserExceptionAdvice.getErrorMessage(invalidLoginId, "loginId",
+                    SignUpRequestDto.LOGIN_ID_INVALID)));
       }
 
       @ParameterizedTest
@@ -226,7 +228,8 @@ class UserControllerTest extends ControllerTest {
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(SignUpRequestDto.PASSWORD_INVALID));
+                .value(UserExceptionAdvice.getErrorMessage(invalidPassword, "password",
+                    SignUpRequestDto.PASSWORD_INVALID)));
       }
 
       @ParameterizedTest
@@ -238,7 +241,8 @@ class UserControllerTest extends ControllerTest {
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(SignUpRequestDto.NICKNAME_INVALID));
+                .value(UserExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
+                    SignUpRequestDto.NICKNAME_INVALID)));
       }
 
       @Test
@@ -249,7 +253,8 @@ class UserControllerTest extends ControllerTest {
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(LoginIdDuplicateException.getMessage(validLoginId)));
+                .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
+                    LoginIdDuplicateException.getMessage(validLoginId))));
       }
 
       @Test
@@ -260,7 +265,8 @@ class UserControllerTest extends ControllerTest {
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(NicknameDuplicateException.getMessage(validNickname)));
+                .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
+                    NicknameDuplicateException.getMessage(validNickname))));
       }
     }
   }

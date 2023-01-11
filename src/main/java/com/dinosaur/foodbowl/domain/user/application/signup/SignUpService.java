@@ -6,6 +6,7 @@ import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.exception.signup.LoginIdDuplicateException;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,14 @@ public class SignUpService {
   }
 
   public void checkDuplicateLoginId(String loginId) {
+    if (userRepository.existsByLoginId(loginId)) {
+      throw new LoginIdDuplicateException(loginId);
+    }
   }
 
   public void checkDuplicateNickname(String nickname) {
+    if (userRepository.existsByNickname(nickname)) {
+      throw new LoginIdDuplicateException(nickname);
+    }
   }
 }

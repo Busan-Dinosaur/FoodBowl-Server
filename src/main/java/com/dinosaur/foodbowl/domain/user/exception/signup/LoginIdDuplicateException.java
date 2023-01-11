@@ -1,11 +1,15 @@
 package com.dinosaur.foodbowl.domain.user.exception.signup;
 
+import lombok.Getter;
+
+@Getter
 public class LoginIdDuplicateException extends RuntimeException {
 
   private String loginId;
 
   public LoginIdDuplicateException(String loginId) {
     super(getMessage(loginId));
+    this.loginId = loginId;
   }
 
   public static String getMessage(String loginId) {
