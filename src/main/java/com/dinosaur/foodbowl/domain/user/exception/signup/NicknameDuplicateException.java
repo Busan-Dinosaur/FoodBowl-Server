@@ -5,6 +5,10 @@ public class NicknameDuplicateException extends RuntimeException {
   private String nickname;
 
   public NicknameDuplicateException(String nickname) {
-    super("닉네임: '" + nickname + "'가 중복됩니다.");
+    super(getMessage(nickname));
+  }
+
+  public static String getMessage(String nickname) {
+    return "닉네임: '" + nickname + "'가 중복됩니다.";
   }
 }

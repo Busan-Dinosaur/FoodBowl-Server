@@ -39,4 +39,10 @@ public class SignUpService {
     }
     return userThumbnail;
   }
+
+  public void checkDuplicateLoginId(String loginId) {
+  }
+
+  public void checkDuplicateNickname(String nickname) {
+  }
 }

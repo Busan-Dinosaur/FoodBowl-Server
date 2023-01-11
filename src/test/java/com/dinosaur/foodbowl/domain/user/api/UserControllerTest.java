@@ -5,6 +5,7 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -22,9 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
+import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.exception.signup.LoginIdDuplicateException;
+import com.dinosaur.foodbowl.domain.user.exception.signup.NicknameDuplicateException;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,6 +36,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -55,9 +61,9 @@ class UserControllerTest extends ControllerTest {
 
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
-    private final String validLoginId = "LoginId";
-    private final String validPassword = "Password";
-    private final String validNickname = "Nickname";
+    private final String validLoginId = "LoginId_123";
+    private final String validPassword = "Password123";
+    private final String validNickname = "바보gusah009";
     private final String validIntroduce = "Introduce";
 
     private MockMultipartFile thumbnail;
@@ -67,10 +73,10 @@ class UserControllerTest extends ControllerTest {
     void setUpSignUp() throws IOException {
       thumbnail = getThumbnailFile();
       params = new LinkedMultiValueMap<>();
-      params.add("loginId", "loginId");
-      params.add("password", "password");
-      params.add("nickname", "nickname");
-      params.add("introduce", "introduce");
+      params.add("loginId", validLoginId);
+      params.add("password", validPassword);
+      params.add("nickname", validNickname);
+      params.add("introduce", validIntroduce);
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
@@ -197,6 +203,64 @@ class UserControllerTest extends ControllerTest {
         params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
         callSignUpApi().andExpect(status().isBadRequest());
         params.set("introduce", "introduce");
+      }
+
+      @ParameterizedTest
+      @ValueSource(strings = {"aaa", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
+          "0123456789012", "012345678901234567890123456789"})
+      @DisplayName("로그인 아이디 유효성 검사 실패 시 회원가입은 실패한다.")
+      void should_returnBadRequest_when_invalidLoginId(String invalidLoginId) throws Exception {
+        params.set("loginId", invalidLoginId);
+        callSignUpApi()
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(SignUpRequestDto.LOGIN_ID_INVALID));
+      }
+
+      @ParameterizedTest
+      @ValueSource(strings = {"aaaaaaa", "0123456789", "onlyEnglish", "###########", "cant blank",
+          "         ", "012345678901234567890"})
+      @DisplayName("비밀번호 유효성 검사 실패 시 회원가입은 실패한다.")
+      void should_returnBadRequest_when_invalidPassword(String invalidPassword) throws Exception {
+        params.set("password", invalidPassword);
+        callSignUpApi()
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(SignUpRequestDto.PASSWORD_INVALID));
+      }
+
+      @ParameterizedTest
+      @ValueSource(strings = {"", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
+          "01234567890123456", "         ", "012345678901234567890"})
+      @DisplayName("닉네임 유효성 검사 실패 시 회원가입은 실패한다.")
+      void should_returnBadRequest_when_invalidNickname(String invalidNickname) throws Exception {
+        params.set("nickname", invalidNickname);
+        callSignUpApi()
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(SignUpRequestDto.NICKNAME_INVALID));
+      }
+
+      @Test
+      @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
+      void should_returnBadRequest_when_duplicateLoginId() throws Exception {
+        doThrow(new LoginIdDuplicateException(validLoginId)).when(signUpService)
+            .checkDuplicateLoginId(any());
+        callSignUpApi()
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(LoginIdDuplicateException.getMessage(validLoginId)));
+      }
+
+      @Test
+      @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
+      void should_returnBadRequest_when_duplicateNickname() throws Exception {
+        doThrow(new NicknameDuplicateException(validNickname)).when(signUpService)
+            .checkDuplicateNickname(any());
+        callSignUpApi()
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(NicknameDuplicateException.getMessage(validNickname)));
       }
     }
   }

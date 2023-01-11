@@ -25,6 +25,8 @@ public class UserController {
 
   @PostMapping("/sign-up")
   public ResponseEntity<SignUpResponseDto> signUp(@Valid @ModelAttribute SignUpRequestDto request) {
+    signUpService.checkDuplicateLoginId(request.getLoginId());
+    signUpService.checkDuplicateNickname(request.getNickname());
     SignUpResponseDto signUpResponseDto = signUpService.signUp(request);
     return ResponseEntity.created(URI.create("/users/" + signUpResponseDto.getUserId()))
         .body(signUpResponseDto);
