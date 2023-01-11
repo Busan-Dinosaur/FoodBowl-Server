@@ -26,14 +26,14 @@ public class UserExceptionAdvice {
   @ExceptionHandler(LoginIdDuplicateException.class)
   public ResponseEntity<ErrorResponse> loginIdDuplicateException(LoginIdDuplicateException e) {
     String errorMessage = getErrorMessage(e.getLoginId(), "loginId", e.getMessage());
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(e.getHttpStatus())
         .body(ErrorResponse.from(errorMessage));
   }
 
   @ExceptionHandler(NicknameDuplicateException.class)
   public ResponseEntity<ErrorResponse> nicknameDuplicateException(NicknameDuplicateException e) {
     String errorMessage = getErrorMessage(e.getNickname(), "nickname", e.getMessage());
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(e.getHttpStatus())
         .body(ErrorResponse.from(errorMessage));
   }
 

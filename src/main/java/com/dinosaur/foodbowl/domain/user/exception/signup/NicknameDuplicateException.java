@@ -1,18 +1,20 @@
 package com.dinosaur.foodbowl.domain.user.exception.signup;
 
+import com.dinosaur.foodbowl.domain.user.exception.UserErrorCode;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class NicknameDuplicateException extends RuntimeException {
 
-  private String nickname;
+  private final String nickname;
+  private final HttpStatus httpStatus;
+  private final String message;
 
-  public NicknameDuplicateException(String nickname) {
-    super(getMessage(nickname));
+  public NicknameDuplicateException(String nickname, UserErrorCode userErrorCode) {
+    super(userErrorCode.getMessage());
     this.nickname = nickname;
-  }
-
-  public static String getMessage(String nickname) {
-    return "닉네임: '" + nickname + "'가 중복됩니다.";
+    this.httpStatus = userErrorCode.getHttpStatus();
+    this.message = userErrorCode.getMessage();
   }
 }

@@ -3,6 +3,8 @@ package com.dinosaur.foodbowl.domain.user.api;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -248,25 +250,25 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
-        doThrow(new LoginIdDuplicateException(validLoginId)).when(signUpService)
-            .checkDuplicateLoginId(any());
+        doThrow(new LoginIdDuplicateException(validLoginId, LOGIN_ID_DUPLICATE))
+            .when(signUpService).checkDuplicateLoginId(any());
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
-                    LoginIdDuplicateException.getMessage(validLoginId))));
+                    LOGIN_ID_DUPLICATE.getMessage())));
       }
 
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
-        doThrow(new NicknameDuplicateException(validNickname)).when(signUpService)
-            .checkDuplicateNickname(any());
+        doThrow(new NicknameDuplicateException(validNickname, NICKNAME_DUPLICATE))
+            .when(signUpService).checkDuplicateNickname(any());
         callSignUpApi()
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
-                    NicknameDuplicateException.getMessage(validNickname))));
+                    NICKNAME_DUPLICATE.getMessage())));
       }
     }
   }

@@ -1,18 +1,20 @@
 package com.dinosaur.foodbowl.domain.user.exception.signup;
 
+import com.dinosaur.foodbowl.domain.user.exception.UserErrorCode;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class LoginIdDuplicateException extends RuntimeException {
 
-  private String loginId;
+  private final String loginId;
+  private final HttpStatus httpStatus;
+  private final String message;
 
-  public LoginIdDuplicateException(String loginId) {
-    super(getMessage(loginId));
+  public LoginIdDuplicateException(String loginId, UserErrorCode userErrorCode) {
+    super(userErrorCode.getMessage());
     this.loginId = loginId;
-  }
-
-  public static String getMessage(String loginId) {
-    return String.format("로그인 아이디: '%s'가 중복됩니다.", loginId);
+    this.httpStatus = userErrorCode.getHttpStatus();
+    this.message = userErrorCode.getMessage();
   }
 }

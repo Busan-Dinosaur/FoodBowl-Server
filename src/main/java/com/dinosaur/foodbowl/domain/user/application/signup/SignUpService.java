@@ -1,5 +1,8 @@
 package com.dinosaur.foodbowl.domain.user.application.signup;
 
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
+
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
@@ -43,13 +46,13 @@ public class SignUpService {
 
   public void checkDuplicateLoginId(String loginId) {
     if (userRepository.existsByLoginId(loginId)) {
-      throw new LoginIdDuplicateException(loginId);
+      throw new LoginIdDuplicateException(loginId, LOGIN_ID_DUPLICATE);
     }
   }
 
   public void checkDuplicateNickname(String nickname) {
     if (userRepository.existsByNickname(nickname)) {
-      throw new LoginIdDuplicateException(nickname);
+      throw new LoginIdDuplicateException(nickname, NICKNAME_DUPLICATE);
     }
   }
 }

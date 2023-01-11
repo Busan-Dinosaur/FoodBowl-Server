@@ -1,5 +1,7 @@
 package com.dinosaur.foodbowl.domain.user.dao;
 
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.USER_NOT_FOUND;
+
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,6 @@ public class UserFindDao {
 
   public User findById(final Long id) {
     return memberRepository.findById(id)
-        .orElseThrow(() -> new UserNotFoundException(id));
+        .orElseThrow(() -> new UserNotFoundException(id, USER_NOT_FOUND));
   }
 }
