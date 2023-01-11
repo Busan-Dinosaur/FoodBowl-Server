@@ -55,6 +55,10 @@ class UserControllerTest extends ControllerTest {
 
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+    private final String validLoginId = "LoginId";
+    private final String validPassword = "Password";
+    private final String validNickname = "Nickname";
+    private final String validIntroduce = "Introduce";
 
     private MockMultipartFile thumbnail;
     private MultiValueMap<String, String> params;
@@ -73,10 +77,10 @@ class UserControllerTest extends ControllerTest {
       when(signUpService.signUp(any())).thenReturn(SignUpResponseDto.of(
           userId,
           User.builder()
-              .loginId("loginId")
-              .password("password")
-              .nickname("nickname")
-              .introduce("introduce")
+              .loginId(validLoginId)
+              .password(validPassword)
+              .nickname(validNickname)
+              .introduce(validIntroduce)
               .build(),
           userToken));
       return mockMvc.perform(multipart("/users/sign-up")
@@ -93,10 +97,10 @@ class UserControllerTest extends ControllerTest {
       when(signUpService.signUp(any())).thenReturn(SignUpResponseDto.of(
           userId,
           User.builder()
-              .loginId("loginId")
-              .password("password")
-              .nickname("nickname")
-              .introduce("introduce")
+              .loginId(validLoginId)
+              .password(validPassword)
+              .nickname(validNickname)
+              .introduce(validIntroduce)
               .thumbnail(Thumbnail.builder()
                   .height(200)
                   .width(200)
@@ -131,9 +135,9 @@ class UserControllerTest extends ControllerTest {
         callSignUpApi()
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.userId").exists())
-            .andExpect(jsonPath("$.loginId").value("loginId"))
-            .andExpect(jsonPath("$.nickname").value("nickname"))
-            .andExpect(jsonPath("$.introduce").value("introduce"))
+            .andExpect(jsonPath("$.loginId").value(validLoginId))
+            .andExpect(jsonPath("$.nickname").value(validNickname))
+            .andExpect(jsonPath("$.introduce").value(validIntroduce))
             .andExpect(jsonPath("$.thumbnailURL").exists())
             .andExpect(jsonPath("$.accessToken").exists())
             .andDo(document("sign-up",
