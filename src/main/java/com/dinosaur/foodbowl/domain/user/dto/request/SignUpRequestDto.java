@@ -1,8 +1,6 @@
 package com.dinosaur.foodbowl.domain.user.dto.request;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -24,12 +22,10 @@ public class SignUpRequestDto {
   public static final String PASSWORD_INVALID = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.";
   public static final String NICKNAME_INVALID = "닉네임은 1~16자 한글, 영어, 숫자만 가능합니다.";
 
-  @Length(max = MAX_LOGIN_ID_LENGTH)
   @Pattern(regexp = "^[a-zA-Z0-9_]{4,12}", message = LOGIN_ID_INVALID)
   private String loginId;
   @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$", message = PASSWORD_INVALID)
   private String password;
-  @Length(max = MAX_NICKNAME_LENGTH)
   @Pattern(regexp = "^[a-zA-Z0-9가-힣]{1,16}", message = NICKNAME_INVALID)
   private String nickname;
   @Length(max = MAX_INTRODUCE_LENGTH)
