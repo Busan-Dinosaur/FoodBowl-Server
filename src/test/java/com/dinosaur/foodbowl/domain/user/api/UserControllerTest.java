@@ -3,6 +3,9 @@ package com.dinosaur.foodbowl.domain.user.api;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -16,37 +19,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
+import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
+import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
+import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.global.api.IntegrationTest;
-import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
+import com.dinosaur.foodbowl.global.api.ControllerTest;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-class UserControllerTest extends IntegrationTest {
+@WebMvcTest(UserController.class)
+class UserControllerTest extends ControllerTest {
 
-  @Autowired
-  ThumbnailUtil thumbnailUtil;
+  @MockBean
+  private SignUpService signUpService;
 
-  @Autowired
-  UserRepository userRepository;
-
-  @Autowired
-  JwtTokenProvider jwtTokenProvider;
+  @MockBean
+  DeleteAccountService deleteAccountService;
 
   @Nested
   class SignUp {
+
+    private final Long userId = 1L;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
     private MockMultipartFile thumbnail;
     private MultiValueMap<String, String> params;
@@ -62,6 +68,15 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
+      when(signUpService.signUp(any())).thenReturn(SignUpResponseDto.of(
+          userId,
+          User.builder()
+              .loginId("loginId")
+              .password("password")
+              .nickname("nickname")
+              .introduce("introduce")
+              .build(),
+          userToken));
       return mockMvc.perform(multipart("/users/sign-up")
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -73,6 +88,20 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApi() throws Exception {
+      when(signUpService.signUp(any())).thenReturn(SignUpResponseDto.of(
+          userId,
+          User.builder()
+              .loginId("loginId")
+              .password("password")
+              .nickname("nickname")
+              .introduce("introduce")
+              .thumbnail(Thumbnail.builder()
+                  .height(200)
+                  .width(200)
+                  .path("/thumbnail/2022-01-11/random_name.jpeg")
+                  .build())
+              .build(),
+          userToken));
       return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
               .params(params)
@@ -164,30 +193,12 @@ class UserControllerTest extends IntegrationTest {
   @Nested
   class deleteAccount {
 
-    private User user;
-    private String userToken;
-
-    @BeforeEach
-    void setupUser() throws IOException {
-      User userWithThumbnail = User.builder()
-          .loginId("loginId")
-          .nickname("nickname")
-          .password("password")
-          .introduce("introduce")
-          .thumbnail(thumbnailUtil.save(getThumbnailFile()))
-          .build();
-      user = userRepository.save(userWithThumbnail);
-      userToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
-    }
-
-    private MockMultipartFile getThumbnailFile() throws IOException {
-      return new MockMultipartFile("thumbnail",
-          "testImage_1x1.png", "image/png",
-          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
-    }
+    private final Long userId = 1L;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
     @Test
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
+      doNothing().when(deleteAccountService).deleteMySelf();
       mockMvc.perform(delete("/users")
               .header("Authorization", userToken))
           .andExpect(status().isNoContent())
