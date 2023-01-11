@@ -253,7 +253,7 @@ class UserControllerTest extends ControllerTest {
         doThrow(new LoginIdDuplicateException(validLoginId, LOGIN_ID_DUPLICATE))
             .when(signUpService).checkDuplicateLoginId(any());
         callSignUpApi()
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
                     LOGIN_ID_DUPLICATE.getMessage())));
@@ -265,7 +265,7 @@ class UserControllerTest extends ControllerTest {
         doThrow(new NicknameDuplicateException(validNickname, NICKNAME_DUPLICATE))
             .when(signUpService).checkDuplicateNickname(any());
         callSignUpApi()
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
                     NICKNAME_DUPLICATE.getMessage())));
