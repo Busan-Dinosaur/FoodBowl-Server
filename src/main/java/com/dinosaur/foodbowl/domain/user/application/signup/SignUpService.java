@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.user.application;
+package com.dinosaur.foodbowl.domain.user.application.signup;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
