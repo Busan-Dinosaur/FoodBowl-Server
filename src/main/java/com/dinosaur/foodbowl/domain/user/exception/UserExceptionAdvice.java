@@ -3,12 +3,12 @@ package com.dinosaur.foodbowl.domain.user.exception;
 import com.dinosaur.foodbowl.domain.user.exception.signup.LoginIdDuplicateException;
 import com.dinosaur.foodbowl.domain.user.exception.signup.NicknameDuplicateException;
 import com.dinosaur.foodbowl.global.error.ErrorResponse;
+import java.util.stream.Collectors;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -40,29 +40,12 @@ public class UserExceptionAdvice {
   private static String getErrorMessage(BindException e) {
     BindingResult bindingResult = e.getBindingResult();
 
-    StringBuilder stringBuilder = new StringBuilder();
-
-    for (FieldError fieldError : bindingResult.getFieldErrors()) {
-      String errorMessage = getErrorMessage((String) fieldError.getRejectedValue(),
-          fieldError.getField(),
-          fieldError.getDefaultMessage());
-      stringBuilder.append(errorMessage);
-      stringBuilder.append(", ");
-    }
-
-    if (isExistError(bindingResult)) {
-      deleteLastComma(stringBuilder);
-    }
-
-    return stringBuilder.toString();
-  }
-
-  private static boolean isExistError(BindingResult bindingResult) {
-    return !bindingResult.getFieldErrors().isEmpty();
-  }
-
-  private static void deleteLastComma(StringBuilder sb) {
-    sb.delete(sb.length() - ", ".length(), sb.length());
+    return bindingResult.getFieldErrors()
+        .stream()
+        .map(fieldError -> getErrorMessage((String) fieldError.getRejectedValue(),
+            fieldError.getField(),
+            fieldError.getDefaultMessage()))
+        .collect(Collectors.joining(", "));
   }
 
   public static String getErrorMessage(String invalidValue, String errorField,
