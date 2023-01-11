@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "address")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Address extends BaseEntity {
 
   private static final int MAX_ADDRESS_NAME_LENGTH = 512;
@@ -47,7 +47,7 @@ public class Address extends BaseEntity {
   @Column(name = "main_building_no", nullable = false, length = MAX_BUILDING_NO_LENGTH)
   private String mainBuildingNo;
 
-  @Column(name = "sub_building_no", nullable = false, length = MAX_BUILDING_NO_LENGTH)
+  @Column(name = "sub_building_no", length = MAX_BUILDING_NO_LENGTH)
   private String subBuildingNo;
 
   @Column(name = "longitude")
