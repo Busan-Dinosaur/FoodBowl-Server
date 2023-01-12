@@ -14,9 +14,9 @@ public class SignUpResponseDto {
   private String thumbnailURL;
   private String accessToken;
 
-  public static SignUpResponseDto of(Long userId, User user, String accessToken) {
+  public static SignUpResponseDto of(User user, String accessToken) {
     return SignUpResponseDto.builder()
-        .userId(userId)
+        .userId(user.getId())
         .loginId(user.getLoginId())
         .nickname(user.getNickname())
         .introduce(user.getIntroduce())

@@ -33,7 +33,7 @@ public class SignUpService {
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
-    return SignUpResponseDto.of(user.getId(), user, accessToken);
+    return SignUpResponseDto.of(user, accessToken);
   }
 
   private Thumbnail saveThumbnailIfExist(MultipartFile thumbnail) {

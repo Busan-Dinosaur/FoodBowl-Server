@@ -45,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -83,15 +84,16 @@ class UserControllerTest extends ControllerTest {
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
-      when(signUpService.signUp(any())).thenReturn(SignUpResponseDto.of(
-          userId,
+      SignUpResponseDto responseDto = SignUpResponseDto.of(
           User.builder()
               .loginId(validLoginId)
               .password(validPassword)
               .nickname(validNickname)
               .introduce(validIntroduce)
               .build(),
-          userToken));
+          userToken);
+      ReflectionTestUtils.setField(responseDto, "userId", userId);
+      when(signUpService.signUp(any())).thenReturn(responseDto);
       return mockMvc.perform(multipart("/users/sign-up")
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -103,8 +105,7 @@ class UserControllerTest extends ControllerTest {
     }
 
     private ResultActions callSignUpApi() throws Exception {
-      when(signUpService.signUp(any())).thenReturn(SignUpResponseDto.of(
-          userId,
+      SignUpResponseDto responseDto = SignUpResponseDto.of(
           User.builder()
               .loginId(validLoginId)
               .password(validPassword)
@@ -116,7 +117,10 @@ class UserControllerTest extends ControllerTest {
                   .path("/thumbnail/2022-01-11/random_name.jpeg")
                   .build())
               .build(),
-          userToken));
+          userToken);
+      ReflectionTestUtils.setField(responseDto, "userId", userId);
+
+      when(signUpService.signUp(any())).thenReturn(responseDto);
       return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
               .params(params)
