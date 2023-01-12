@@ -1,4 +1,7 @@
-package com.dinosaur.foodbowl.domain.user.application;
+package com.dinosaur.foodbowl.domain.user.application.signup;
+
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
@@ -6,6 +9,7 @@ import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,9 @@ public class SignUpService {
 
   @Transactional
   public SignUpResponseDto signUp(SignUpRequestDto request) {
+    checkDuplicateLoginId(request.getLoginId());
+    checkDuplicateNickname(request.getNickname());
+
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
@@ -38,5 +45,17 @@ public class SignUpService {
       userThumbnail = thumbnailUtil.save(thumbnail);
     }
     return userThumbnail;
+  }
+
+  private void checkDuplicateLoginId(String loginId) {
+    if (userRepository.existsByLoginId(loginId)) {
+      throw new UserException(loginId, "loginId", LOGIN_ID_DUPLICATE);
+    }
+  }
+
+  private void checkDuplicateNickname(String nickname) {
+    if (userRepository.existsByNickname(nickname)) {
+      throw new UserException(nickname, "nickname", NICKNAME_DUPLICATE);
+    }
   }
 }
