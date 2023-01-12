@@ -22,7 +22,7 @@ public class UserExceptionAdvice {
   }
 
   @ExceptionHandler(UserException.class)
-  public ResponseEntity<ErrorResponse> loginIdDuplicateException(UserException e) {
+  public ResponseEntity<ErrorResponse> userException(UserException e) {
     String errorMessage = getErrorMessage(e.getInvalidValue().toString(), e.getFieldName(),
         e.getMessage());
     return ResponseEntity.status(e.getHttpStatus())
