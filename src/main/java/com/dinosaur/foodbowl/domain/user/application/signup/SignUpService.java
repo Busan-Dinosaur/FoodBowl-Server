@@ -30,6 +30,9 @@ public class SignUpService {
 
   @Transactional
   public SignUpResponseDto signUp(SignUpRequestDto request) {
+    checkDuplicateLoginId(request.getLoginId());
+    checkDuplicateNickname(request.getNickname());
+
     Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
@@ -44,13 +47,13 @@ public class SignUpService {
     return userThumbnail;
   }
 
-  public void checkDuplicateLoginId(String loginId) {
+  private void checkDuplicateLoginId(String loginId) {
     if (userRepository.existsByLoginId(loginId)) {
       throw new UserException(loginId, "loginId", LOGIN_ID_DUPLICATE);
     }
   }
 
-  public void checkDuplicateNickname(String nickname) {
+  private void checkDuplicateNickname(String nickname) {
     if (userRepository.existsByNickname(nickname)) {
       throw new UserException(nickname, "nickname", NICKNAME_DUPLICATE);
     }

@@ -7,7 +7,6 @@ import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -83,16 +82,6 @@ class UserControllerTest extends ControllerTest {
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
-      SignUpResponseDto responseDto = SignUpResponseDto.of(
-          User.builder()
-              .loginId(validLoginId)
-              .password(validPassword)
-              .nickname(validNickname)
-              .introduce(validIntroduce)
-              .build(),
-          userToken);
-      ReflectionTestUtils.setField(responseDto, "userId", userId);
-      when(signUpService.signUp(any())).thenReturn(responseDto);
       return mockMvc.perform(multipart("/users/sign-up")
               .params(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -103,7 +92,33 @@ class UserControllerTest extends ControllerTest {
           .andDo(print());
     }
 
+    private void mockingValidResponseWithoutThumbnail() {
+      SignUpResponseDto responseDto = SignUpResponseDto.of(
+          User.builder()
+              .loginId(validLoginId)
+              .password(validPassword)
+              .nickname(validNickname)
+              .introduce(validIntroduce)
+              .build(),
+          userToken);
+      ReflectionTestUtils.setField(responseDto, "userId", userId);
+
+      when(signUpService.signUp(any())).thenReturn(responseDto);
+    }
+
     private ResultActions callSignUpApi() throws Exception {
+      return mockMvc.perform(multipart("/users/sign-up")
+              .file(thumbnail)
+              .params(params)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+              .with(request -> {
+                request.setMethod("POST");
+                return request;
+              }))
+          .andDo(print());
+    }
+
+    private void mockingValidResponse() {
       SignUpResponseDto responseDto = SignUpResponseDto.of(
           User.builder()
               .loginId(validLoginId)
@@ -120,15 +135,6 @@ class UserControllerTest extends ControllerTest {
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
-      return mockMvc.perform(multipart("/users/sign-up")
-              .file(thumbnail)
-              .params(params)
-              .contentType(MediaType.MULTIPART_FORM_DATA)
-              .with(request -> {
-                request.setMethod("POST");
-                return request;
-              }))
-          .andDo(print());
     }
 
     private MockMultipartFile getThumbnailFile() throws IOException {
@@ -144,6 +150,7 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("썸네일이 있을 경우 회원가입은 성공한다.")
       void should_successfully_when_validRequest() throws Exception {
+        mockingValidResponse();
         callSignUpApi()
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.userId").exists())
@@ -186,6 +193,7 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("썸네일이 없어도 회원가입은 성공한다.")
       void should_returnIsOK_when_thumbnailIsNull() throws Exception {
+        mockingValidResponseWithoutThumbnail();
         callSignUpApiWithoutThumbnail()
             .andExpect(status().isCreated());
       }
@@ -198,6 +206,8 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("너무 긴 요청 값일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_tooLongParameter() throws Exception {
+        mockingValidResponse();
+
         params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
         callSignUpApi().andExpect(status().isBadRequest());
         params.set("loginId", "loginId");
@@ -216,6 +226,7 @@ class UserControllerTest extends ControllerTest {
           "0123456789012", "012345678901234567890123456789"})
       @DisplayName("로그인 아이디 유효성 검사 실패 시 회원가입은 실패한다.")
       void should_returnBadRequest_when_invalidLoginId(String invalidLoginId) throws Exception {
+        mockingValidResponse();
         params.set("loginId", invalidLoginId);
         callSignUpApi()
             .andExpect(status().isBadRequest())
@@ -229,6 +240,7 @@ class UserControllerTest extends ControllerTest {
           "         ", "012345678901234567890"})
       @DisplayName("비밀번호 유효성 검사 실패 시 회원가입은 실패한다.")
       void should_returnBadRequest_when_invalidPassword(String invalidPassword) throws Exception {
+        mockingValidResponse();
         params.set("password", invalidPassword);
         callSignUpApi()
             .andExpect(status().isBadRequest())
@@ -242,6 +254,7 @@ class UserControllerTest extends ControllerTest {
           "01234567890123456", "         ", "012345678901234567890"})
       @DisplayName("닉네임 유효성 검사 실패 시 회원가입은 실패한다.")
       void should_returnBadRequest_when_invalidNickname(String invalidNickname) throws Exception {
+        mockingValidResponse();
         params.set("nickname", invalidNickname);
         callSignUpApi()
             .andExpect(status().isBadRequest())
@@ -253,8 +266,8 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
-        doThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
-            .when(signUpService).checkDuplicateLoginId(any());
+        when(signUpService.signUp(any()))
+            .thenThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE));
         callSignUpApi()
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
@@ -265,8 +278,8 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
-        doThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE))
-            .when(signUpService).checkDuplicateNickname(any());
+        when(signUpService.signUp(any()))
+            .thenThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE));
         callSignUpApi()
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
