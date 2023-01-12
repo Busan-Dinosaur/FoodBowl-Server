@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProfileModifyRequestDto {
+public class UpdateProfileRequestDto {
 
   @Length(max = MAX_INTRODUCE_LENGTH)
   private String introduce;
