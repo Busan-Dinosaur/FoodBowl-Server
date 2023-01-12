@@ -391,8 +391,9 @@ class UserControllerTest extends ControllerTest {
 
     private ResultActions callModifyProfileApi(MockMultipartFile thumbnail,
         MultiValueMap<String, String> params) throws Exception {
-      return mockMvc.perform(multipart("/users/{userId}", userId)
+      return mockMvc.perform(multipart("/users")
           .file(thumbnail)
+          .header("Authorization", userToken)
           .params(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .with(request -> {
