@@ -1,7 +1,5 @@
 package com.dinosaur.foodbowl.domain.user.exception;
 
-import com.dinosaur.foodbowl.domain.user.exception.signup.LoginIdDuplicateException;
-import com.dinosaur.foodbowl.domain.user.exception.signup.NicknameDuplicateException;
 import com.dinosaur.foodbowl.global.error.ErrorResponse;
 import java.util.stream.Collectors;
 import org.springframework.core.Ordered;
@@ -23,23 +21,10 @@ public class UserExceptionAdvice {
         .body(ErrorResponse.from(errorMessage));
   }
 
-  @ExceptionHandler(LoginIdDuplicateException.class)
-  public ResponseEntity<ErrorResponse> loginIdDuplicateException(LoginIdDuplicateException e) {
-    String errorMessage = getErrorMessage(e.getLoginId(), "loginId", e.getMessage());
-    return ResponseEntity.status(e.getHttpStatus())
-        .body(ErrorResponse.from(errorMessage));
-  }
-
-  @ExceptionHandler(NicknameDuplicateException.class)
-  public ResponseEntity<ErrorResponse> nicknameDuplicateException(NicknameDuplicateException e) {
-    String errorMessage = getErrorMessage(e.getNickname(), "nickname", e.getMessage());
-    return ResponseEntity.status(e.getHttpStatus())
-        .body(ErrorResponse.from(errorMessage));
-  }
-
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<ErrorResponse> userNotFoundException(UserNotFoundException e) {
-    String errorMessage = getErrorMessage(String.valueOf(e.getUserId()), "userId", e.getMessage());
+  @ExceptionHandler(UserException.class)
+  public ResponseEntity<ErrorResponse> loginIdDuplicateException(UserException e) {
+    String errorMessage = getErrorMessage(e.getInvalidValue().toString(), e.getFieldName(),
+        e.getMessage());
     return ResponseEntity.status(e.getHttpStatus())
         .body(ErrorResponse.from(errorMessage));
   }

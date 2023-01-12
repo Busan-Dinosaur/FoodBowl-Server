@@ -29,9 +29,8 @@ import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
-import com.dinosaur.foodbowl.domain.user.exception.signup.LoginIdDuplicateException;
-import com.dinosaur.foodbowl.domain.user.exception.signup.NicknameDuplicateException;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -254,7 +253,7 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
-        doThrow(new LoginIdDuplicateException(validLoginId, LOGIN_ID_DUPLICATE))
+        doThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
             .when(signUpService).checkDuplicateLoginId(any());
         callSignUpApi()
             .andExpect(status().isConflict())
@@ -266,7 +265,7 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
-        doThrow(new NicknameDuplicateException(validNickname, NICKNAME_DUPLICATE))
+        doThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE))
             .when(signUpService).checkDuplicateNickname(any());
         callSignUpApi()
             .andExpect(status().isConflict())
