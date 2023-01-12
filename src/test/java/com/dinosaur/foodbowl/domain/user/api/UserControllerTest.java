@@ -18,6 +18,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -135,12 +136,6 @@ class UserControllerTest extends ControllerTest {
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
-    }
-
-    private MockMultipartFile getThumbnailFile() throws IOException {
-      return new MockMultipartFile("thumbnail",
-          "testImage_210x210.png", "image/png",
-          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
     }
 
     @Nested
@@ -323,5 +318,93 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
+  }
+
+  @Nested
+  @DisplayName("프로필 수정")
+  class ModifyProfile {
+
+    private final Long userId = 1L;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+    private final String validIntroduce = "Introduce";
+
+    private MockMultipartFile thumbnail;
+    private MultiValueMap<String, String> params;
+
+    @BeforeEach
+    void setUpModifyProfile() throws IOException {
+      thumbnail = getThumbnailFile();
+      params = new LinkedMultiValueMap<>();
+      params.add("introduce", validIntroduce);
+    }
+
+    @Test
+    @DisplayName("썸네일과 소개글 모두 포함되어 있어도 프로필 수정은 성공한다.")
+    void should_successfully_when_validRequest() throws Exception {
+      callModifyProfileApi(thumbnail, params)
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId))
+          .andDo(document("modify-profile",
+              requestParameters(
+                  parameterWithName("introduce")
+                      .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
+                      .optional()
+              ),
+              requestParts(
+                  partWithName("thumbnail").description("유저가 수정할 썸네일")
+                      .optional()
+              )));
+    }
+
+    @Test
+    @DisplayName("수정할 썸네일이 없어도 프로필 수정은 성공한다.")
+    void should_successfully_when_nullThumbnail() throws Exception {
+      callModifyProfileApi(null, params)
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    @Test
+    @DisplayName("수정할 소개글이 없어도 프로필 수정은 성공한다.")
+    void should_successfully_when_nullIntroduce() throws Exception {
+      callModifyProfileApi(thumbnail, new LinkedMultiValueMap<>())
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    @Test
+    @DisplayName("소개글이나 썸네일이 없어도 프로필 수정은 성공한다.")
+    void should_successfully_when_nullEverything() throws Exception {
+      callModifyProfileApi(null, new LinkedMultiValueMap<>())
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    @Test
+    @DisplayName("소개글이 너무 길 경우 프로필 수정은 실패한다.")
+    void should_successfully_when_tooLongIntroduce() throws Exception {
+      params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
+      callModifyProfileApi(null, params)
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    private ResultActions callModifyProfileApi(MockMultipartFile thumbnail,
+        MultiValueMap<String, String> params) throws Exception {
+      return mockMvc.perform(multipart("/users/{userId}", userId)
+          .file(thumbnail)
+          .params(params)
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .with(request -> {
+            request.setMethod("PATCH");
+            return request;
+          }));
+    }
+  }
+
+  private MockMultipartFile getThumbnailFile() throws IOException {
+    return new MockMultipartFile("thumbnail",
+        "testImage_210x210.png", "image/png",
+        new FileInputStream("src/test/resources/images/testImage_1x1.png"));
   }
 }
