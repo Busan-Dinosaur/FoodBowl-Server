@@ -398,6 +398,14 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("썸네일이 이미지가 아닐 경우 프로필 수정은 실패한다.")
+    void should_400BadRequest_when_thumbnailIsNotImage() throws Exception {
+      mockUpdateProfileService();
+      callModifyProfileApi(getFakeImageFile())
+          .andExpect(status().isBadRequest());
+    }
+
     private void mockUpdateProfileService() {
       when(updateProfileService.updateProfile(any())).thenReturn(userId);
     }
@@ -430,5 +438,11 @@ class UserControllerTest extends ControllerTest {
     return new MockMultipartFile("thumbnail",
         "testImage_210x210.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+  }
+
+  private MockMultipartFile getFakeImageFile() throws IOException {
+    return new MockMultipartFile("thumbnail",
+        "fakeImage.png", "image/png",
+        new FileInputStream("src/test/resources/images/fakeImage.png"));
   }
 }
