@@ -391,7 +391,7 @@ class UserControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("소개글이 너무 길 경우 프로필 수정은 실패한다.")
-    void should_successfully_when_tooLongIntroduce() throws Exception {
+    void should_400BadRequest_when_tooLongIntroduce() throws Exception {
       params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
       mockUpdateProfileService();
       callModifyProfileApi(thumbnail)
