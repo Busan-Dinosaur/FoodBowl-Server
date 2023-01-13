@@ -111,7 +111,7 @@ class UserControllerTest extends ControllerTest {
       when(signUpService.signUp(any())).thenReturn(responseDto);
     }
 
-    private ResultActions callSignUpApi() throws Exception {
+    private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
               .params(params)
@@ -150,7 +150,7 @@ class UserControllerTest extends ControllerTest {
       @DisplayName("썸네일이 있을 경우 회원가입은 성공한다.")
       void should_successfully_when_validRequest() throws Exception {
         mockingValidResponse();
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.userId").exists())
             .andExpect(jsonPath("$.loginId").value(validLoginId))
@@ -208,15 +208,15 @@ class UserControllerTest extends ControllerTest {
         mockingValidResponse();
 
         params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
-        callSignUpApi().andExpect(status().isBadRequest());
+        callSignUpApi(thumbnail).andExpect(status().isBadRequest());
         params.set("loginId", "loginId");
 
         params.set("nickname", "a".repeat(MAX_NICKNAME_LENGTH + 1));
-        callSignUpApi().andExpect(status().isBadRequest());
+        callSignUpApi(thumbnail).andExpect(status().isBadRequest());
         params.set("nickname", "nickname");
 
         params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
-        callSignUpApi().andExpect(status().isBadRequest());
+        callSignUpApi(thumbnail).andExpect(status().isBadRequest());
         params.set("introduce", "introduce");
       }
 
@@ -227,7 +227,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_invalidLoginId(String invalidLoginId) throws Exception {
         mockingValidResponse();
         params.set("loginId", invalidLoginId);
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(invalidLoginId, "loginId",
@@ -241,7 +241,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_invalidPassword(String invalidPassword) throws Exception {
         mockingValidResponse();
         params.set("password", invalidPassword);
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(invalidPassword, "password",
@@ -255,7 +255,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_invalidNickname(String invalidNickname) throws Exception {
         mockingValidResponse();
         params.set("nickname", invalidNickname);
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
@@ -267,7 +267,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
         when(signUpService.signUp(any()))
             .thenThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE));
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
@@ -279,11 +279,19 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
         when(signUpService.signUp(any()))
             .thenThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE));
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
                     NICKNAME_DUPLICATE.getMessage())));
+      }
+
+      @Test
+      @DisplayName("썸네일이 이미지가 아닐 경우 회원가입은 실패한다.")
+      void should_returnBadRequest_when_thumbnailIsNotImage() throws Exception {
+        mockingValidResponse();
+        callSignUpApi(getFakeImageFile())
+            .andExpect(status().isBadRequest());
       }
     }
   }

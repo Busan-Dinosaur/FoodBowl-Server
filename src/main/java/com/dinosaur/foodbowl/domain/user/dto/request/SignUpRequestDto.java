@@ -4,6 +4,7 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.util.validator.image.ImageOrNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class SignUpRequestDto {
   private String nickname;
   @Length(max = MAX_INTRODUCE_LENGTH)
   private String introduce;
+  @ImageOrNull
   private MultipartFile thumbnail;
 
   public User toEntity(Thumbnail thumbnail, PasswordEncoder passwordEncoder) {
