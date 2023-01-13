@@ -8,6 +8,7 @@ import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +21,15 @@ public class UpdateProfileService {
   @Transactional
   public long updateProfile(UpdateProfileRequestDto requestDto) {
     User me = authUtil.getUserByJWT();
-    Thumbnail newThumbnail = getThumbnail(requestDto);
+    Thumbnail newThumbnail = saveThumbnailIfExist(requestDto.getThumbnail());
     me.updateProfile(newThumbnail, requestDto.getIntroduce());
     return me.getId();
   }
 
-  private Thumbnail getThumbnail(UpdateProfileRequestDto requestDto) {
+  private Thumbnail saveThumbnailIfExist(MultipartFile thumbnail) {
     Thumbnail newThumbnail = null;
-    if (requestDto.getThumbnail() != null) {
-      newThumbnail = thumbnailUtil.save(requestDto.getThumbnail());
+    if (thumbnail != null) {
+      newThumbnail = thumbnailUtil.save(thumbnail);
     }
     return newThumbnail;
   }
