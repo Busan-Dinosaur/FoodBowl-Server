@@ -33,6 +33,7 @@ import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
+import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,9 @@ class UserControllerTest extends ControllerTest {
 
   @MockBean
   UpdateProfileService updateProfileService;
+
+  @MockBean
+  AuthUtil authUtil;
 
   @Nested
   @DisplayName("회원가입")
@@ -98,17 +102,18 @@ class UserControllerTest extends ControllerTest {
     }
 
     private void mockingValidResponseWithoutThumbnail() {
-      SignUpResponseDto responseDto = SignUpResponseDto.of(
-          User.builder()
-              .loginId(validLoginId)
-              .password(validPassword)
-              .nickname(validNickname)
-              .introduce(validIntroduce)
-              .build(),
-          userToken);
+      User user = User.builder()
+          .loginId(validLoginId)
+          .password(validPassword)
+          .nickname(validNickname)
+          .introduce(validIntroduce)
+          .build();
+      ReflectionTestUtils.setField(user, "id", userId);
+      SignUpResponseDto responseDto = SignUpResponseDto.of(user, userToken);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
+      when(authUtil.getUserByJWT()).thenReturn(user);
     }
 
     private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
@@ -303,10 +308,17 @@ class UserControllerTest extends ControllerTest {
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
+    @BeforeEach
+    void setup() {
+      User user = User.builder().build();
+      ReflectionTestUtils.setField(user, "id", userId);
+      when(authUtil.getUserByJWT()).thenReturn(user);
+    }
+
     @Test
     @DisplayName("본인의 JWT로 회원 탈퇴는 성공한다.")
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
-      doNothing().when(deleteAccountService).deleteMySelf();
+      doNothing().when(deleteAccountService).deleteMySelf(any());
       mockMvc.perform(delete("/users")
               .header("Authorization", userToken))
           .andExpect(status().isNoContent())
@@ -415,7 +427,7 @@ class UserControllerTest extends ControllerTest {
     }
 
     private void mockUpdateProfileService() {
-      when(updateProfileService.updateProfile(any())).thenReturn(userId);
+      when(updateProfileService.updateProfile(any(), any())).thenReturn(userId);
     }
 
     private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {

@@ -6,6 +6,8 @@ import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class UserController {
   private final SignUpService signUpService;
   private final DeleteAccountService deleteAccountService;
   private final UpdateProfileService updateProfileService;
+  private final AuthUtil authUtil;
 
   @PostMapping("/sign-up")
   public ResponseEntity<SignUpResponseDto> signUp(@Valid @ModelAttribute SignUpRequestDto request) {
@@ -36,7 +39,8 @@ public class UserController {
 
   @DeleteMapping
   public ResponseEntity<Void> deleteAccount() {
-    deleteAccountService.deleteMySelf();
+    User me = authUtil.getUserByJWT();
+    deleteAccountService.deleteMySelf(me);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .build();
   }
@@ -44,7 +48,8 @@ public class UserController {
   @PatchMapping
   public ResponseEntity<Void> updateProfile(
       @ModelAttribute @Valid UpdateProfileRequestDto requestDto) {
-    long userId = updateProfileService.updateProfile(requestDto);
+    User me = authUtil.getUserByJWT();
+    long userId = updateProfileService.updateProfile(me, requestDto);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .location(URI.create("/users/" + userId))
         .build();
