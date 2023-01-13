@@ -2,6 +2,7 @@ package com.dinosaur.foodbowl.domain.user.dto.request;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 
+import com.dinosaur.foodbowl.global.util.validator.image.ImageOrNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,6 @@ public class UpdateProfileRequestDto {
 
   @Length(max = MAX_INTRODUCE_LENGTH)
   private String introduce;
+  @ImageOrNull
   private MultipartFile thumbnail;
 }
