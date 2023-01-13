@@ -12,11 +12,11 @@ import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -33,18 +33,10 @@ public class SignUpService {
     checkDuplicateLoginId(request.getLoginId());
     checkDuplicateNickname(request.getNickname());
 
-    Thumbnail userThumbnail = saveThumbnailIfExist(request.getThumbnail());
-    User user = userRepository.save(request.toEntity(userThumbnail, passwordEncoder));
+    Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
+    User user = userRepository.save(request.toEntity(userThumbnail.orElse(null), passwordEncoder));
     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
     return SignUpResponseDto.of(user, accessToken);
-  }
-
-  private Thumbnail saveThumbnailIfExist(MultipartFile thumbnail) {
-    Thumbnail userThumbnail = null;
-    if (thumbnail != null) {
-      userThumbnail = thumbnailUtil.save(thumbnail);
-    }
-    return userThumbnail;
   }
 
   private void checkDuplicateLoginId(String loginId) {

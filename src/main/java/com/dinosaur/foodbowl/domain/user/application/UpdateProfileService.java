@@ -8,7 +8,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -19,15 +18,9 @@ public class UpdateProfileService {
 
   @Transactional
   public long updateProfile(User me, UpdateProfileRequestDto requestDto) {
-    Optional<Thumbnail> newThumbnail = saveThumbnailIfExist(requestDto.getThumbnail());
+    Optional<Thumbnail> newThumbnail = thumbnailUtil
+        .saveIfExist(requestDto.getThumbnail());
     me.updateProfile(newThumbnail.orElse(null), requestDto.getIntroduce());
     return me.getId();
-  }
-
-  private Optional<Thumbnail> saveThumbnailIfExist(MultipartFile thumbnail) {
-    if (thumbnail == null) {
-      return Optional.empty();
-    }
-    return Optional.of(thumbnailUtil.save(thumbnail));
   }
 }
