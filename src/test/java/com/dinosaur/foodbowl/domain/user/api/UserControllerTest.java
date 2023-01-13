@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
+import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
@@ -57,6 +58,9 @@ class UserControllerTest extends ControllerTest {
 
   @MockBean
   DeleteAccountService deleteAccountService;
+
+  @MockBean
+  UpdateProfileService updateProfileService;
 
   @Nested
   @DisplayName("회원가입")
@@ -341,7 +345,8 @@ class UserControllerTest extends ControllerTest {
     @Test
     @DisplayName("썸네일과 소개글 모두 포함되어 있어도 프로필 수정은 성공한다.")
     void should_successfully_when_validRequest() throws Exception {
-      callModifyProfileApi(thumbnail, params)
+      mockUpdateProfileService();
+      callModifyProfileApi()
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("modify-profile",
@@ -359,7 +364,8 @@ class UserControllerTest extends ControllerTest {
     @Test
     @DisplayName("수정할 썸네일이 없어도 프로필 수정은 성공한다.")
     void should_successfully_when_nullThumbnail() throws Exception {
-      callModifyProfileApi(null, params)
+      mockUpdateProfileService();
+      callModifyProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -367,7 +373,8 @@ class UserControllerTest extends ControllerTest {
     @Test
     @DisplayName("수정할 소개글이 없어도 프로필 수정은 성공한다.")
     void should_successfully_when_nullIntroduce() throws Exception {
-      callModifyProfileApi(thumbnail, new LinkedMultiValueMap<>())
+      mockUpdateProfileService();
+      callModifyProfileApi()
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -375,7 +382,9 @@ class UserControllerTest extends ControllerTest {
     @Test
     @DisplayName("소개글이나 썸네일이 없어도 프로필 수정은 성공한다.")
     void should_successfully_when_nullEverything() throws Exception {
-      callModifyProfileApi(null, new LinkedMultiValueMap<>())
+      params.set("introduce", null);
+      mockUpdateProfileService();
+      callModifyProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -384,15 +393,29 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("소개글이 너무 길 경우 프로필 수정은 실패한다.")
     void should_successfully_when_tooLongIntroduce() throws Exception {
       params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
-      callModifyProfileApi(null, params)
-          .andExpect(status().isNoContent())
-          .andExpect(header().string("location", "/users/" + userId));
+      mockUpdateProfileService();
+      callModifyProfileApi()
+          .andExpect(status().isBadRequest());
     }
 
-    private ResultActions callModifyProfileApi(MockMultipartFile thumbnail,
-        MultiValueMap<String, String> params) throws Exception {
+    private void mockUpdateProfileService() {
+      when(updateProfileService.updateProfile(any())).thenReturn(userId);
+    }
+
+    private ResultActions callModifyProfileApi() throws Exception {
       return mockMvc.perform(multipart("/users")
           .file(thumbnail)
+          .header("Authorization", userToken)
+          .params(params)
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .with(request -> {
+            request.setMethod("PATCH");
+            return request;
+          }));
+    }
+
+    private ResultActions callModifyProfileApiWithoutThumbnail() throws Exception {
+      return mockMvc.perform(multipart("/users")
           .header("Authorization", userToken)
           .params(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
