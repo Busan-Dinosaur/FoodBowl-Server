@@ -20,12 +20,16 @@ public class UpdateProfileService {
   @Transactional
   public long updateProfile(UpdateProfileRequestDto requestDto) {
     User me = authUtil.getUserByJWT();
-    Thumbnail newThumbnail = null;
-    try {
-      newThumbnail = thumbnailUtil.save(requestDto.getThumbnail());
-    } catch (RuntimeException ignore) {
-    }
+    Thumbnail newThumbnail = getThumbnail(requestDto);
     me.updateProfile(newThumbnail, requestDto.getIntroduce());
     return me.getId();
+  }
+
+  private Thumbnail getThumbnail(UpdateProfileRequestDto requestDto) {
+    Thumbnail newThumbnail = null;
+    if (requestDto.getThumbnail() != null) {
+      newThumbnail = thumbnailUtil.save(requestDto.getThumbnail());
+    }
+    return newThumbnail;
   }
 }
