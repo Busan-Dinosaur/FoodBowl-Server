@@ -334,7 +334,7 @@ class UserControllerTest extends ControllerTest {
 
   @Nested
   @DisplayName("프로필 수정")
-  class ModifyProfile {
+  class UpdateProfile {
 
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
@@ -344,7 +344,7 @@ class UserControllerTest extends ControllerTest {
     private MultiValueMap<String, String> params;
 
     @BeforeEach
-    void setUpModifyProfile() throws IOException {
+    void setup() throws IOException {
       thumbnail = getThumbnailFile();
       params = new LinkedMultiValueMap<>();
       params.add("introduce", validIntroduce);
@@ -354,10 +354,10 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("썸네일과 소개글 모두 포함되어 있어도 프로필 수정은 성공한다.")
     void should_successfully_when_validRequest() throws Exception {
       mockUpdateProfileService();
-      callModifyProfileApi(thumbnail)
+      callUpdateProfileApi(thumbnail)
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
-          .andDo(document("modify-profile",
+          .andDo(document("update-profile",
               requestParameters(
                   parameterWithName("introduce")
                       .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
@@ -373,7 +373,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("수정할 썸네일이 없어도 프로필 수정은 성공한다.")
     void should_successfully_when_nullThumbnail() throws Exception {
       mockUpdateProfileService();
-      callModifyProfileApiWithoutThumbnail()
+      callUpdateProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -382,7 +382,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("수정할 소개글이 없어도 프로필 수정은 성공한다.")
     void should_successfully_when_nullIntroduce() throws Exception {
       mockUpdateProfileService();
-      callModifyProfileApi(thumbnail)
+      callUpdateProfileApi(thumbnail)
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -392,7 +392,7 @@ class UserControllerTest extends ControllerTest {
     void should_successfully_when_nullEverything() throws Exception {
       params.set("introduce", null);
       mockUpdateProfileService();
-      callModifyProfileApiWithoutThumbnail()
+      callUpdateProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -402,7 +402,7 @@ class UserControllerTest extends ControllerTest {
     void should_400BadRequest_when_tooLongIntroduce() throws Exception {
       params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
       mockUpdateProfileService();
-      callModifyProfileApi(thumbnail)
+      callUpdateProfileApi(thumbnail)
           .andExpect(status().isBadRequest());
     }
 
@@ -410,7 +410,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("썸네일이 이미지가 아닐 경우 프로필 수정은 실패한다.")
     void should_400BadRequest_when_thumbnailIsNotImage() throws Exception {
       mockUpdateProfileService();
-      callModifyProfileApi(getFakeImageFile())
+      callUpdateProfileApi(getFakeImageFile())
           .andExpect(status().isBadRequest());
     }
 
@@ -418,7 +418,7 @@ class UserControllerTest extends ControllerTest {
       when(updateProfileService.updateProfile(any())).thenReturn(userId);
     }
 
-    private ResultActions callModifyProfileApi(MockMultipartFile thumbnail) throws Exception {
+    private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users")
           .file(thumbnail)
           .header("Authorization", userToken)
@@ -430,7 +430,7 @@ class UserControllerTest extends ControllerTest {
           }));
     }
 
-    private ResultActions callModifyProfileApiWithoutThumbnail() throws Exception {
+    private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
       return mockMvc.perform(multipart("/users")
           .header("Authorization", userToken)
           .params(params)
