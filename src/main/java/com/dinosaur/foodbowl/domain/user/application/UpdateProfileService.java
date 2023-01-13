@@ -4,6 +4,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,16 +19,15 @@ public class UpdateProfileService {
 
   @Transactional
   public long updateProfile(User me, UpdateProfileRequestDto requestDto) {
-    Thumbnail newThumbnail = saveThumbnailIfExist(requestDto.getThumbnail());
-    me.updateProfile(newThumbnail, requestDto.getIntroduce());
+    Optional<Thumbnail> newThumbnail = saveThumbnailIfExist(requestDto.getThumbnail());
+    me.updateProfile(newThumbnail.orElse(null), requestDto.getIntroduce());
     return me.getId();
   }
 
-  private Thumbnail saveThumbnailIfExist(MultipartFile thumbnail) {
-    Thumbnail newThumbnail = null;
-    if (thumbnail != null) {
-      newThumbnail = thumbnailUtil.save(thumbnail);
+  private Optional<Thumbnail> saveThumbnailIfExist(MultipartFile thumbnail) {
+    if (thumbnail == null) {
+      return Optional.empty();
     }
-    return newThumbnail;
+    return Optional.of(thumbnailUtil.save(thumbnail));
   }
 }
