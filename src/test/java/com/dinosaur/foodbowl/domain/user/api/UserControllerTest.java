@@ -346,7 +346,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("썸네일과 소개글 모두 포함되어 있어도 프로필 수정은 성공한다.")
     void should_successfully_when_validRequest() throws Exception {
       mockUpdateProfileService();
-      callModifyProfileApi()
+      callModifyProfileApi(thumbnail)
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("modify-profile",
@@ -374,7 +374,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("수정할 소개글이 없어도 프로필 수정은 성공한다.")
     void should_successfully_when_nullIntroduce() throws Exception {
       mockUpdateProfileService();
-      callModifyProfileApi()
+      callModifyProfileApi(thumbnail)
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId));
     }
@@ -394,7 +394,7 @@ class UserControllerTest extends ControllerTest {
     void should_successfully_when_tooLongIntroduce() throws Exception {
       params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
       mockUpdateProfileService();
-      callModifyProfileApi()
+      callModifyProfileApi(thumbnail)
           .andExpect(status().isBadRequest());
     }
 
@@ -402,7 +402,7 @@ class UserControllerTest extends ControllerTest {
       when(updateProfileService.updateProfile(any())).thenReturn(userId);
     }
 
-    private ResultActions callModifyProfileApi() throws Exception {
+    private ResultActions callModifyProfileApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users")
           .file(thumbnail)
           .header("Authorization", userToken)
