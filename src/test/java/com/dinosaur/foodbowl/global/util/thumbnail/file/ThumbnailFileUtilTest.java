@@ -1,9 +1,10 @@
-package com.dinosaur.foodbowl.global.util.thumbnail;
+package com.dinosaur.foodbowl.global.util.thumbnail.file;
 
-import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.ROOT_PATH;
+import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;

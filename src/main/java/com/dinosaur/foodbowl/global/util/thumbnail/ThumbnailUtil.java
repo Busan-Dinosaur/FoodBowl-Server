@@ -3,6 +3,7 @@ package com.dinosaur.foodbowl.global.util.thumbnail;
 import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType.DEFAULT;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;

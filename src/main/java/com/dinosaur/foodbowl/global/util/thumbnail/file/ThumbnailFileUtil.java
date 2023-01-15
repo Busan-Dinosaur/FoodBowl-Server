@@ -1,9 +1,11 @@
-package com.dinosaur.foodbowl.global.util.thumbnail;
+package com.dinosaur.foodbowl.global.util.thumbnail.file;
 
-import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.ROOT_PATH;
+import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
 
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType;
+import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import com.dinosaur.foodbowl.global.util.thumbnail.exception.ThumbnailException;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -37,16 +39,16 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
   }
 
   private Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
-    ThumbnailInfoDto thumbnail = ThumbnailInfoDto.from(file);
+    ThumbnailFileDto thumbnail = ThumbnailFileDto.from(file);
     tryResizingAndSave(thumbnail, type);
     return saveThumbnailEntity(thumbnail.getFullPath(), type);
   }
 
-  private static void tryResizingAndSave(ThumbnailInfoDto thumbnailInfoDto, ThumbnailType type)
+  private static void tryResizingAndSave(ThumbnailFileDto thumbnailFileDto, ThumbnailType type)
       throws IOException {
-    BufferedImage bufferedImage = ImageIO.read(thumbnailInfoDto.getOriginalInputStream());
+    BufferedImage bufferedImage = ImageIO.read(thumbnailFileDto.getOriginalInputStream());
     BufferedImage resizingBufferedImage = type.resizing(bufferedImage);
-    File thumbnail = new File(thumbnailInfoDto.getFullPath());
+    File thumbnail = new File(thumbnailFileDto.getFullPath());
     ImageIO.write(resizingBufferedImage, "jpeg", thumbnail);
   }
 

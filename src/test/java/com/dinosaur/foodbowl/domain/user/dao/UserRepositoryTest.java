@@ -9,7 +9,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.dao.RepositoryTest;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailFileUtil;
+import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
