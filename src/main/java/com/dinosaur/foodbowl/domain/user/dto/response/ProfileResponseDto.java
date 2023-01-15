@@ -7,12 +7,12 @@ import lombok.Getter;
 @Getter
 public class ProfileResponseDto {
 
-  private long userId;
-  private String nickname;
-  private String introduce;
-  private long followerCount;
-  private long followingCount;
-  private String thumbnailURL;
+  private final long userId;
+  private final String nickname;
+  private final String introduce;
+  private final long followerCount;
+  private final long followingCount;
+  private final String thumbnailURL;
 
   public static ProfileResponseDto of(User user, long followerCount, long followingCount) {
     return ProfileResponseDto.builder()
@@ -26,7 +26,7 @@ public class ProfileResponseDto {
   }
 
   @Builder
-  public ProfileResponseDto(Long userId, String nickname, String introduce,
+  private ProfileResponseDto(Long userId, String nickname, String introduce,
       long followerCount, long followingCount, String thumbnailURL) {
     this.userId = userId;
     this.followerCount = followerCount;
