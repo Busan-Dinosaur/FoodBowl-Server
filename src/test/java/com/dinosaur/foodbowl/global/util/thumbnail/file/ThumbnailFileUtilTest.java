@@ -2,9 +2,9 @@ package com.dinosaur.foodbowl.global.util.thumbnail.file;
 
 import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,19 @@ class ThumbnailFileUtilTest {
       assertThat(image.getWidth()).isEqualTo(200);
 
       deleteTestFile(savedThumbnailEntity);
+    }
+
+    @Test
+    @DisplayName("썸네일 저장 시 파라미터가 null이면 NullPointerException을 발생시킨다.")
+    void should_throwNullPointerException_when_parameterIsNull() {
+      assertThatThrownBy(() -> thumbnailFileUtil.save(null))
+          .isInstanceOf(NullPointerException.class);
+      assertThatThrownBy(() -> thumbnailFileUtil.save(null, null))
+          .isInstanceOf(NullPointerException.class);
+      assertThatThrownBy(() -> thumbnailFileUtil.saveIfExist(validMultipartFile, null))
+          .isInstanceOf(NullPointerException.class);
+      assertThatThrownBy(() -> thumbnailFileUtil.deleteFileAndEntity(null))
+          .isInstanceOf(NullPointerException.class);
     }
   }
 }
