@@ -4,12 +4,15 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
+import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Column;
@@ -69,6 +72,9 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
   private final Set<UserRole> userRole = new HashSet<>();
 
+  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
+  private final List<Follow> followingList = new ArrayList<>();
+
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
       String introduce) {
@@ -105,5 +111,16 @@ public class User extends BaseEntity {
     if (introduce != null) {
       this.introduce = introduce;
     }
+  }
+
+  public void follow(User other) {
+    followingList.add(Follow.builder()
+        .following(other)
+        .follower(this)
+        .build());
+  }
+
+  public void unfollow(User other) {
+    followingList.removeIf(follow -> follow.isFollowing(other));
   }
 }

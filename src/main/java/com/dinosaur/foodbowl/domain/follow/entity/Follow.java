@@ -40,4 +40,8 @@ public class Follow extends BaseEntity {
     this.following = following;
     this.follower = follower;
   }
+
+  public boolean isFollowing(User user) {
+    return following.equals(user);
+  }
 }
