@@ -97,4 +97,13 @@ public class User extends BaseEntity {
         .role(Role.getRoleBy(roleType))
         .build());
   }
+
+  public void updateProfile(Thumbnail thumbnail, String introduce) {
+    if (thumbnail != null) {
+      this.thumbnail = thumbnail;
+    }
+    if (introduce != null) {
+      this.introduce = introduce;
+    }
+  }
 }

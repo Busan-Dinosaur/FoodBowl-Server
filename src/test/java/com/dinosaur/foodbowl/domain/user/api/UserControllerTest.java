@@ -18,11 +18,13 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
+import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
@@ -31,6 +33,7 @@ import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
+import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +59,12 @@ class UserControllerTest extends ControllerTest {
 
   @MockBean
   DeleteAccountService deleteAccountService;
+
+  @MockBean
+  UpdateProfileService updateProfileService;
+
+  @MockBean
+  AuthUtil authUtil;
 
   @Nested
   @DisplayName("회원가입")
@@ -93,20 +102,21 @@ class UserControllerTest extends ControllerTest {
     }
 
     private void mockingValidResponseWithoutThumbnail() {
-      SignUpResponseDto responseDto = SignUpResponseDto.of(
-          User.builder()
-              .loginId(validLoginId)
-              .password(validPassword)
-              .nickname(validNickname)
-              .introduce(validIntroduce)
-              .build(),
-          userToken);
+      User user = User.builder()
+          .loginId(validLoginId)
+          .password(validPassword)
+          .nickname(validNickname)
+          .introduce(validIntroduce)
+          .build();
+      ReflectionTestUtils.setField(user, "id", userId);
+      SignUpResponseDto responseDto = SignUpResponseDto.of(user, userToken);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
+      when(authUtil.getUserByJWT()).thenReturn(user);
     }
 
-    private ResultActions callSignUpApi() throws Exception {
+    private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
               .params(params)
@@ -137,12 +147,6 @@ class UserControllerTest extends ControllerTest {
       when(signUpService.signUp(any())).thenReturn(responseDto);
     }
 
-    private MockMultipartFile getThumbnailFile() throws IOException {
-      return new MockMultipartFile("thumbnail",
-          "testImage_210x210.png", "image/png",
-          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
-    }
-
     @Nested
     @DisplayName("회원가입 성공")
     class SignUpSuccess {
@@ -151,7 +155,7 @@ class UserControllerTest extends ControllerTest {
       @DisplayName("썸네일이 있을 경우 회원가입은 성공한다.")
       void should_successfully_when_validRequest() throws Exception {
         mockingValidResponse();
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.userId").exists())
             .andExpect(jsonPath("$.loginId").value(validLoginId))
@@ -209,15 +213,15 @@ class UserControllerTest extends ControllerTest {
         mockingValidResponse();
 
         params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
-        callSignUpApi().andExpect(status().isBadRequest());
+        callSignUpApi(thumbnail).andExpect(status().isBadRequest());
         params.set("loginId", "loginId");
 
         params.set("nickname", "a".repeat(MAX_NICKNAME_LENGTH + 1));
-        callSignUpApi().andExpect(status().isBadRequest());
+        callSignUpApi(thumbnail).andExpect(status().isBadRequest());
         params.set("nickname", "nickname");
 
         params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
-        callSignUpApi().andExpect(status().isBadRequest());
+        callSignUpApi(thumbnail).andExpect(status().isBadRequest());
         params.set("introduce", "introduce");
       }
 
@@ -228,7 +232,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_invalidLoginId(String invalidLoginId) throws Exception {
         mockingValidResponse();
         params.set("loginId", invalidLoginId);
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(invalidLoginId, "loginId",
@@ -242,7 +246,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_invalidPassword(String invalidPassword) throws Exception {
         mockingValidResponse();
         params.set("password", invalidPassword);
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(invalidPassword, "password",
@@ -256,7 +260,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_invalidNickname(String invalidNickname) throws Exception {
         mockingValidResponse();
         params.set("nickname", invalidNickname);
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
@@ -268,7 +272,7 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
         when(signUpService.signUp(any()))
             .thenThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE));
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
@@ -280,11 +284,19 @@ class UserControllerTest extends ControllerTest {
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
         when(signUpService.signUp(any()))
             .thenThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE));
-        callSignUpApi()
+        callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
                 .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
                     NICKNAME_DUPLICATE.getMessage())));
+      }
+
+      @Test
+      @DisplayName("썸네일이 이미지가 아닐 경우 회원가입은 실패한다.")
+      void should_returnBadRequest_when_thumbnailIsNotImage() throws Exception {
+        mockingValidResponse();
+        callSignUpApi(getFakeImageFile())
+            .andExpect(status().isBadRequest());
       }
     }
   }
@@ -296,10 +308,17 @@ class UserControllerTest extends ControllerTest {
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
+    @BeforeEach
+    void setup() {
+      User user = User.builder().build();
+      ReflectionTestUtils.setField(user, "id", userId);
+      when(authUtil.getUserByJWT()).thenReturn(user);
+    }
+
     @Test
     @DisplayName("본인의 JWT로 회원 탈퇴는 성공한다.")
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
-      doNothing().when(deleteAccountService).deleteMySelf();
+      doNothing().when(deleteAccountService).deleteMySelf(any());
       mockMvc.perform(delete("/users")
               .header("Authorization", userToken))
           .andExpect(status().isNoContent())
@@ -323,5 +342,127 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
+  }
+
+  @Nested
+  @DisplayName("프로필 수정")
+  class UpdateProfile {
+
+    private final Long userId = 1L;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+    private final String validIntroduce = "Introduce";
+
+    private MockMultipartFile thumbnail;
+    private MultiValueMap<String, String> params;
+
+    @BeforeEach
+    void setup() throws IOException {
+      thumbnail = getThumbnailFile();
+      params = new LinkedMultiValueMap<>();
+      params.add("introduce", validIntroduce);
+    }
+
+    @Test
+    @DisplayName("썸네일과 소개글 모두 포함되어 있어도 프로필 수정은 성공한다.")
+    void should_successfully_when_validRequest() throws Exception {
+      mockUpdateProfileService();
+      callUpdateProfileApi(thumbnail)
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId))
+          .andDo(document("update-profile",
+              requestParameters(
+                  parameterWithName("introduce")
+                      .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
+                      .optional()
+              ),
+              requestParts(
+                  partWithName("thumbnail").description("유저가 수정할 썸네일")
+                      .optional()
+              )));
+    }
+
+    @Test
+    @DisplayName("수정할 썸네일이 없어도 프로필 수정은 성공한다.")
+    void should_successfully_when_nullThumbnail() throws Exception {
+      mockUpdateProfileService();
+      callUpdateProfileApiWithoutThumbnail()
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    @Test
+    @DisplayName("수정할 소개글이 없어도 프로필 수정은 성공한다.")
+    void should_successfully_when_nullIntroduce() throws Exception {
+      mockUpdateProfileService();
+      callUpdateProfileApi(thumbnail)
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    @Test
+    @DisplayName("소개글이나 썸네일이 없어도 프로필 수정은 성공한다.")
+    void should_successfully_when_nullEverything() throws Exception {
+      params.set("introduce", null);
+      mockUpdateProfileService();
+      callUpdateProfileApiWithoutThumbnail()
+          .andExpect(status().isNoContent())
+          .andExpect(header().string("location", "/users/" + userId));
+    }
+
+    @Test
+    @DisplayName("소개글이 너무 길 경우 프로필 수정은 실패한다.")
+    void should_400BadRequest_when_tooLongIntroduce() throws Exception {
+      params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
+      mockUpdateProfileService();
+      callUpdateProfileApi(thumbnail)
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("썸네일이 이미지가 아닐 경우 프로필 수정은 실패한다.")
+    void should_400BadRequest_when_thumbnailIsNotImage() throws Exception {
+      mockUpdateProfileService();
+      callUpdateProfileApi(getFakeImageFile())
+          .andExpect(status().isBadRequest());
+    }
+
+    private void mockUpdateProfileService() {
+      when(updateProfileService.updateProfile(any(), any())).thenReturn(userId);
+    }
+
+    private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
+      return mockMvc.perform(multipart("/users")
+          .file(thumbnail)
+          .header("Authorization", userToken)
+          .params(params)
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .with(request -> {
+            request.setMethod("PATCH");
+            return request;
+          }));
+    }
+
+    private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
+      return mockMvc.perform(multipart("/users")
+          .header("Authorization", userToken)
+          .params(params)
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .with(request -> {
+            request.setMethod("PATCH");
+            return request;
+          }));
+    }
+  }
+
+  private MockMultipartFile getThumbnailFile() throws IOException {
+    return new MockMultipartFile("thumbnail",
+        "testImage_210x210.png", "image/png",
+        new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+  }
+
+  private MockMultipartFile getFakeImageFile() throws IOException {
+    return new MockMultipartFile("thumbnail",
+        "fakeImage.png", "image/png",
+        new FileInputStream("src/test/resources/images/fakeImage.png"));
   }
 }

@@ -4,6 +4,7 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.util.validator.image.ImageOrNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignUpRequestDto {
 
   public static final String LOGIN_ID_INVALID = "로그인 아이디는 4~12자 영어, 숫자, '_'만 가능합니다.";
@@ -30,6 +31,7 @@ public class SignUpRequestDto {
   private String nickname;
   @Length(max = MAX_INTRODUCE_LENGTH)
   private String introduce;
+  @ImageOrNull
   private MultipartFile thumbnail;
 
   public User toEntity(Thumbnail thumbnail, PasswordEncoder passwordEncoder) {
