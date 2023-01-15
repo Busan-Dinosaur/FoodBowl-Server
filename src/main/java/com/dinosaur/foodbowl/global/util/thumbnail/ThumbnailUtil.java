@@ -60,4 +60,16 @@ public abstract class ThumbnailUtil {
   protected abstract void deleteFile(Thumbnail thumbnail);
 
   protected abstract void deleteEntity(Thumbnail thumbnail);
+
+  /**
+   * @param thumbnail 이 {@code null}일 가능성이 있는 경우 이 메서드를 사용하시는 게 좋습니다.
+   * @apiNote 썸네일이 null일 경우 아무 일도 하지 않습니다.
+   * @see ThumbnailFileUtil#deleteFileAndEntity(Thumbnail)
+   */
+  public void deleteFileAndEntityIfExist(Thumbnail thumbnail) {
+    if (thumbnail == null) {
+      return;
+    }
+    deleteFileAndEntity(thumbnail);
+  }
 }
