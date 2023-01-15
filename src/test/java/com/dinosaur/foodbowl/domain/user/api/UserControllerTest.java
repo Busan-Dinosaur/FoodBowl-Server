@@ -16,6 +16,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -24,9 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
+import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
@@ -62,6 +65,9 @@ class UserControllerTest extends ControllerTest {
 
   @MockBean
   UpdateProfileService updateProfileService;
+
+  @MockBean
+  GetProfileService getProfileService;
 
   @MockBean
   AuthUtil authUtil;
@@ -451,6 +457,74 @@ class UserControllerTest extends ControllerTest {
             request.setMethod("PATCH");
             return request;
           }));
+    }
+  }
+
+  @Nested
+  @DisplayName("프로필 가져오기")
+  class GetProfile {
+
+    private final Long userId = 1L;
+    private final String validNickname = "바보gusah009";
+    private final String validIntroduce = "Introduce";
+    private final String thumbnailURL = "/hello/world/haha.jpg";
+    private final long followerCount = 0;
+    private final long followingCount = 0;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+
+    @Test
+    @DisplayName("유효한 유저 아이디의 프로필 가져오기는 성공한다.")
+    void should_successfully_when_validUserId() throws Exception {
+      mockingDto();
+      mockMvc.perform(get("/users/" + userId)
+              .header("Authorization", userToken))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.userId").value(userId))
+          .andExpect(jsonPath("$.nickname").value(validNickname))
+          .andExpect(jsonPath("$.introduce").value(validIntroduce))
+          .andExpect(jsonPath("$.followerCount").value(followerCount))
+          .andExpect(jsonPath("$.followingCount").value(followingCount))
+          .andExpect(jsonPath("$.thumbnailURL").value(thumbnailURL))
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("썸네일이 없어도 유저 아이디의 프로필 가져오기는 성공한다.")
+    void should_successfully_when_thumbnailIsNull() throws Exception {
+      mockingDtoWithoutThumbnail();
+      mockMvc.perform(get("/users/" + userId)
+              .header("Authorization", userToken))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.userId").value(userId))
+          .andExpect(jsonPath("$.nickname").value(validNickname))
+          .andExpect(jsonPath("$.introduce").value(validIntroduce))
+          .andExpect(jsonPath("$.followerCount").value(followerCount))
+          .andExpect(jsonPath("$.followingCount").value(followingCount))
+          .andExpect(jsonPath("$.thumbnailURL").isEmpty())
+          .andDo(print());
+    }
+
+    private void mockingDtoWithoutThumbnail() {
+      ProfileResponseDto user = ProfileResponseDto.builder()
+          .userId(userId)
+          .nickname(validNickname)
+          .introduce(validIntroduce)
+          .followerCount(followerCount)
+          .followingCount(followingCount)
+          .build();
+      when(getProfileService.getProfile(userId)).thenReturn(user);
+    }
+
+    private void mockingDto() {
+      ProfileResponseDto user = ProfileResponseDto.builder()
+          .userId(userId)
+          .nickname(validNickname)
+          .introduce(validIntroduce)
+          .followerCount(followerCount)
+          .followingCount(followingCount)
+          .thumbnailURL(thumbnailURL)
+          .build();
+      when(getProfileService.getProfile(userId)).thenReturn(user);
     }
   }
 
