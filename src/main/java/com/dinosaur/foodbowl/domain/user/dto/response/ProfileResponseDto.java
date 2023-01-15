@@ -20,7 +20,7 @@ public class ProfileResponseDto {
         .nickname(user.getNickname())
         .introduce(user.getIntroduce())
         .followerCount(followerCount)
-        .followerCount(followingCount)
+        .followingCount(followingCount)
         .thumbnailURL(user.getThumbnailURL().orElse(null))
         .build();
   }
