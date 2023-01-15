@@ -16,10 +16,14 @@ public abstract class ThumbnailUtil {
    * @return {@link Thumbnail} if null, {@code Optional.empty()}
    */
   public Optional<Thumbnail> saveIfExist(MultipartFile thumbnail) {
+    return saveIfExist(thumbnail, DEFAULT);
+  }
+
+  public Optional<Thumbnail> saveIfExist(MultipartFile thumbnail, ThumbnailType type) {
     if (thumbnail == null) {
       return Optional.empty();
     }
-    return Optional.of(save(thumbnail));
+    return Optional.of(save(thumbnail, type));
   }
 
   /**
