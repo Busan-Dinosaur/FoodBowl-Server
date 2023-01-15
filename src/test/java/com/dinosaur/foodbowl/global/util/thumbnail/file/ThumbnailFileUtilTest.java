@@ -28,9 +28,11 @@ class ThumbnailFileUtilTest {
   private ThumbnailFileUtil thumbnailFileUtil;
 
   @Nested
+  @DisplayName("썸네일 삭제 테스트")
   class deleteTest {
 
     @Test
+    @DisplayName("썸네일 파일이 존재할 경우 삭제는 성공해야 한다.")
     void should_deleteSuccessfully_when_existFile() throws IOException {
       MockMultipartFile validMultipartFile = new MockMultipartFile("image",
           "testImage_210x210.png", "image/png",
@@ -46,6 +48,7 @@ class ThumbnailFileUtilTest {
   }
 
   @Nested
+  @DisplayName("썸네일 저장 테스트")
   class SaveTest {
 
     private final MockMultipartFile validMultipartFile = new MockMultipartFile("image",
@@ -56,19 +59,15 @@ class ThumbnailFileUtilTest {
     }
 
     @Test
+    @DisplayName("썸네일 파일이 유효한 경우 저장은 성공해야 한다.")
     void should_saveSuccessfully_when_validMultipartFile() {
       Thumbnail result = thumbnailFileUtil.save(validMultipartFile);
       assertThat(result).isNotNull();
       deleteTestFile(result);
     }
 
-    private void deleteTestFile(Thumbnail thumbnail) {
-      File thumbnailFile = new File(ROOT_PATH + thumbnail.getPath());
-      assertThat(thumbnailFile).exists();
-      assertThat(thumbnailFile.delete()).isTrue();
-    }
-
     @Test
+    @DisplayName("썸네일 파일이 유효한 경우 원하는 사이즈로 사이즈 변환에 성공해야 한다.")
     void should_resizingWell_when_validMultipartFile() throws IOException {
       Thumbnail savedThumbnailEntity = thumbnailFileUtil.save(validMultipartFile);
       File result = new File(ROOT_PATH + savedThumbnailEntity.getPath());
@@ -93,6 +92,12 @@ class ThumbnailFileUtilTest {
           .isInstanceOf(NullPointerException.class);
       assertThatThrownBy(() -> thumbnailFileUtil.deleteFileAndEntity(null))
           .isInstanceOf(NullPointerException.class);
+    }
+
+    private void deleteTestFile(Thumbnail thumbnail) {
+      File thumbnailFile = new File(ROOT_PATH + thumbnail.getPath());
+      assertThat(thumbnailFile).exists();
+      assertThat(thumbnailFile.delete()).isTrue();
     }
   }
 }
