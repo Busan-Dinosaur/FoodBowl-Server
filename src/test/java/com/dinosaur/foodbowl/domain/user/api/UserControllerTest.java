@@ -6,9 +6,13 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -183,6 +187,9 @@ class UserControllerTest extends ControllerTest {
                 requestParts(
                     partWithName("thumbnail").description("유저가 등록할 썸네일").optional()
                 ),
+                responseCookies(
+                    cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token")
+                ),
                 responseFields(
                     fieldWithPath("userId")
                         .description("DB에 저장된 user의 고유 ID 값"),
@@ -193,10 +200,7 @@ class UserControllerTest extends ControllerTest {
                     fieldWithPath("introduce")
                         .description("저장된 소개글"),
                     fieldWithPath("thumbnailURL")
-                        .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음."),
-                    fieldWithPath("accessToken")
-                        .description("사용자 인증에 필요한 access token.\r\n"
-                            + " API 호출 시 Authorization 헤더에 넣어서 보내주면 됨")
+                        .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
                 )));
       }
 
@@ -329,7 +333,12 @@ class UserControllerTest extends ControllerTest {
               .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andExpect(status().isNoContent())
           .andDo(print())
-          .andDo(document("user-delete"));
+          .andDo(document("user-delete",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description(
+                      "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+              )));
     }
 
     @Test
@@ -376,6 +385,11 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("update-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description(
+                      "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+              ),
               queryParameters(
                   parameterWithName("introduce")
                       .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
