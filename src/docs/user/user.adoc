@@ -21,9 +21,9 @@ link:../foodbowl.html[API 목록으로 돌아가기]
 
 include::{snippets}/sign-up/http-request.adoc[]
 
-==== Path Parameters
+==== Query Parameters
 
-include::{snippets}/sign-up/request-parameters.adoc[]
+include::{snippets}/sign-up/query-parameters.adoc[]
 
 ==== Request Parts
 
@@ -65,9 +65,9 @@ NOTE: Authorization 헤더에 자신의 JWT access token이 필요합니다.
 
 include::{snippets}/update-profile/http-request.adoc[]
 
-==== Path Parameters
+==== Query Parameters
 
-include::{snippets}/update-profile/request-parameters.adoc[]
+include::{snippets}/update-profile/query-parameters.adoc[]
 
 ==== Request Parts
 

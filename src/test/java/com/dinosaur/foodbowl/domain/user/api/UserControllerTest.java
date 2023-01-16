@@ -13,7 +13,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -119,7 +119,7 @@ class UserControllerTest extends ControllerTest {
     private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
-              .params(params)
+              .queryParams(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .with(request -> {
                 request.setMethod("POST");
@@ -164,7 +164,7 @@ class UserControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.thumbnailURL").exists())
             .andExpect(jsonPath("$.accessToken").exists())
             .andDo(document("sign-up",
-                requestParameters(
+                queryParameters(
                     parameterWithName("loginId")
                         .description("로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH),
                     parameterWithName("password")
@@ -370,7 +370,7 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("update-profile",
-              requestParameters(
+              queryParameters(
                   parameterWithName("introduce")
                       .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
                       .optional()
@@ -434,7 +434,7 @@ class UserControllerTest extends ControllerTest {
       return mockMvc.perform(multipart("/users")
           .file(thumbnail)
           .header("Authorization", userToken)
-          .params(params)
+          .queryParams(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .with(request -> {
             request.setMethod("PATCH");
