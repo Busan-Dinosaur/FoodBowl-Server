@@ -1,10 +1,9 @@
 package com.dinosaur.foodbowl.global.util.auth;
 
-
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import jakarta.annotation.PostConstruct;
 import java.util.Base64;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;

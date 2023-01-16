@@ -4,7 +4,7 @@ spring:
 
   jpa:
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         show_sql: true

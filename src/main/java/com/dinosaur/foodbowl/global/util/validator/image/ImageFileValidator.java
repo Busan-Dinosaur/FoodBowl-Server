@@ -1,11 +1,11 @@
 package com.dinosaur.foodbowl.global.util.validator.image;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImageFileValidator implements ConstraintValidator<ImageOrNull, MultipartFile> {
