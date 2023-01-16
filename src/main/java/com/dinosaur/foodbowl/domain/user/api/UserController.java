@@ -1,5 +1,9 @@
 package com.dinosaur.foodbowl.domain.user.api;
 
+import static com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType.ROLE_회원;
+import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
+
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
@@ -9,8 +13,11 @@ import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import java.net.URI;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,12 +41,25 @@ public class UserController {
   private final UpdateProfileService updateProfileService;
   private final GetProfileService getProfileService;
   private final AuthUtil authUtil;
+  private final JwtTokenProvider jwtTokenProvider;
 
   @PostMapping("/sign-up")
-  public ResponseEntity<SignUpResponseDto> signUp(@Valid @ModelAttribute SignUpRequestDto request) {
+  public ResponseEntity<SignUpResponseDto> signUp(@Valid @ModelAttribute SignUpRequestDto request,
+      HttpServletResponse response) {
     SignUpResponseDto signUpResponseDto = signUpService.signUp(request);
+
+    setAccessToken(response, signUpResponseDto);
+
     return ResponseEntity.created(URI.create("/users/" + signUpResponseDto.getUserId()))
         .body(signUpResponseDto);
+  }
+
+  private void setAccessToken(HttpServletResponse response, SignUpResponseDto signUpResponseDto) {
+    String accessToken = jwtTokenProvider.createAccessToken(signUpResponseDto.getUserId(), ROLE_회원);
+    Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
+    cookie.setHttpOnly(true);
+    cookie.setMaxAge((int) (DEFAULT_TOKEN_VALID_MILLISECOND / 1000));
+    response.addCookie(cookie);
   }
 
   @DeleteMapping

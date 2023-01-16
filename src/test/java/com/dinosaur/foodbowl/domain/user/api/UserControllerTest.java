@@ -5,9 +5,12 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -39,6 +42,7 @@ import com.dinosaur.foodbowl.global.api.ControllerTest;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -47,6 +51,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -115,7 +120,7 @@ class UserControllerTest extends ControllerTest {
           .introduce(validIntroduce)
           .build();
       ReflectionTestUtils.setField(user, "id", userId);
-      SignUpResponseDto responseDto = SignUpResponseDto.of(user, userToken);
+      SignUpResponseDto responseDto = SignUpResponseDto.of(user);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
@@ -146,8 +151,7 @@ class UserControllerTest extends ControllerTest {
                   .width(200)
                   .path("/thumbnail/2022-01-11/random_name.jpeg")
                   .build())
-              .build(),
-          userToken);
+              .build());
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
@@ -168,7 +172,6 @@ class UserControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.nickname").value(validNickname))
             .andExpect(jsonPath("$.introduce").value(validIntroduce))
             .andExpect(jsonPath("$.thumbnailURL").exists())
-            .andExpect(jsonPath("$.accessToken").exists())
             .andDo(document("sign-up",
                 requestParameters(
                     parameterWithName("loginId")
@@ -326,7 +329,7 @@ class UserControllerTest extends ControllerTest {
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
       doNothing().when(deleteAccountService).deleteMySelf(any());
       mockMvc.perform(delete("/users")
-              .header("Authorization", userToken))
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("user-delete"));
@@ -344,7 +347,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("잘못된 토큰으로 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_invalidToken() throws Exception {
       mockMvc.perform(delete("/users")
-              .header("Authorization", userToken + "haha"))
+              .cookie(new Cookie(ACCESS_TOKEN, userToken + "haha")))
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
@@ -439,7 +442,7 @@ class UserControllerTest extends ControllerTest {
     private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users")
           .file(thumbnail)
-          .header("Authorization", userToken)
+          .cookie(new Cookie(ACCESS_TOKEN, userToken))
           .params(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .with(request -> {
@@ -450,7 +453,7 @@ class UserControllerTest extends ControllerTest {
 
     private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
       return mockMvc.perform(multipart("/users")
-          .header("Authorization", userToken)
+          .cookie(new Cookie(ACCESS_TOKEN, userToken))
           .params(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .with(request -> {
@@ -477,7 +480,7 @@ class UserControllerTest extends ControllerTest {
     void should_successfully_when_validUserId() throws Exception {
       mockingDto();
       mockMvc.perform(get("/users/" + userId)
-              .header("Authorization", userToken))
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
           .andExpect(jsonPath("$.nickname").value(validNickname))
@@ -493,7 +496,7 @@ class UserControllerTest extends ControllerTest {
     void should_successfully_when_thumbnailIsNull() throws Exception {
       mockingDtoWithoutThumbnail();
       mockMvc.perform(get("/users/" + userId)
-              .header("Authorization", userToken))
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
           .andExpect(jsonPath("$.nickname").value(validNickname))

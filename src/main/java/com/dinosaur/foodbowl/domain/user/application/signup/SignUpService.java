@@ -8,7 +8,6 @@ import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
@@ -25,7 +24,6 @@ public class SignUpService {
 
   private final ThumbnailUtil thumbnailUtil;
   private final UserRepository userRepository;
-  private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
 
   @Transactional
@@ -35,8 +33,7 @@ public class SignUpService {
 
     Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail.orElse(null), passwordEncoder));
-    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), RoleType.ROLE_회원);
-    return SignUpResponseDto.of(user, accessToken);
+    return SignUpResponseDto.of(user);
   }
 
   private void checkDuplicateLoginId(String loginId) {
