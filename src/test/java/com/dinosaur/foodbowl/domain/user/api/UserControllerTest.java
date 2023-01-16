@@ -516,8 +516,8 @@ class UserControllerTest extends ControllerTest {
                   fieldWithPath("userId").description("DB에 저장된 user의 고유 ID 값"),
                   fieldWithPath("nickname").description("저장된 닉네임"),
                   fieldWithPath("introduce").description("저장된 소개글"),
-                  fieldWithPath("followerCount").description("나의 팔로워 수"),
-                  fieldWithPath("followingCount").description("나의 팔로잉 수"),
+                  fieldWithPath("followerCount").description("유저의 팔로워 수"),
+                  fieldWithPath("followingCount").description("유저의 팔로잉 수"),
                   fieldWithPath("thumbnailURL").description(
                       "썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
               )));
