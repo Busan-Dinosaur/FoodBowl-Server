@@ -90,3 +90,31 @@ include::{snippets}/update-profile/request-parts.adoc[]
 ==== Response
 
 include::{snippets}/update-profile/http-response.adoc[]
+
+== *프로필 정보 가져오기*
+
+NOTE: 회원가입이나 로그인을 통해 COOKIE를 설정하셔야 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-profile/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-profile/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-profile/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-profile/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-profile/response-fields.adoc[]

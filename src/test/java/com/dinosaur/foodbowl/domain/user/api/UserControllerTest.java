@@ -14,14 +14,15 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -492,7 +493,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("유효한 유저 아이디의 프로필 가져오기는 성공한다.")
     void should_successfully_when_validUserId() throws Exception {
       mockingDto();
-      mockMvc.perform(get("/users/" + userId)
+      mockMvc.perform(get("/users/{userId}", userId)
               .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
@@ -501,7 +502,25 @@ class UserControllerTest extends ControllerTest {
           .andExpect(jsonPath("$.followerCount").value(followerCount))
           .andExpect(jsonPath("$.followingCount").value(followingCount))
           .andExpect(jsonPath("$.thumbnailURL").value(thumbnailURL))
-          .andDo(print());
+          .andDo(print())
+          .andDo(document("get-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description(
+                      "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+              ),
+              pathParameters(
+                  parameterWithName("userId").description("유저의 아이디")
+              ),
+              responseFields(
+                  fieldWithPath("userId").description("DB에 저장된 user의 고유 ID 값"),
+                  fieldWithPath("nickname").description("저장된 닉네임"),
+                  fieldWithPath("introduce").description("저장된 소개글"),
+                  fieldWithPath("followerCount").description("나의 팔로워 수"),
+                  fieldWithPath("followingCount").description("나의 팔로잉 수"),
+                  fieldWithPath("thumbnailURL").description(
+                      "썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
+              )));
     }
 
     @Test
