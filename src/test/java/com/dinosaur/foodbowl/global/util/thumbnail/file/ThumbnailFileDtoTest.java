@@ -3,7 +3,6 @@ package com.dinosaur.foodbowl.global.util.thumbnail.file;
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileDto;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.Nested;
