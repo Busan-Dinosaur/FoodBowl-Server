@@ -1,7 +1,7 @@
-package com.dinosaur.foodbowl.global.util.thumbnail;
+package com.dinosaur.foodbowl.global.util.thumbnail.file;
 
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
-import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailConstants.DEFAULT_THUMBNAIL_PATH;
+import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.DEFAULT_THUMBNAIL_PATH;
 import static java.io.File.separator;
 
 import java.io.BufferedInputStream;
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-class ThumbnailInfoDto {
+class ThumbnailFileDto {
 
   static {
     createDirectoryWhenIsNotExist(DEFAULT_THUMBNAIL_PATH);
@@ -28,12 +28,12 @@ class ThumbnailInfoDto {
   private final String fullPath;
   private final InputStream originalInputStream;
 
-  static ThumbnailInfoDto from(MultipartFile file) throws IOException {
+  static ThumbnailFileDto from(MultipartFile file) throws IOException {
     String thumbnailFullPath = generateThumbnailFullPath(file);
     checkThumbnailFullPathLength(thumbnailFullPath, file.getOriginalFilename());
     checkInvalidImageFile(file);
     InputStream inputStream = new BufferedInputStream(file.getInputStream());
-    return new ThumbnailInfoDto(thumbnailFullPath, inputStream);
+    return new ThumbnailFileDto(thumbnailFullPath, inputStream);
   }
 
   private static void checkThumbnailFullPathLength(String thumbnailFullPath, String fileName) {

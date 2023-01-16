@@ -9,8 +9,8 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.dao.RepositoryTest;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailFileUtil;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
+import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
@@ -176,7 +176,7 @@ class UserRepositoryTest extends RepositoryTest {
           .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
           .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
           .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-          .thumbnail(thumbnailUtil.save(getThumbnailFile()))
+          .thumbnail(thumbnailUtil.saveIfExist(getThumbnailFile()).orElseThrow())
           .build();
       userWithThumbnail = userRepository.save(userWithThumbnail);
       em.flush();
@@ -274,7 +274,7 @@ class UserRepositoryTest extends RepositoryTest {
 
     private Thumbnail generateThumbnail() throws IOException {
       final ThumbnailUtil thumbnailUtil = new ThumbnailFileUtil(thumbnailRepository);
-      Thumbnail thumbnail = thumbnailUtil.save(getThumbnailFile());
+      Thumbnail thumbnail = thumbnailUtil.saveIfExist(getThumbnailFile()).orElseThrow();
       return thumbnail;
     }
 
