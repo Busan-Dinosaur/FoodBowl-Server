@@ -26,14 +26,17 @@ class GetProfileServiceTest {
   FollowRepository followRepository;
 
   @Autowired
-  UserTestHelper userTestHelper;
+  PostRepository postRepository;
 
   @Autowired
+  UserTestHelper userTestHelper;
+
+  @PersistenceContext
   EntityManager em;
 
   @AfterAll
   static void deleteAll() {
-    UserTestHelper.deleteAllThumbnails();
+    ThumbnailTestHelper.deleteAllThumbnails();
   }
 
   @Nested

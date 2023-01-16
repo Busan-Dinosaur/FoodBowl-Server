@@ -11,6 +11,7 @@ import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.dao.RepositoryTest;
+import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
-@Import(UserTestHelper.class)
+@Import(value = {UserTestHelper.class, ThumbnailTestHelper.class})
 class UserRepositoryTest extends RepositoryTest {
 
   private static final int MAX_LOGIN_ID_LENGTH = 40;
@@ -31,6 +32,9 @@ class UserRepositoryTest extends RepositoryTest {
 
   @Autowired
   private UserTestHelper userTestHelper;
+
+  @Autowired
+  private ThumbnailTestHelper thumbnailTestHelper;
 
   @Autowired
   private UserRepository userRepository;
@@ -190,7 +194,7 @@ class UserRepositoryTest extends RepositoryTest {
     @DisplayName("소개가 null일 경우 소개는 바뀌어선 안된다.")
     void should_notChangeThumbnail_when_nullIntroduce() {
       User beforeUser = userTestHelper.generateUser();
-      Thumbnail newThumbnail = userTestHelper.generateThumbnail();
+      Thumbnail newThumbnail = thumbnailTestHelper.generateThumbnail();
 
       whenUpdateUser(beforeUser, newThumbnail, null);
 
