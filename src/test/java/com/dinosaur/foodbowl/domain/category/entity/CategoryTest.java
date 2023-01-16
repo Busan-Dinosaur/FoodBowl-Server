@@ -19,6 +19,7 @@ class CategoryTest extends RepositoryTest {
   CategoryRepository categoryRepository;
 
   @Nested
+  @DisplayName("DB 동일성 테스트")
   class DBConsistencyTest {
 
     @DisplayName("카테고리 Enum이 DB와 동일한 값을 가지는지 확인한다.")
@@ -29,9 +30,8 @@ class CategoryTest extends RepositoryTest {
       List<Category> categories = categoryRepository.findAll(Sort.by(Direction.ASC, "id"));
 
       for (int i = 0; i < categories.size(); i++) {
+        assertThat(categories.get(i).getCategoryType()).isEqualTo(categoryTypes[i]);
         assertThat(categories.get(i).getId()).isEqualTo(categoryTypes[i].getId());
-        assertThat(categories.get(i).getCategoryType().getName())
-            .isEqualTo(categoryTypes[i].getName());
       }
     }
   }
