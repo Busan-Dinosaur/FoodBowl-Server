@@ -18,7 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ContextConfiguration
 class JwtTokenProviderTest {
 
-  private static final String TEST_SECRET_KEY = "foodbowl_zzang_zzang";
+  private static final String TEST_SECRET_KEY = "2B4B6250655368566D597133743677397A244326452948404D635166546A576E";
   private static final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
   @BeforeAll
@@ -52,9 +52,9 @@ class JwtTokenProviderTest {
     /**
      * PK: 1
      * ROLE: 회원, 관리자
-     * expired: 2073년 1월 10일
+     * expired: 2073년 1월 16일
      */
-    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3MzMyNDU0NSwiZXhwIjozMjUwMTI0NTQ1fQ.SP9RXwAP8OQzX5FYBTZC240Kp34pmEx8vkR6rWFj4w4";
+    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3Mzg0OTAxNSwiZXhwIjoxNjc4MTY5MDE1fQ.jN1AbCdUaYXHaMVPB3rDebkRx335cub44_2hLo5Ne0c";
 
     Authentication authentication = jwtTokenProvider.getAuthentication(validToken);
 
