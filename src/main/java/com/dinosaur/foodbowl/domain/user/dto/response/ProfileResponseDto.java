@@ -3,6 +3,7 @@ package com.dinosaur.foodbowl.domain.user.dto.response;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 public class ProfileResponseDto {
@@ -26,7 +27,7 @@ public class ProfileResponseDto {
   }
 
   @Builder
-  private ProfileResponseDto(Long userId, String nickname, String introduce,
+  private ProfileResponseDto(long userId, @NonNull String nickname, @NonNull String introduce,
       long followerCount, long followingCount, String thumbnailURL) {
     this.userId = userId;
     this.followerCount = followerCount;
