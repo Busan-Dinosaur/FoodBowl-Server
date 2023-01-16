@@ -37,7 +37,7 @@ class ThumbnailFileUtilTest {
       MockMultipartFile validMultipartFile = new MockMultipartFile("image",
           "testImage_210x210.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_210x210.png"));
-      Thumbnail savedThumbnail = thumbnailFileUtil.save(validMultipartFile);
+      Thumbnail savedThumbnail = thumbnailFileUtil.saveIfExist(validMultipartFile).orElseThrow();
 
       assertThat(Files.exists(Path.of(ROOT_PATH + savedThumbnail.getPath()))).isTrue();
 
@@ -61,7 +61,7 @@ class ThumbnailFileUtilTest {
     @Test
     @DisplayName("썸네일 파일이 유효한 경우 저장은 성공해야 한다.")
     void should_saveSuccessfully_when_validMultipartFile() {
-      Thumbnail result = thumbnailFileUtil.save(validMultipartFile);
+      Thumbnail result = thumbnailFileUtil.saveIfExist(validMultipartFile).orElseThrow();
       assertThat(result).isNotNull();
       deleteTestFile(result);
     }
@@ -69,7 +69,8 @@ class ThumbnailFileUtilTest {
     @Test
     @DisplayName("썸네일 파일이 유효한 경우 원하는 사이즈로 사이즈 변환에 성공해야 한다.")
     void should_resizingWell_when_validMultipartFile() throws IOException {
-      Thumbnail savedThumbnailEntity = thumbnailFileUtil.save(validMultipartFile);
+      Thumbnail savedThumbnailEntity = thumbnailFileUtil.saveIfExist(validMultipartFile)
+          .orElseThrow();
       File result = new File(ROOT_PATH + savedThumbnailEntity.getPath());
 
       assertThat(result).exists();
@@ -82,11 +83,9 @@ class ThumbnailFileUtilTest {
     }
 
     @Test
-    @DisplayName("썸네일 저장 시 파라미터가 null이면 NullPointerException을 발생시킨다.")
+    @DisplayName("썸네일 저장 시 type이 null이면 NullPointerException을 발생시킨다.")
     void should_throwNullPointerException_when_parameterIsNull() {
-      assertThatThrownBy(() -> thumbnailFileUtil.save(null))
-          .isInstanceOf(NullPointerException.class);
-      assertThatThrownBy(() -> thumbnailFileUtil.save(null, null))
+      assertThatThrownBy(() -> thumbnailFileUtil.saveIfExist(null, null))
           .isInstanceOf(NullPointerException.class);
       assertThatThrownBy(() -> thumbnailFileUtil.saveIfExist(validMultipartFile, null))
           .isInstanceOf(NullPointerException.class);

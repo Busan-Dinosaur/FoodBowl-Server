@@ -38,7 +38,7 @@ public class UserTestHelper {
 
   public Thumbnail generateThumbnail() {
     final ThumbnailUtil thumbnailUtil = new ThumbnailFileUtil(thumbnailRepository);
-    return thumbnailUtil.save(getThumbnailFile());
+    return thumbnailUtil.saveIfExist(getThumbnailFile()).orElseThrow();
   }
 
   public User generateUserWithoutThumbnail() {

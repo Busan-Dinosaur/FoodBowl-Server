@@ -1,6 +1,5 @@
 package com.dinosaur.foodbowl.global.config.security;
 
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-        .antMatchers("/docs/*", "/users/sign-up", "/users/sign-in", "/thumbnail/**").permitAll()
+        .requestMatchers("/docs/*", "/users/sign-up", "/users/sign-in", "/thumbnail/**").permitAll()
         .anyRequest().hasRole("회원")
         .and()
         .httpBasic().disable()

@@ -9,14 +9,12 @@ import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCE
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,9 +38,9 @@ import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
+import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
-import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -51,7 +49,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -130,7 +127,7 @@ class UserControllerTest extends ControllerTest {
     private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users/sign-up")
               .file(thumbnail)
-              .params(params)
+              .queryParams(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .with(request -> {
                 request.setMethod("POST");
@@ -173,7 +170,7 @@ class UserControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.introduce").value(validIntroduce))
             .andExpect(jsonPath("$.thumbnailURL").exists())
             .andDo(document("sign-up",
-                requestParameters(
+                queryParameters(
                     parameterWithName("loginId")
                         .description("로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH),
                     parameterWithName("password")
@@ -379,7 +376,7 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("update-profile",
-              requestParameters(
+              queryParameters(
                   parameterWithName("introduce")
                       .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
                       .optional()
@@ -444,6 +441,8 @@ class UserControllerTest extends ControllerTest {
           .file(thumbnail)
           .cookie(new Cookie(ACCESS_TOKEN, userToken))
           .params(params)
+          .header("Authorization", userToken)
+          .queryParams(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .with(request -> {
             request.setMethod("PATCH");

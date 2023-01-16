@@ -9,7 +9,6 @@ import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
-import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

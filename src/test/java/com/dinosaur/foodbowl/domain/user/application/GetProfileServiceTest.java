@@ -6,7 +6,7 @@ import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
