@@ -2,6 +2,7 @@ package com.dinosaur.foodbowl.domain.follow.entity;
 
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,13 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "follow")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Follow extends BaseEntity {
 
   @Id
@@ -43,5 +42,22 @@ public class Follow extends BaseEntity {
 
   public boolean isFollowing(User user) {
     return following.equals(user);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Follow follow = (Follow) o;
+    return following.equals(follow.following) && follower.equals(follow.follower);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(following, follower);
   }
 }

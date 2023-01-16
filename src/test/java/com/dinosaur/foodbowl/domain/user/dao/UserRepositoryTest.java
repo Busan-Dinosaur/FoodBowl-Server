@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
@@ -42,6 +43,9 @@ class UserRepositoryTest extends RepositoryTest {
 
   @Autowired
   private UserRoleRepository userRoleRepository;
+
+  @Autowired
+  private FollowRepository followRepository;
 
   private User user;
 
@@ -232,6 +236,30 @@ class UserRepositoryTest extends RepositoryTest {
     private String getUserThumbnailPath(User userWithThumbnail) {
       return userWithThumbnail.getThumbnailURL()
           .orElseThrow();
+    }
+  }
+
+  @Nested
+  @DisplayName("유저 팔로잉")
+  class UserFollowTest {
+
+    @Test
+    @DisplayName("팔로우를 여러번 해도 같은 사람이면 한 번만 들어가야한다.")
+    void should_once_when_duplicateFollow() {
+      User me = userTestHelper.generateUser();
+      User other1 = userTestHelper.generateUser();
+      User other2 = userTestHelper.generateUser();
+
+      me.follow(other1);
+      me.follow(other2);
+      me.follow(other2);
+      me.follow(other2);
+
+      em.flush();
+      em.clear();
+
+      long followingCount = followRepository.countByFollower(me);
+      assertThat(followingCount).isEqualTo(2);
     }
   }
 }
