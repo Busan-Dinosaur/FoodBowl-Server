@@ -487,6 +487,7 @@ class UserControllerTest extends ControllerTest {
     private final String thumbnailURL = "/hello/world/haha.jpg";
     private final long followerCount = 0;
     private final long followingCount = 0;
+    private final long postCount = 10;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
     @Test
@@ -501,6 +502,7 @@ class UserControllerTest extends ControllerTest {
           .andExpect(jsonPath("$.introduce").value(validIntroduce))
           .andExpect(jsonPath("$.followerCount").value(followerCount))
           .andExpect(jsonPath("$.followingCount").value(followingCount))
+          .andExpect(jsonPath("$.postCount").value(postCount))
           .andExpect(jsonPath("$.thumbnailURL").value(thumbnailURL))
           .andDo(print())
           .andDo(document("get-profile",
@@ -518,6 +520,7 @@ class UserControllerTest extends ControllerTest {
                   fieldWithPath("introduce").description("저장된 소개글"),
                   fieldWithPath("followerCount").description("유저의 팔로워 수"),
                   fieldWithPath("followingCount").description("유저의 팔로잉 수"),
+                  fieldWithPath("postCount").description("유저의 게시글 수"),
                   fieldWithPath("thumbnailURL").description(
                       "썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
               )));
@@ -535,6 +538,7 @@ class UserControllerTest extends ControllerTest {
           .andExpect(jsonPath("$.introduce").value(validIntroduce))
           .andExpect(jsonPath("$.followerCount").value(followerCount))
           .andExpect(jsonPath("$.followingCount").value(followingCount))
+          .andExpect(jsonPath("$.postCount").value(postCount))
           .andExpect(jsonPath("$.thumbnailURL").isEmpty())
           .andDo(print());
     }
@@ -546,6 +550,7 @@ class UserControllerTest extends ControllerTest {
           .introduce(validIntroduce)
           .followerCount(followerCount)
           .followingCount(followingCount)
+          .postCount(postCount)
           .build();
       when(getProfileService.getProfile(userId)).thenReturn(user);
     }
@@ -557,6 +562,7 @@ class UserControllerTest extends ControllerTest {
           .introduce(validIntroduce)
           .followerCount(followerCount)
           .followingCount(followingCount)
+          .postCount(postCount)
           .thumbnailURL(thumbnailURL)
           .build();
       when(getProfileService.getProfile(userId)).thenReturn(user);

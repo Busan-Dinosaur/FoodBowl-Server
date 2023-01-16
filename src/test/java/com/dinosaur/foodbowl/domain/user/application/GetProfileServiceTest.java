@@ -3,10 +3,13 @@ package com.dinosaur.foodbowl.domain.user.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
+import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,10 +29,10 @@ class GetProfileServiceTest {
   FollowRepository followRepository;
 
   @Autowired
-  PostRepository postRepository;
+  UserTestHelper userTestHelper;
 
   @Autowired
-  UserTestHelper userTestHelper;
+  PostTestHelper postTestHelper;
 
   @PersistenceContext
   EntityManager em;
@@ -65,6 +68,31 @@ class GetProfileServiceTest {
       assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
       assertThat(result.getFollowerCount()).isEqualTo(1);
       assertThat(result.getFollowingCount()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("내가 쓴 게시글이 10개일 때 postCount는 10이어야 한다.")
+    void should_getPostCountExactly_when_myPostIs10() {
+      User me = userTestHelper.generateUser();
+      User other = userTestHelper.generateUser();
+      int myPostCount = 10;
+
+      postTestHelper.builder().user(other).build();
+      for (int i = 0; i < myPostCount; i++) {
+        postTestHelper.builder().user(me).build();
+      }
+      postTestHelper.builder().user(other).build();
+
+      em.flush();
+      em.clear();
+
+      ProfileResponseDto result = getProfileService.getProfile(me.getId());
+
+      assertThat(result.getUserId()).isEqualTo(me.getId());
+      assertThat(result.getNickname()).isEqualTo(me.getNickname());
+      assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
+      assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
+      assertThat(result.getPostCount()).isEqualTo(myPostCount);
     }
   }
 }

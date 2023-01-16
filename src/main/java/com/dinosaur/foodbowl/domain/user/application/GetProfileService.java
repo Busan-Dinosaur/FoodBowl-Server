@@ -20,6 +20,7 @@ public class GetProfileService {
     User user = userFindDao.findById(userId);
     long followerCount = followRepository.countByFollowing(user);
     long followingCount = followRepository.countByFollower(user);
-    return ProfileResponseDto.of(user, followerCount, followingCount);
+    long postCount = user.getPostCount();
+    return ProfileResponseDto.of(user, followerCount, followingCount, postCount);
   }
 }
