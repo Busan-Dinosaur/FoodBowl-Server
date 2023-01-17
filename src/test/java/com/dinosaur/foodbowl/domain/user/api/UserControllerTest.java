@@ -5,14 +5,21 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -24,9 +31,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
+import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
@@ -34,6 +43,7 @@ import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
 import com.dinosaur.foodbowl.global.api.ControllerTest;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
+import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +72,9 @@ class UserControllerTest extends ControllerTest {
 
   @MockBean
   UpdateProfileService updateProfileService;
+
+  @MockBean
+  GetProfileService getProfileService;
 
   @MockBean
   AuthUtil authUtil;
@@ -109,7 +122,7 @@ class UserControllerTest extends ControllerTest {
           .introduce(validIntroduce)
           .build();
       ReflectionTestUtils.setField(user, "id", userId);
-      SignUpResponseDto responseDto = SignUpResponseDto.of(user, userToken);
+      SignUpResponseDto responseDto = SignUpResponseDto.of(user);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
@@ -140,8 +153,7 @@ class UserControllerTest extends ControllerTest {
                   .width(200)
                   .path("/thumbnail/2022-01-11/random_name.jpeg")
                   .build())
-              .build(),
-          userToken);
+              .build());
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
       when(signUpService.signUp(any())).thenReturn(responseDto);
@@ -162,7 +174,6 @@ class UserControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.nickname").value(validNickname))
             .andExpect(jsonPath("$.introduce").value(validIntroduce))
             .andExpect(jsonPath("$.thumbnailURL").exists())
-            .andExpect(jsonPath("$.accessToken").exists())
             .andDo(document("sign-up",
                 queryParameters(
                     parameterWithName("loginId")
@@ -177,6 +188,9 @@ class UserControllerTest extends ControllerTest {
                 requestParts(
                     partWithName("thumbnail").description("유저가 등록할 썸네일").optional()
                 ),
+                responseCookies(
+                    cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token")
+                ),
                 responseFields(
                     fieldWithPath("userId")
                         .description("DB에 저장된 user의 고유 ID 값"),
@@ -187,10 +201,7 @@ class UserControllerTest extends ControllerTest {
                     fieldWithPath("introduce")
                         .description("저장된 소개글"),
                     fieldWithPath("thumbnailURL")
-                        .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음."),
-                    fieldWithPath("accessToken")
-                        .description("사용자 인증에 필요한 access token.\r\n"
-                            + " API 호출 시 Authorization 헤더에 넣어서 보내주면 됨")
+                        .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
                 )));
       }
 
@@ -320,10 +331,15 @@ class UserControllerTest extends ControllerTest {
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
       doNothing().when(deleteAccountService).deleteMySelf(any());
       mockMvc.perform(delete("/users")
-              .header("Authorization", userToken))
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andExpect(status().isNoContent())
           .andDo(print())
-          .andDo(document("user-delete"));
+          .andDo(document("user-delete",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description(
+                      "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+              )));
     }
 
     @Test
@@ -338,7 +354,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("잘못된 토큰으로 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_invalidToken() throws Exception {
       mockMvc.perform(delete("/users")
-              .header("Authorization", userToken + "haha"))
+              .cookie(new Cookie(ACCESS_TOKEN, userToken + "haha")))
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
@@ -370,6 +386,11 @@ class UserControllerTest extends ControllerTest {
           .andExpect(status().isNoContent())
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("update-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description(
+                      "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+              ),
               queryParameters(
                   parameterWithName("introduce")
                       .description("수정할 유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
@@ -433,6 +454,8 @@ class UserControllerTest extends ControllerTest {
     private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart("/users")
           .file(thumbnail)
+          .cookie(new Cookie(ACCESS_TOKEN, userToken))
+          .params(params)
           .header("Authorization", userToken)
           .queryParams(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -444,13 +467,105 @@ class UserControllerTest extends ControllerTest {
 
     private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
       return mockMvc.perform(multipart("/users")
-          .header("Authorization", userToken)
+          .cookie(new Cookie(ACCESS_TOKEN, userToken))
           .params(params)
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .with(request -> {
             request.setMethod("PATCH");
             return request;
           }));
+    }
+  }
+
+  @Nested
+  @DisplayName("프로필 가져오기")
+  class GetProfile {
+
+    private final Long userId = 1L;
+    private final String validNickname = "바보gusah009";
+    private final String validIntroduce = "Introduce";
+    private final String thumbnailURL = "/hello/world/haha.jpg";
+    private final long followerCount = 0;
+    private final long followingCount = 0;
+    private final long postCount = 10;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+
+    @Test
+    @DisplayName("유효한 유저 아이디의 프로필 가져오기는 성공한다.")
+    void should_successfully_when_validUserId() throws Exception {
+      mockingDto();
+      mockMvc.perform(get("/users/{userId}", userId)
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.userId").value(userId))
+          .andExpect(jsonPath("$.nickname").value(validNickname))
+          .andExpect(jsonPath("$.introduce").value(validIntroduce))
+          .andExpect(jsonPath("$.followerCount").value(followerCount))
+          .andExpect(jsonPath("$.followingCount").value(followingCount))
+          .andExpect(jsonPath("$.postCount").value(postCount))
+          .andExpect(jsonPath("$.thumbnailURL").value(thumbnailURL))
+          .andDo(print())
+          .andDo(document("get-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description(
+                      "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+              ),
+              pathParameters(
+                  parameterWithName("userId").description("유저의 아이디")
+              ),
+              responseFields(
+                  fieldWithPath("userId").description("DB에 저장된 user의 고유 ID 값"),
+                  fieldWithPath("nickname").description("저장된 닉네임"),
+                  fieldWithPath("introduce").description("저장된 소개글"),
+                  fieldWithPath("followerCount").description("유저의 팔로워 수"),
+                  fieldWithPath("followingCount").description("유저의 팔로잉 수"),
+                  fieldWithPath("postCount").description("유저의 게시글 수"),
+                  fieldWithPath("thumbnailURL").description(
+                      "썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
+              )));
+    }
+
+    @Test
+    @DisplayName("썸네일이 없어도 유저 아이디의 프로필 가져오기는 성공한다.")
+    void should_successfully_when_thumbnailIsNull() throws Exception {
+      mockingDtoWithoutThumbnail();
+      mockMvc.perform(get("/users/" + userId)
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.userId").value(userId))
+          .andExpect(jsonPath("$.nickname").value(validNickname))
+          .andExpect(jsonPath("$.introduce").value(validIntroduce))
+          .andExpect(jsonPath("$.followerCount").value(followerCount))
+          .andExpect(jsonPath("$.followingCount").value(followingCount))
+          .andExpect(jsonPath("$.postCount").value(postCount))
+          .andExpect(jsonPath("$.thumbnailURL").isEmpty())
+          .andDo(print());
+    }
+
+    private void mockingDtoWithoutThumbnail() {
+      ProfileResponseDto user = ProfileResponseDto.builder()
+          .userId(userId)
+          .nickname(validNickname)
+          .introduce(validIntroduce)
+          .followerCount(followerCount)
+          .followingCount(followingCount)
+          .postCount(postCount)
+          .build();
+      when(getProfileService.getProfile(userId)).thenReturn(user);
+    }
+
+    private void mockingDto() {
+      ProfileResponseDto user = ProfileResponseDto.builder()
+          .userId(userId)
+          .nickname(validNickname)
+          .introduce(validIntroduce)
+          .followerCount(followerCount)
+          .followingCount(followingCount)
+          .postCount(postCount)
+          .thumbnailURL(thumbnailURL)
+          .build();
+      when(getProfileService.getProfile(userId)).thenReturn(user);
     }
   }
 

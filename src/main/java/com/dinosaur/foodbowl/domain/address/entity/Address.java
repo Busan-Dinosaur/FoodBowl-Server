@@ -19,10 +19,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Address extends BaseEntity {
 
-  private static final int MAX_ADDRESS_NAME_LENGTH = 512;
-  private static final int MAX_REGION_DEPTH_NAME_LENGTH = 45;
-  private static final int MAX_ROAD_NAME_LENGTH = 45;
-  private static final int MAX_BUILDING_NO_LENGTH = 45;
+  public static final int MAX_ADDRESS_NAME_LENGTH = 512;
+  public static final int MAX_REGION_DEPTH_NAME_LENGTH = 45;
+  public static final int MAX_ROAD_NAME_LENGTH = 45;
+  public static final int MAX_BUILDING_NO_LENGTH = 45;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

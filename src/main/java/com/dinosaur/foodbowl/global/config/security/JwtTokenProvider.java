@@ -20,11 +20,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
   public static final Long DEFAULT_TOKEN_VALID_MILLISECOND = 60 * 60 * 1000L;
-  public static final String TOKEN_TYPE = "Bearer";
+  public static final String ACCESS_TOKEN = "accessToken";
 
   @Value("${spring.jwt.secret}")
   private String secretKey;
@@ -57,7 +59,7 @@ public class JwtTokenProvider {
     Claims claims = Jwts.claims().setSubject(userPk);
     claims.put("roles", String.join(",", roles));
     Date now = new Date();
-    return TOKEN_TYPE + " " + Jwts.builder()
+    return Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
         .setExpiration(new Date(now.getTime() + DEFAULT_TOKEN_VALID_MILLISECOND))
@@ -112,15 +114,12 @@ public class JwtTokenProvider {
   }
 
   public String resolveToken(HttpServletRequest req) {
-    String requestHeader = req.getHeader("Authorization");
-    if (requestHeader == null || requestHeader.isEmpty()) {
+    Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
+        .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN))
+        .findFirst();
+    if (accessToken.isEmpty()) {
       throw new EmptyJwtException();
     }
-    String[] parts = requestHeader.split(" ");
-    String type = parts[0];
-    if (parts.length != 2 || !type.equals(TOKEN_TYPE)) {
-      throw new WrongFormatJwtException();
-    }
-    return parts[1];
+    return accessToken.get().getValue();
   }
 }

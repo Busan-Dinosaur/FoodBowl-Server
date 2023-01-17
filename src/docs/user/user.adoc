@@ -35,19 +35,27 @@ include::{snippets}/sign-up/request-parts.adoc[]
 
 include::{snippets}/sign-up/http-response.adoc[]
 
+==== Response Cookies
+
+include::{snippets}/sign-up/response-cookies.adoc[]
+
 ==== Response Fields
 
 include::{snippets}/sign-up/response-fields.adoc[]
 
 == *회원탈퇴*
 
-NOTE: Authorization 헤더에 자신의 JWT access token이 필요합니다.
+NOTE: 회원가입이나 로그인을 통해 COOKIE를 설정하셔야 합니다.
 
 === 요청
 
 ==== Request
 
 include::{snippets}/user-delete/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/user-delete/request-cookies.adoc[]
 
 === 응답
 
@@ -57,13 +65,17 @@ include::{snippets}/user-delete/http-response.adoc[]
 
 == *프로필 수정*
 
-NOTE: Authorization 헤더에 자신의 JWT access token이 필요합니다.
+NOTE: 회원가입이나 로그인을 통해 COOKIE를 설정하셔야 합니다.
 
 === 요청
 
 ==== Request
 
 include::{snippets}/update-profile/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/user-delete/request-cookies.adoc[]
 
 ==== Query Parameters
 
@@ -78,3 +90,31 @@ include::{snippets}/update-profile/request-parts.adoc[]
 ==== Response
 
 include::{snippets}/update-profile/http-response.adoc[]
+
+== *프로필 정보 가져오기*
+
+NOTE: 회원가입이나 로그인을 통해 COOKIE를 설정하셔야 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-profile/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-profile/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-profile/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-profile/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-profile/response-fields.adoc[]

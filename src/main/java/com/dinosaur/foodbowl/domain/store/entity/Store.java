@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Store extends BaseEntity {
 
-  private static final int MAX_STORE_NAME_LENGTH = 100;
+  public static final int MAX_STORE_NAME_LENGTH = 100;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

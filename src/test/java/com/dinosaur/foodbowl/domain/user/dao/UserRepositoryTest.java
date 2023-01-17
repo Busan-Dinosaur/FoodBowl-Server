@@ -4,16 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.dao.RepositoryTest;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
+import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
 import jakarta.persistence.EntityManager;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,14 +20,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.context.annotation.Import;
 
+@Import(value = {UserTestHelper.class, ThumbnailTestHelper.class})
 class UserRepositoryTest extends RepositoryTest {
 
   private static final int MAX_LOGIN_ID_LENGTH = 40;
   private static final int MAX_PASSWORD_LENGTH = 512;
   private static final int MAX_NICKNAME_LENGTH = 40;
   private static final int MAX_INTRODUCE_LENGTH = 255;
+
+  @Autowired
+  private UserTestHelper userTestHelper;
+
+  @Autowired
+  private ThumbnailTestHelper thumbnailTestHelper;
 
   @Autowired
   private UserRepository userRepository;
@@ -42,21 +48,14 @@ class UserRepositoryTest extends RepositoryTest {
   @Autowired
   private UserRoleRepository userRoleRepository;
 
+  @Autowired
+  private FollowRepository followRepository;
+
   private User user;
-  private final String loginId = getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH);
-  private final String nickname = getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH);
-  private final String password = getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH);
-  private final String introduce = getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH);
 
   @BeforeEach
   void setUpUser() {
-    user = User.builder()
-        .loginId(loginId)
-        .nickname(nickname)
-        .password(password)
-        .introduce(introduce)
-        .build();
-    user = userRepository.save(user);
+    user = userTestHelper.generateUser();
   }
 
   private static String getRandomUUIDLengthWith(int length) {
@@ -77,7 +76,7 @@ class UserRepositoryTest extends RepositoryTest {
 
     private void generateLoginIdDuplicateUser() {
       User duplicateUser = User.builder()
-          .loginId(loginId)
+          .loginId(user.getLoginId())
           .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
           .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
           .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
@@ -88,7 +87,7 @@ class UserRepositoryTest extends RepositoryTest {
     private void generateNicknameDuplicateUser() {
       User duplicateUser = User.builder()
           .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .nickname(nickname)
+          .nickname(user.getNickname())
           .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
           .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
           .build();
@@ -105,7 +104,7 @@ class UserRepositoryTest extends RepositoryTest {
       User duplicateUser = User.builder()
           .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
           .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .password(password)
+          .password(user.getPassword())
           .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
           .build();
       userRepository.save(duplicateUser);
@@ -116,7 +115,7 @@ class UserRepositoryTest extends RepositoryTest {
           .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
           .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
           .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .introduce(introduce)
+          .introduce(user.getIntroduce())
           .build();
       userRepository.save(duplicateUser);
     }
@@ -153,8 +152,8 @@ class UserRepositoryTest extends RepositoryTest {
   class UserDeleteTest {
 
     @Test
-    void should_deleteAllUserInfo_when_deleteMySelf() throws IOException {
-      User userWithThumbnail = generateUser();
+    void should_deleteAllUserInfo_when_deleteMySelf() {
+      User userWithThumbnail = userTestHelper.generateUser();
 
       whenDeleteUser(userWithThumbnail);
 
@@ -169,27 +168,6 @@ class UserRepositoryTest extends RepositoryTest {
       em.clear();
     }
 
-    private User generateUser() throws IOException {
-      final ThumbnailUtil thumbnailUtil = new ThumbnailFileUtil(thumbnailRepository);
-      User userWithThumbnail = User.builder()
-          .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-          .thumbnail(thumbnailUtil.saveIfExist(getThumbnailFile()).orElseThrow())
-          .build();
-      userWithThumbnail = userRepository.save(userWithThumbnail);
-      em.flush();
-      em.clear();
-      return userWithThumbnail;
-    }
-
-    private MockMultipartFile getThumbnailFile() throws IOException {
-      return new MockMultipartFile("thumbnail",
-          "testImage_1x1.png", "image/png",
-          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
-    }
-
     private String getUserThumbnailPath(User userWithThumbnail) {
       return userWithThumbnail.getThumbnailURL()
           .orElseThrow();
@@ -202,8 +180,8 @@ class UserRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("썸네일이 null일 경우 썸네일은 바뀌어선 안된다.")
-    void should_notChangeThumbnail_when_nullThumbnail() throws IOException {
-      User beforeUser = generateUser();
+    void should_notChangeThumbnail_when_nullThumbnail() {
+      User beforeUser = userTestHelper.generateUser();
       String newIntroduce = "newIntroduce";
 
       whenUpdateUser(beforeUser, null, newIntroduce);
@@ -214,9 +192,9 @@ class UserRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("소개가 null일 경우 소개는 바뀌어선 안된다.")
-    void should_notChangeThumbnail_when_nullIntroduce() throws IOException {
-      User beforeUser = generateUser();
-      Thumbnail newThumbnail = generateThumbnail();
+    void should_notChangeThumbnail_when_nullIntroduce() {
+      User beforeUser = userTestHelper.generateUser();
+      Thumbnail newThumbnail = thumbnailTestHelper.generateThumbnail();
 
       whenUpdateUser(beforeUser, newThumbnail, null);
 
@@ -226,8 +204,8 @@ class UserRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("썸네일과 소개가 null일 경우 둘 다 바뀌어선 안된다.")
-    void should_notChangeThumbnail_when_nullEverything() throws IOException {
-      User beforeUser = generateUser();
+    void should_notChangeThumbnail_when_nullEverything() {
+      User beforeUser = userTestHelper.generateUser();
 
       whenUpdateUser(beforeUser, null, null);
 
@@ -259,34 +237,33 @@ class UserRepositoryTest extends RepositoryTest {
       em.clear();
     }
 
-    private User generateUser() throws IOException {
-      Thumbnail thumbnail = generateThumbnail();
-      User userWithThumbnail = User.builder()
-          .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-          .thumbnail(thumbnail)
-          .build();
-      userWithThumbnail = userRepository.save(userWithThumbnail);
-      return userWithThumbnail;
-    }
-
-    private Thumbnail generateThumbnail() throws IOException {
-      final ThumbnailUtil thumbnailUtil = new ThumbnailFileUtil(thumbnailRepository);
-      Thumbnail thumbnail = thumbnailUtil.saveIfExist(getThumbnailFile()).orElseThrow();
-      return thumbnail;
-    }
-
-    private MockMultipartFile getThumbnailFile() throws IOException {
-      return new MockMultipartFile("thumbnail",
-          "testImage_1x1.png", "image/png",
-          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
-    }
-
     private String getUserThumbnailPath(User userWithThumbnail) {
       return userWithThumbnail.getThumbnailURL()
           .orElseThrow();
+    }
+  }
+
+  @Nested
+  @DisplayName("유저 팔로잉")
+  class UserFollowTest {
+
+    @Test
+    @DisplayName("팔로우를 여러번 해도 같은 사람이면 한 번만 들어가야한다.")
+    void should_once_when_duplicateFollow() {
+      User me = userTestHelper.generateUser();
+      User other1 = userTestHelper.generateUser();
+      User other2 = userTestHelper.generateUser();
+
+      me.follow(other1);
+      me.follow(other2);
+      me.follow(other2);
+      me.follow(other2);
+
+      em.flush();
+      em.clear();
+
+      long followingCount = followRepository.countByFollower(me);
+      assertThat(followingCount).isEqualTo(2);
     }
   }
 }

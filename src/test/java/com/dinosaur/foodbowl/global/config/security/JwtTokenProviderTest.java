@@ -32,7 +32,6 @@ class JwtTokenProviderTest {
     RoleType[] roleType = new RoleType[]{RoleType.ROLE_회원, RoleType.ROLE_관리자};
 
     String accessToken = jwtTokenProvider.createAccessToken(userPk, roleType);
-    accessToken = removePrefix(accessToken);
     Claims claims = Jwts.parser().setSigningKey(TEST_SECRET_KEY)
         .parseClaimsJws(accessToken)
         .getBody();
@@ -41,10 +40,6 @@ class JwtTokenProviderTest {
     String roles = claims.get("roles").toString();
     assertThat(resultUserPK).isEqualTo(userPk);
     assertThat(roles).isEqualTo("ROLE_회원,ROLE_관리자");
-  }
-
-  private String removePrefix(String accessToken) {
-    return accessToken.split(" ")[1];
   }
 
   @Test
