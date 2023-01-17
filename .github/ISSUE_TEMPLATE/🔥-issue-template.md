@@ -18,4 +18,3 @@ assignees: ''
 ## 🎱 Todo
 
 - [ ] todo1
-- [ ] todo2
