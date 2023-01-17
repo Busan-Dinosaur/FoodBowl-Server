@@ -4,6 +4,7 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
@@ -17,7 +18,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -69,6 +72,10 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
   private final Set<UserRole> userRole = new HashSet<>();
 
+  @Getter
+  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
+  private final Set<Follow> followingList = new HashSet<>();
+
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
       String introduce) {
@@ -105,5 +112,25 @@ public class User extends BaseEntity {
     if (introduce != null) {
       this.introduce = introduce;
     }
+  }
+
+  @Override
+  public String toString() {
+    return "User{" +
+        "id=" + id +
+        ", loginId='" + loginId + '\'' +
+        ", password='" + password + '\'' +
+        ", nickname='" + nickname + '\'' +
+        ", introduce='" + introduce + '\'' +
+        ", userRole=" + userRole +
+        '}';
+  }
+
+  public void follow(User user) {
+    followingList.add(Follow.of(this, user));
+  }
+
+  public void unfollow(User user) {
+    followingList.removeIf(follow -> follow.isFollowing(user));
   }
 }

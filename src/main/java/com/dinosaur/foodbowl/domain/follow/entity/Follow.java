@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -39,5 +40,42 @@ public class Follow extends BaseEntity {
   private Follow(User following, User follower) {
     this.following = following;
     this.follower = follower;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Follow follow = (Follow) o;
+    return following.equals(follow.following) && follower.equals(follow.follower);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(following, follower);
+  }
+
+  public static Follow of(User follower, User following) {
+    return Follow.builder()
+        .follower(follower)
+        .following(following)
+        .build();
+  }
+
+  @Override
+  public String toString() {
+    return "Follow{" +
+        "id=" + id +
+        ", following=" + following +
+        ", follower=" + follower +
+        '}';
+  }
+
+  public boolean isFollowing(User user) {
+    return following.equals(user);
   }
 }
