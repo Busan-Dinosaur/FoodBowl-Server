@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class FollowController {
 
   private final AuthUtil authUtil;
-
   private final FollowService followService;
 
   @PostMapping("/{userId}")

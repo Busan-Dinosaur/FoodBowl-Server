@@ -95,8 +95,8 @@ class FollowServiceTest {
       em.clear();
 
       // then
-      assertThatThrownBy(() -> followService.follow(me, other.getId())).isInstanceOf(
-          IllegalArgumentException.class);
+      assertThatThrownBy(() -> followService.follow(me, other.getId()))
+          .isInstanceOf(IllegalArgumentException.class);
 
     }
 
