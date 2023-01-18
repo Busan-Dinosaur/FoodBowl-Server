@@ -20,7 +20,11 @@ public class FollowService {
   public void follow(User me, Long otherId) {
     checkMe(me, otherId);
     User other = userFindDao.findById(otherId);
-    checkAlreadyFollowed(me, other);
+
+    if (me.isFollowing(other)) {
+      return;
+    }
+
     me.follow(other);
   }
 
@@ -28,7 +32,10 @@ public class FollowService {
   public void unfollow(User me, Long otherId) {
     checkMe(me, otherId);
     User other = userFindDao.findById(otherId);
-    checkNotFollowed(me, other);
+
+    if (!me.isFollowing(other)) {
+      return;
+    }
 
     me.unfollow(other);
   }
@@ -38,17 +45,4 @@ public class FollowService {
       throw new IllegalArgumentException();
     }
   }
-
-  private void checkAlreadyFollowed(User me, User other) {
-    if (followRepository.existsByFollowerAndFollowing(me, other)) {
-      throw new IllegalArgumentException();
-    }
-  }
-
-  private void checkNotFollowed(User me, User other) {
-    if (!followRepository.existsByFollowerAndFollowing(me, other)) {
-      throw new IllegalArgumentException();
-    }
-  }
-
 }

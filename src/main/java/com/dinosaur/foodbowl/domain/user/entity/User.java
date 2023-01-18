@@ -129,6 +129,11 @@ public class User extends BaseEntity {
     followingList.removeIf(follow -> follow.getFollowing().equals(other));
   }
 
+  public boolean isFollowing(User other) {
+    return followingList.stream()
+        .anyMatch(follow -> follow.getFollowing().equals(other));
+  }
+
   public long getPostCount() {
     return posts.size();
   }
