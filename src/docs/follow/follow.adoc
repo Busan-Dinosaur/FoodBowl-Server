@@ -35,10 +35,6 @@ include::{snippets}/follow/path-parameters.adoc[]
 
 include::{snippets}/follow/http-response.adoc[]
 
-==== Response Body
-
-include::{snippets}/follow/response-body.adoc[]
-
 == *팔로우 취소*
 
 === 요청
@@ -60,7 +56,3 @@ include::{snippets}/unfollow/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/unfollow/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/unfollow/response-body.adoc[]
