@@ -74,12 +74,11 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
   private final Set<UserRole> userRole = new HashSet<>();
 
-  @OneToMany(mappedBy = "user", cascade = REMOVE)
-  private final List<Post> posts = new ArrayList<>();
-
-  @Getter
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
   private final Set<Follow> followingList = new HashSet<>();
+
+  @OneToMany(mappedBy = "user", cascade = REMOVE)
+  private final List<Post> posts = new ArrayList<>();
 
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
