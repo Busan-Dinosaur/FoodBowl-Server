@@ -4,6 +4,7 @@ import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileCons
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,17 +16,9 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
-@Transactional
-class ThumbnailFileUtilTest {
-
-  @Autowired
-  private ThumbnailFileUtil thumbnailFileUtil;
+class ThumbnailFileUtilTest extends IntegrationTest {
 
   @Nested
   @DisplayName("썸네일 삭제 테스트")

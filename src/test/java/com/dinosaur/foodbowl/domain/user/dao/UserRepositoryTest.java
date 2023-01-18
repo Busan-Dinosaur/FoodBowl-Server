@@ -4,52 +4,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
-import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.global.dao.RepositoryTest;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
-import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-@Import(value = {UserTestHelper.class, ThumbnailTestHelper.class})
-class UserRepositoryTest extends RepositoryTest {
+class UserRepositoryTest extends IntegrationTest {
 
   private static final int MAX_LOGIN_ID_LENGTH = 40;
   private static final int MAX_PASSWORD_LENGTH = 512;
   private static final int MAX_NICKNAME_LENGTH = 40;
   private static final int MAX_INTRODUCE_LENGTH = 255;
-
-  @Autowired
-  private UserTestHelper userTestHelper;
-
-  @Autowired
-  private ThumbnailTestHelper thumbnailTestHelper;
-
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private EntityManager em;
-
-  @Autowired
-  private ThumbnailRepository thumbnailRepository;
-
-  @Autowired
-  private UserRoleRepository userRoleRepository;
-
-  @Autowired
-  private FollowRepository followRepository;
 
   private User user;
 

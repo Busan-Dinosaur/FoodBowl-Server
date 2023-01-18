@@ -2,40 +2,16 @@ package com.dinosaur.foodbowl.domain.user.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
-import com.dinosaur.foodbowl.domain.post.PostTestHelper;
-import com.dinosaur.foodbowl.domain.user.UserTestHelper;
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
-@Transactional
-class GetProfileServiceTest {
-
-  @Autowired
-  GetProfileService getProfileService;
-
-  @Autowired
-  FollowRepository followRepository;
-
-  @Autowired
-  UserTestHelper userTestHelper;
-
-  @Autowired
-  PostTestHelper postTestHelper;
-
-  @PersistenceContext
-  EntityManager em;
+class GetProfileServiceTest extends IntegrationTest {
 
   @AfterAll
   static void deleteAll() {
