@@ -5,6 +5,8 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.USER_NOT_FOUND;
+import static com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice.getErrorMessage;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +41,6 @@ import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
-import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -226,7 +227,7 @@ class UserControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(invalidLoginId, "loginId",
+                .value(getErrorMessage(invalidLoginId, "loginId",
                     SignUpRequestDto.LOGIN_ID_INVALID)));
       }
 
@@ -240,7 +241,7 @@ class UserControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(invalidPassword, "password",
+                .value(getErrorMessage(invalidPassword, "password",
                     SignUpRequestDto.PASSWORD_INVALID)));
       }
 
@@ -254,7 +255,7 @@ class UserControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
+                .value(getErrorMessage(invalidNickname, "nickname",
                     SignUpRequestDto.NICKNAME_INVALID)));
       }
 
@@ -266,7 +267,7 @@ class UserControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
+                .value(getErrorMessage(validLoginId, "loginId",
                     LOGIN_ID_DUPLICATE.getMessage())));
       }
 
@@ -278,7 +279,7 @@ class UserControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
+                .value(getErrorMessage(validNickname, "nickname",
                     NICKNAME_DUPLICATE.getMessage())));
       }
 
@@ -519,6 +520,22 @@ class UserControllerTest extends IntegrationTest {
           .andExpect(jsonPath("$.followingCount").value(followingCount))
           .andExpect(jsonPath("$.postCount").value(postCount))
           .andExpect(jsonPath("$.thumbnailURL").isEmpty())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 유저의 ID일 경우 404 NOT FOUND를 반환한다. ")
+    void should_fail_when_notExistUser() throws Exception {
+      String notExistUserId = "-1";
+      String field = "userId";
+      doThrow(new UserException(notExistUserId, field, USER_NOT_FOUND))
+          .when(getProfileService)
+          .getProfile(Long.parseLong(notExistUserId));
+      mockMvc.perform(get("/users/" + notExistUserId)
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(getErrorMessage(notExistUserId, field, USER_NOT_FOUND.getMessage())))
           .andDo(print());
     }
 
