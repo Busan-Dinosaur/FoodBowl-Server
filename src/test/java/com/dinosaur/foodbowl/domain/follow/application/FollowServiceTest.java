@@ -4,6 +4,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
+import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
+import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -23,6 +25,9 @@ class FollowServiceTest {
   EntityManager em;
   @Autowired
   private FollowRepository followRepository;
+
+  @Autowired
+  private UserFindDao userFindDao;
   @Autowired
   private FollowService followService;
   @Autowired
@@ -58,9 +63,13 @@ class FollowServiceTest {
       followService.follow(me, other.getId());
       em.flush();
       em.clear();
+      me = userFindDao.findById(me.getId());
+      other = userFindDao.findById(other.getId());
 
       // when
       followService.unfollow(me, other.getId());
+      em.flush();
+      em.clear();
 
       // then
       boolean isFollowed = followRepository.existsByFollowerAndFollowing(me, other);

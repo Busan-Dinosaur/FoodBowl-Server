@@ -123,7 +123,7 @@ public class User extends BaseEntity {
   }
 
   public void unfollow(User other) {
-    followingList.removeIf(follow -> follow.isFollowing(other));
+    followingList.removeIf(follow -> follow.getFollowing().equals(other));
   }
 
   public long getPostCount() {

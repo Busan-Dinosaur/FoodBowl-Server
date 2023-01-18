@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,7 +27,7 @@ public class Follow extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
-
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "following_id", nullable = false, updatable = false)
   private User following;
@@ -39,10 +40,6 @@ public class Follow extends BaseEntity {
   private Follow(User following, User follower) {
     this.following = following;
     this.follower = follower;
-  }
-
-  public boolean isFollowing(User user) {
-    return following.equals(user);
   }
 
   public static Follow of(User follower, User following) {

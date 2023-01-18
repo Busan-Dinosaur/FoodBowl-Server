@@ -29,7 +29,8 @@ public class FollowService {
     checkMe(me, otherId);
     User other = userFindDao.findById(otherId);
     checkNotFollowed(me, other);
-    followRepository.deleteFollowByFollowerAndFollowing(me, other);
+
+    me.unfollow(other);
   }
 
   private void checkMe(User me, Long userId) {
