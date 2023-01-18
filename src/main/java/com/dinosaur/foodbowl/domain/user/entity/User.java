@@ -119,7 +119,10 @@ public class User extends BaseEntity {
   }
 
   public void follow(User other) {
-    followingList.add(Follow.of(this, other));
+    followingList.add(Follow.builder()
+        .follower(this)
+        .following(other)
+        .build());
   }
 
   public void unfollow(User other) {
