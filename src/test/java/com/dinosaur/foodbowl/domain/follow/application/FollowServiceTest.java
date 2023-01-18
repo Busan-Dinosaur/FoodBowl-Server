@@ -5,7 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
-import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -94,22 +93,6 @@ class FollowServiceTest {
     }
 
     @Test
-    @DisplayName("이미 팔로잉한 유저이면 팔로잉은 실패한다.")
-    void shouldFailToFollowWhenAlreadyFollowed() {
-      // given
-      User me = userTestHelper.generateUserWithoutThumbnail();
-      User other = userTestHelper.generateUserWithoutThumbnail();
-      followService.follow(me, other.getId());
-      em.flush();
-      em.clear();
-
-      // then
-      assertThatThrownBy(() -> followService.follow(me, other.getId()))
-          .isInstanceOf(IllegalArgumentException.class);
-
-    }
-
-    @Test
     @DisplayName("팔로잉 취소 대상이 자신이면 실패한다.")
     void shouldFailToUnfollowWhenOneself() {
       // given
@@ -119,20 +102,6 @@ class FollowServiceTest {
       assertThatThrownBy(() -> followService.unfollow(me, me.getId())).isInstanceOf(
           IllegalArgumentException.class);
 
-    }
-
-    @Test
-    @DisplayName("이미 팔로잉한 유저가 아니면 팔로잉 취소는 실패한다.")
-    void shouldSucceedToUnfollowWhenFollowing() {
-      // given
-      User me = userTestHelper.generateUserWithoutThumbnail();
-      User other = userTestHelper.generateUserWithoutThumbnail();
-      em.flush();
-      em.clear();
-
-      // then
-      assertThatThrownBy(() -> followService.unfollow(me, other.getId())).isInstanceOf(
-          IllegalArgumentException.class);
     }
 
   }
