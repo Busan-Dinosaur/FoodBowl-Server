@@ -3,6 +3,7 @@ package com.dinosaur.foodbowl.domain.follow.api;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
+import com.dinosaur.foodbowl.global.util.validator.follow.NotMe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class FollowController {
   private final FollowService followService;
 
   @PostMapping("/{userId}")
-  public ResponseEntity<Void> follow(@PathVariable("userId") Long userId) {
+  public ResponseEntity<Void> follow(@PathVariable("userId") @NotMe Long userId) {
     User me = authUtil.getUserByJWT();
 
     followService.follow(me, userId);
@@ -31,7 +32,7 @@ public class FollowController {
   }
 
   @DeleteMapping("/{userId}")
-  public ResponseEntity<Void> unFollow(@PathVariable("userId") Long userId) {
+  public ResponseEntity<Void> unFollow(@PathVariable("userId") @NotMe Long userId) {
     User me = authUtil.getUserByJWT();
 
     followService.unfollow(me, userId);
