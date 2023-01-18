@@ -1,9 +1,8 @@
 package com.dinosaur.foodbowl.domain.follow.application;
 
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
-import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
+import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,22 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FollowService {
 
-  private final UserRepository userRepository;
+  private final UserFindDao userFindDao;
   private final FollowRepository followRepository;
-  private final AuthUtil authUtil;
 
   @Transactional
-  public void follow(User me, Long userId) {
-    checkMe(me, userId);
-    User other = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+  public void follow(User me, Long otherId) {
+    checkMe(me, otherId);
+    User other = userFindDao.findById(otherId);
     checkAlreadyFollowed(me, other);
     me.follow(other);
   }
 
   @Transactional
-  public void unfollow(User me, Long userId) {
-    checkMe(me, userId);
-    User other = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+  public void unfollow(User me, Long otherId) {
+    checkMe(me, otherId);
+    User other = userFindDao.findById(otherId);
     checkNotFollowed(me, other);
     followRepository.deleteFollowByFollowerAndFollowing(me, other);
   }
