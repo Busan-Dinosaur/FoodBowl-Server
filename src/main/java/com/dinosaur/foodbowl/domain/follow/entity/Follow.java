@@ -60,4 +60,11 @@ public class Follow extends BaseEntity {
   public int hashCode() {
     return Objects.hash(following, follower);
   }
+
+  public static Follow of(User follower, User following) {
+    return Follow.builder()
+        .follower(follower)
+        .following(following)
+        .build();
+  }
 }

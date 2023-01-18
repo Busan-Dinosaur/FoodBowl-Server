@@ -74,11 +74,12 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
   private final Set<UserRole> userRole = new HashSet<>();
 
-  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
-  private final Set<Follow> followingList = new HashSet<>();
-
   @OneToMany(mappedBy = "user", cascade = REMOVE)
   private final List<Post> posts = new ArrayList<>();
+
+  @Getter
+  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
+  private final Set<Follow> followingList = new HashSet<>();
 
   @Builder
   private User(Thumbnail thumbnail, String loginId, String password, String nickname,
@@ -119,10 +120,7 @@ public class User extends BaseEntity {
   }
 
   public void follow(User other) {
-    followingList.add(Follow.builder()
-        .following(other)
-        .follower(this)
-        .build());
+    followingList.add(Follow.of(this, other));
   }
 
   public void unfollow(User other) {
