@@ -32,15 +32,16 @@ public class Category {
   private CategoryType categoryType;
 
   public enum CategoryType {
-    카페(1L),
-    한식(2L),
-    양식(3L),
-    일식(4L),
-    중식(5L),
-    치킨(6L),
-    분식(7L),
-    해산물(8L),
-    샐러드(9L);
+    전체(1L),
+    카페(2L),
+    한식(3L),
+    양식(4L),
+    일식(5L),
+    중식(6L),
+    치킨(7L),
+    분식(8L),
+    해산물(9L),
+    샐러드(10L);
 
     private final long id;
 
