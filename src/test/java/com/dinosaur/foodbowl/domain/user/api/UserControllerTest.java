@@ -3,10 +3,10 @@ package com.dinosaur.foodbowl.domain.user.api;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.USER_NOT_FOUND;
-import static com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice.getErrorMessage;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
+import static com.dinosaur.foodbowl.global.error.ExceptionAdvice.getErrorMessage;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +40,7 @@ import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.domain.user.exception.UserException;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -262,7 +262,7 @@ class UserControllerTest extends IntegrationTest {
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
-        doThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
+        doThrow(new BusinessException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
             .when(signUpService).signUp(any());
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
@@ -274,7 +274,7 @@ class UserControllerTest extends IntegrationTest {
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
-        doThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE))
+        doThrow(new BusinessException(validNickname, "nickname", NICKNAME_DUPLICATE))
             .when(signUpService).signUp(any());
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
@@ -528,7 +528,7 @@ class UserControllerTest extends IntegrationTest {
     void should_fail_when_notExistUser() throws Exception {
       String notExistUserId = "-1";
       String field = "userId";
-      doThrow(new UserException(notExistUserId, field, USER_NOT_FOUND))
+      doThrow(new BusinessException(notExistUserId, field, USER_NOT_FOUND))
           .when(getProfileService)
           .getProfile(Long.parseLong(notExistUserId));
       mockMvc.perform(get("/users/" + notExistUserId)
