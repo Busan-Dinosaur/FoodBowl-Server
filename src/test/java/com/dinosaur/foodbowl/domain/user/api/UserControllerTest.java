@@ -9,7 +9,8 @@ import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCE
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
@@ -29,20 +30,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
-import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
-import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
-import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.exception.UserException;
 import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
-import com.dinosaur.foodbowl.global.api.ControllerTest;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,8 +49,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -61,23 +57,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@WebMvcTest(UserController.class)
-class UserControllerTest extends ControllerTest {
-
-  @MockBean
-  private SignUpService signUpService;
-
-  @MockBean
-  DeleteAccountService deleteAccountService;
-
-  @MockBean
-  UpdateProfileService updateProfileService;
-
-  @MockBean
-  GetProfileService getProfileService;
-
-  @MockBean
-  AuthUtil authUtil;
+class UserControllerTest extends IntegrationTest {
 
   @Nested
   @DisplayName("회원가입")
@@ -105,7 +85,7 @@ class UserControllerTest extends ControllerTest {
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
       return mockMvc.perform(multipart("/users/sign-up")
-              .params(params)
+              .queryParams(params)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .with(request -> {
                 request.setMethod("POST");
@@ -125,8 +105,8 @@ class UserControllerTest extends ControllerTest {
       SignUpResponseDto responseDto = SignUpResponseDto.of(user);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
-      when(signUpService.signUp(any())).thenReturn(responseDto);
-      when(authUtil.getUserByJWT()).thenReturn(user);
+      doReturn(responseDto).when(signUpService).signUp(any(SignUpRequestDto.class));
+      doReturn(user).when(authUtil).getUserByJWT();
     }
 
     private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
@@ -156,7 +136,7 @@ class UserControllerTest extends ControllerTest {
               .build());
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
-      when(signUpService.signUp(any())).thenReturn(responseDto);
+      doReturn(responseDto).when(signUpService).signUp(any(SignUpRequestDto.class));
     }
 
     @Nested
@@ -281,8 +261,8 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
-        when(signUpService.signUp(any()))
-            .thenThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE));
+        doThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
+            .when(signUpService).signUp(any());
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
@@ -293,8 +273,8 @@ class UserControllerTest extends ControllerTest {
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
-        when(signUpService.signUp(any()))
-            .thenThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE));
+        doThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE))
+            .when(signUpService).signUp(any());
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
@@ -323,7 +303,7 @@ class UserControllerTest extends ControllerTest {
     void setup() {
       User user = User.builder().build();
       ReflectionTestUtils.setField(user, "id", userId);
-      when(authUtil.getUserByJWT()).thenReturn(user);
+      doReturn(user).when(authUtil).getUserByJWT();
     }
 
     @Test
@@ -448,32 +428,31 @@ class UserControllerTest extends ControllerTest {
     }
 
     private void mockUpdateProfileService() {
-      when(updateProfileService.updateProfile(any(), any())).thenReturn(userId);
+      User user = User.builder()
+          .introduce(validIntroduce)
+          .build();
+      ReflectionTestUtils.setField(user, "id", userId);
+      SignUpResponseDto responseDto = SignUpResponseDto.of(user);
+      ReflectionTestUtils.setField(responseDto, "userId", userId);
+
+      doReturn(user).when(authUtil).getUserByJWT();
+      doReturn(userId).when(updateProfileService)
+          .updateProfile(any(User.class), any(UpdateProfileRequestDto.class));
     }
 
     private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
-      return mockMvc.perform(multipart("/users")
+      return mockMvc.perform(multipart(HttpMethod.PATCH, "/users")
           .file(thumbnail)
           .cookie(new Cookie(ACCESS_TOKEN, userToken))
-          .params(params)
-          .header("Authorization", userToken)
           .queryParams(params)
-          .contentType(MediaType.MULTIPART_FORM_DATA)
-          .with(request -> {
-            request.setMethod("PATCH");
-            return request;
-          }));
+          .contentType(MediaType.MULTIPART_FORM_DATA));
     }
 
     private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
-      return mockMvc.perform(multipart("/users")
+      return mockMvc.perform(multipart(HttpMethod.PATCH, "/users")
           .cookie(new Cookie(ACCESS_TOKEN, userToken))
-          .params(params)
-          .contentType(MediaType.MULTIPART_FORM_DATA)
-          .with(request -> {
-            request.setMethod("PATCH");
-            return request;
-          }));
+          .queryParams(params)
+          .contentType(MediaType.MULTIPART_FORM_DATA));
     }
   }
 
@@ -552,7 +531,7 @@ class UserControllerTest extends ControllerTest {
           .followingCount(followingCount)
           .postCount(postCount)
           .build();
-      when(getProfileService.getProfile(userId)).thenReturn(user);
+      doReturn(user).when(getProfileService).getProfile(userId);
     }
 
     private void mockingDto() {
@@ -565,7 +544,7 @@ class UserControllerTest extends ControllerTest {
           .postCount(postCount)
           .thumbnailURL(thumbnailURL)
           .build();
-      when(getProfileService.getProfile(userId)).thenReturn(user);
+      doReturn(user).when(getProfileService).getProfile(userId);
     }
   }
 

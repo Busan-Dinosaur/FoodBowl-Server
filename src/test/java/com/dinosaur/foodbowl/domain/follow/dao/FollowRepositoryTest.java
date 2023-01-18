@@ -2,23 +2,15 @@ package com.dinosaur.foodbowl.domain.follow.dao;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.follow.entity.Follow;
-import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.dao.RepositoryTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
-class FollowRepositoryTest extends RepositoryTest {
-
-  @Autowired
-  UserRepository userRepository;
-
-  @Autowired
-  FollowRepository followRepository;
+class FollowRepositoryTest extends IntegrationTest {
 
   @Nested
   class NullColumnTest {
