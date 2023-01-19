@@ -2,21 +2,16 @@ package com.dinosaur.foodbowl.domain.category.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
-import com.dinosaur.foodbowl.global.dao.RepositoryTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-class CategoryTest extends RepositoryTest {
-
-  @Autowired
-  CategoryRepository categoryRepository;
+class CategoryTest extends IntegrationTest {
 
   @Nested
   @DisplayName("DB 동일성 테스트")
