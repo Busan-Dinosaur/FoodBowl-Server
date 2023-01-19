@@ -1,6 +1,5 @@
 package com.dinosaur.foodbowl.global.util.validator.follow;
 
-import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
