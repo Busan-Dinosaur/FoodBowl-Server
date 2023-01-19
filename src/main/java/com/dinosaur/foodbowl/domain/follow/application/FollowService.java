@@ -3,7 +3,6 @@ package com.dinosaur.foodbowl.domain.follow.application;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,6 @@ public class FollowService {
 
   @Transactional
   public void follow(User me, Long otherId) {
-    checkMe(me, otherId);
     User other = userFindDao.findById(otherId);
 
     if (me.isFollowing(other)) {
@@ -30,7 +28,6 @@ public class FollowService {
 
   @Transactional
   public void unfollow(User me, Long otherId) {
-    checkMe(me, otherId);
     User other = userFindDao.findById(otherId);
 
     if (!me.isFollowing(other)) {
@@ -40,9 +37,4 @@ public class FollowService {
     me.unfollow(other);
   }
 
-  private void checkMe(User me, Long userId) {
-    if (Objects.equals(me.getId(), userId)) {
-      throw new IllegalArgumentException();
-    }
-  }
 }
