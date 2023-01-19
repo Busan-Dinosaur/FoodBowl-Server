@@ -101,7 +101,7 @@ public class FollowControllerTest extends ControllerTest {
     @Test
     @DisplayName("토큰이 없을 경우 팔로우는 실패한다.")
     void shouldFailFollowWhenNoToken() throws Exception {
-      mockMvc.perform(delete("/follows/{userId}", otherId))
+      mockMvc.perform(post("/follows/{userId}", otherId))
           .andExpect(status().isUnauthorized());
     }
 
