@@ -2,7 +2,7 @@ package com.dinosaur.foodbowl.domain.follow.api;
 
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -12,29 +12,19 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.dinosaur.foodbowl.domain.follow.application.FollowService;
+import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.global.api.ControllerTest;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 
-@WebMvcTest(FollowController.class)
-public class FollowControllerTest extends ControllerTest {
-
-  @MockBean
-  AuthUtil authUtil;
-  @MockBean
-  FollowService followService;
+public class FollowControllerTest extends IntegrationTest {
 
   @Nested
   @DisplayName("팔로우 & 언팔로우")
@@ -46,11 +36,12 @@ public class FollowControllerTest extends ControllerTest {
 
     @BeforeEach
     void setup() {
-      User user = User.builder().build();
-      ReflectionTestUtils.setField(user, "id", myId);
-      when(authUtil.getUserByJWT()).thenReturn(user);
-      when(authUtil.getUserIdByJWT()).thenReturn(myId);
-
+      User me = User.builder().build();
+      User other = User.builder().build();
+      ReflectionTestUtils.setField(me, "id", myId);
+      doReturn(me).when(authUtil).getUserByJWT();
+      doReturn(myId).when(authUtil).getUserIdByJWT();
+      doReturn(other).when(userFindDao).findById(otherId);
     }
 
     @Test

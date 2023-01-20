@@ -7,6 +7,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
@@ -16,6 +17,7 @@ import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dao.RoleRepository;
+import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
 import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
@@ -67,6 +69,9 @@ public class IntegrationTest {
   @SpyBean
   protected CategoryRepository categoryRepository;
 
+  @SpyBean
+  protected UserFindDao userFindDao;
+
   /******* Service *******/
   @SpyBean
   protected GetProfileService getProfileService;
@@ -79,6 +84,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected UpdateProfileService updateProfileService;
+
+  @SpyBean
+  protected FollowService followService;
 
   /******* Helper *******/
   @SpyBean
