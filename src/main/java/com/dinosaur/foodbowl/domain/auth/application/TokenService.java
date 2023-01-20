@@ -19,4 +19,8 @@ public class TokenService {
     redisTemplate.opsForValue()
         .set(userId, token, REFRESH_TOKEN_VALID_MILLISECOND, TimeUnit.MILLISECONDS);
   }
+
+  public void deleteToken(long userId) {
+    redisTemplate.delete(userId);
+  }
 }

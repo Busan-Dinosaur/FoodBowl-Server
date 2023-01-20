@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -38,8 +39,10 @@ import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -361,6 +364,41 @@ class AuthControllerTest extends IntegrationTest {
       return mockMvc.perform(post("/log-in")
               .contentType(MediaType.APPLICATION_JSON_VALUE)
               .content(asJsonString(loginRequestDto)))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("로그아웃")
+  class Logout {
+
+    private long userId = 1L;
+    private String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+
+    @Test
+    @DisplayName("로그아웃을 성공한다.")
+    void success_logout() throws Exception {
+      doNothing().when(tokenService).deleteToken(anyLong());
+
+      callLogoutApi()
+          .andExpect(status().isOk())
+          .andDo(document("log-out",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token")
+              )));
+    }
+
+    @Test
+    @DisplayName("로그인을 하지 않은(토큰이 존재하지 않는) 유저는 로그아웃이 실패한다.")
+    void fail_logout_by_not_exist_token() throws Exception {
+      mockMvc.perform(post("/log-out"))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+
+    private ResultActions callLogoutApi() throws Exception {
+      return mockMvc.perform(post("/log-out")
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
           .andDo(print());
     }
   }

@@ -12,6 +12,7 @@ import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
+import com.dinosaur.foodbowl.global.util.resolver.LoginUserId;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -70,6 +71,13 @@ public class AuthController {
 
     setAccessToken(response, userId);
     setRefreshToken(response, userId);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/log-out")
+  public ResponseEntity<Void> logout(@LoginUserId Long userId) {
+    tokenService.deleteToken(userId);
 
     return ResponseEntity.ok().build();
   }
