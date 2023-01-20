@@ -2,9 +2,6 @@ package com.dinosaur.foodbowl.global.error;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +31,13 @@ public class ExceptionAdvice {
 
   @ExceptionHandler
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map validationExceptionHandler(ConstraintViolationException e) {
-    List<String> errors = e.getConstraintViolations()
+  public ResponseEntity<ErrorResponse> validationExceptionHandler(ConstraintViolationException e) {
+    String errorMessage = e.getConstraintViolations()
         .stream()
         .map(ConstraintViolation::getMessage)
-        .collect(Collectors.toList());
-    return Collections.singletonMap("errors", errors);
+        .collect(Collectors.joining(", "));
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ErrorResponse.from(errorMessage));
   }
 
   private static String getErrorMessage(BindException e) {

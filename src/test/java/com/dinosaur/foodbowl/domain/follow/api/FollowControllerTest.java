@@ -79,13 +79,16 @@ public class FollowControllerTest extends IntegrationTest {
     @Test
     @DisplayName("자신에 대한 팔로우 요청은 400 Bad Request 를 반환한다.")
     void shouldClientErrorWhenFollowOneself() throws Exception {
-      callFollowApi(myId).andExpect(status().isBadRequest());
+      callFollowApi(myId).andExpect(status().isBadRequest())
+          .andDo(print());
     }
 
     @Test
     @DisplayName("자신에 대한 팔로우 취소 요청은 400 Bad Request 를 반환한다.")
     void shouldClientErrorWhenUnfollowOneself() throws Exception {
-      callUnfollowApi(myId).andExpect(status().isBadRequest());
+      callUnfollowApi(myId).andExpect(status().isBadRequest())
+          .andDo(print());
+
     }
 
 
