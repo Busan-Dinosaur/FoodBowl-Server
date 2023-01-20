@@ -3,9 +3,12 @@ package com.dinosaur.foodbowl.domain.user.api;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_MILLISECOND;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
+import static com.dinosaur.foodbowl.global.error.ExceptionAdvice.getErrorMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -25,11 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
+import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
-import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -273,6 +277,22 @@ class UserControllerTest extends IntegrationTest {
           .andExpect(jsonPath("$.followingCount").value(followingCount))
           .andExpect(jsonPath("$.postCount").value(postCount))
           .andExpect(jsonPath("$.thumbnailURL").isEmpty())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 유저의 ID일 경우 404 NOT FOUND를 반환한다. ")
+    void should_fail_when_notExistUser() throws Exception {
+      String notExistUserId = "-1";
+      String field = "userId";
+      doThrow(new BusinessException(notExistUserId, field, USER_NOT_FOUND))
+          .when(getProfileService)
+          .getProfile(Long.parseLong(notExistUserId));
+      mockMvc.perform(get("/users/" + notExistUserId)
+              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(getErrorMessage(notExistUserId, field, USER_NOT_FOUND.getMessage())))
           .andDo(print());
     }
 

@@ -1,9 +1,6 @@
-package com.dinosaur.foodbowl.domain.user.exception;
+package com.dinosaur.foodbowl.global.error;
 
-import com.dinosaur.foodbowl.global.error.ErrorResponse;
 import java.util.stream.Collectors;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -11,8 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class UserExceptionAdvice {
+public class ExceptionAdvice {
 
   @ExceptionHandler(BindException.class)
   public ResponseEntity<ErrorResponse> bindException(BindException e) {
@@ -21,8 +17,8 @@ public class UserExceptionAdvice {
         .body(ErrorResponse.from(errorMessage));
   }
 
-  @ExceptionHandler(UserException.class)
-  public ResponseEntity<ErrorResponse> userException(UserException e) {
+  @ExceptionHandler(BusinessException.class)
+  public ResponseEntity<ErrorResponse> businessException(BusinessException e) {
     String errorMessage = getErrorMessage(e.getInvalidValue().toString(), e.getFieldName(),
         e.getMessage());
     return ResponseEntity.status(e.getHttpStatus())

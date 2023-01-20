@@ -1,14 +1,14 @@
 package com.dinosaur.foodbowl.domain.auth.application;
 
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.exception.UserException;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +37,13 @@ public class AuthService {
 
   private void checkDuplicateLoginId(String loginId) {
     if (userRepository.existsByLoginId(loginId)) {
-      throw new UserException(loginId, "loginId", LOGIN_ID_DUPLICATE);
+      throw new BusinessException(loginId, "loginId", LOGIN_ID_DUPLICATE);
     }
   }
 
   private void checkDuplicateNickname(String nickname) {
     if (userRepository.existsByNickname(nickname)) {
-      throw new UserException(nickname, "nickname", NICKNAME_DUPLICATE);
+      throw new BusinessException(nickname, "nickname", NICKNAME_DUPLICATE);
     }
   }
 }
