@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-  public static final long ACCESS_TOKEN_VALID_MILLISECOND = 30 * 60 * 1000L;
+  public static final long ACCESS_TOKEN_VALID_MILLISECOND = 15 * 60 * 1000L;
   public static final long REFRESH_TOKEN_VALID_MILLISECOND = 14 * 24 * 60 * 60 * 1000L;
   public static final String ACCESS_TOKEN = "accessToken";
   public static final String REFRESH_TOKEN = "refreshToken";
@@ -134,5 +134,11 @@ public class JwtTokenProvider {
       throw new EmptyJwtException();
     }
     return accessToken.get().getValue();
+  }
+
+  public Long extractUserId(HttpServletRequest req) {
+    String accessToken = resolveToken(req);
+    Claims claim = getClaim(accessToken);
+    return Long.parseLong(claim.getSubject());
   }
 }
