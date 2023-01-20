@@ -5,9 +5,11 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.REFRESH_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EMPTY;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.TOKEN_INVALID;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -40,6 +42,7 @@ import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.global.config.security.dto.TokenValidationDto;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
 import jakarta.servlet.http.Cookie;
@@ -50,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -399,6 +403,76 @@ class AuthControllerTest extends IntegrationTest {
     private ResultActions callLogoutApi() throws Exception {
       return mockMvc.perform(post("/log-out")
               .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("토큰 재발급")
+  class Refresh {
+
+    private long userId = 1L;
+    private String accessToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+    private String refreshToken = jwtTokenProvider.createRefreshToken();
+
+    @Test
+    @DisplayName("토큰 재발급에 성공한다.")
+    void success() throws Exception {
+      doNothing().when(tokenService).validate(anyLong(), any(TokenValidationDto.class));
+
+      callRefresh()
+          .andExpect(status().isNoContent())
+          .andDo(document("refresh",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token"),
+                  cookieWithName(REFRESH_TOKEN).description("인증 토큰 갱신에 필요한 refresh token")
+              ),
+              responseCookies(
+                  cookieWithName(ACCESS_TOKEN).description("재발급된 access token"),
+                  cookieWithName(REFRESH_TOKEN).description("재발급된 refresh token")
+              )));
+    }
+
+    @Test
+    @DisplayName("accessToken이 존재하지 않는 경우 토큰 재발급에 실패한다.")
+    void fail_by_not_exist_accessToken() throws Exception {
+      mockMvc.perform(post("/refresh")
+              .cookie(new Cookie(REFRESH_TOKEN, refreshToken)))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("refreshToken이 존재하지 않는 경우 토큰 재발급에 실패한다.")
+    void fail_by_invalid_refreshToken() throws Exception {
+      doThrow(new BusinessException(refreshToken, "token", HttpStatus.BAD_REQUEST,
+          EMPTY.getMsg())).when(tokenService).validate(anyLong(), any(TokenValidationDto.class));
+
+      mockMvc.perform(post("/refresh")
+              .cookie(new Cookie(ACCESS_TOKEN, accessToken)))
+          .andDo(print())
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message").value(
+              ExceptionAdvice.getErrorMessage(refreshToken, "token", EMPTY.getMsg())));
+    }
+
+    @Test
+    @DisplayName("토큰이 일치하지 않는 경우 토큰 재발급에 실패한다.")
+    void fail_by_not_match_refreshToken() throws Exception {
+      doThrow(new BusinessException(refreshToken, "token", TOKEN_INVALID)).when(tokenService)
+          .validate(anyLong(), any(TokenValidationDto.class));
+
+      mockMvc.perform(post("/refresh")
+              .cookie(new Cookie(ACCESS_TOKEN, accessToken), new Cookie(REFRESH_TOKEN, refreshToken)))
+          .andDo(print())
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message").value(
+              ExceptionAdvice.getErrorMessage(refreshToken, "token", TOKEN_INVALID.getMessage())));
+    }
+
+    private ResultActions callRefresh() throws Exception {
+      return mockMvc.perform(post("/refresh")
+              .cookie(new Cookie(ACCESS_TOKEN, accessToken), new Cookie(REFRESH_TOKEN, refreshToken)))
           .andDo(print());
     }
   }
