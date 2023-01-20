@@ -1,19 +1,15 @@
 package com.dinosaur.foodbowl.domain.user.dao;
 
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_PASSWORD_LENGTH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,80 +17,85 @@ import org.junit.jupiter.api.Test;
 
 class UserRepositoryTest extends IntegrationTest {
 
+  private UserBuilder userBuilder;
   private User user;
 
   @BeforeEach
-  void setUpUser() {
-    user = userTestHelper.generateUser();
-  }
-
-  private static String getRandomUUIDLengthWith(int length) {
-    String randomString = UUID.randomUUID()
-        .toString();
-    length = Math.min(length, randomString.length());
-    return randomString.substring(0, length);
+  void setUp() {
+    userBuilder = userTestHelper.builder();
+    user = userBuilder.build();
   }
 
   @Nested
+  @DisplayName("유니크 컬럼 테스트")
   class UniqueColumnTest {
 
     @Test
+    @DisplayName("유니크 컬럼에 중복이 발생하면 예외가 발생한다.")
     void should_throwException_when_uniqueColumnIsDuplicate() {
-      assertThatThrownBy(this::generateLoginIdDuplicateUser);
-      assertThatThrownBy(this::generateNicknameDuplicateUser);
-    }
-
-    private void generateLoginIdDuplicateUser() {
-      User duplicateUser = User.builder()
-          .loginId(user.getLoginId())
-          .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-          .build();
-      userRepository.save(duplicateUser);
-    }
-
-    private void generateNicknameDuplicateUser() {
-      User duplicateUser = User.builder()
-          .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .nickname(user.getNickname())
-          .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-          .build();
-      userRepository.save(duplicateUser);
+      assertThatThrownBy(() -> userBuilder.loginId(user.getLoginId()).build());
+      assertThatThrownBy(() -> userBuilder.nickname(user.getNickname()).build());
     }
 
     @Test
+    @DisplayName("유니크 하지 않은 컬럼에 중복이 발생하면 예외가 발생하지 않는다.")
     void should_createSuccessfully_when_nonUniqueColumnIsDuplicate() {
-      assertThatNoException().isThrownBy(this::generatePasswordDuplicateUser);
-      assertThatNoException().isThrownBy(this::generateIntroduceDuplicateUser);
-    }
-
-    private void generatePasswordDuplicateUser() {
-      User duplicateUser = User.builder()
-          .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .password(user.getPassword())
-          .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-          .build();
-      userRepository.save(duplicateUser);
-    }
-
-    private void generateIntroduceDuplicateUser() {
-      User duplicateUser = User.builder()
-          .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .introduce(user.getIntroduce())
-          .build();
-      userRepository.save(duplicateUser);
+      assertThatNoException().isThrownBy(() -> userBuilder.password(user.getPassword()).build());
+      assertThatNoException().isThrownBy(() -> userBuilder.introduce(user.getIntroduce()).build());
     }
   }
 
   @Nested
+  @DisplayName("존재하는 컬럼 테스트")
+  class ExistColumnTest {
+
+    @Test
+    @DisplayName("아이디가 존재하면 true를 반환한다.")
+    void loginIdExist() {
+      String loginId = user.getLoginId();
+
+      boolean result = userRepository.existsByLoginId(loginId);
+
+      assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("아이다가 존재하지 않으면 false를 반환한다.")
+    void loginIdNotExist() {
+      String loginId = "not-exist-loginId";
+
+      boolean result = userRepository.existsByLoginId(loginId);
+
+      assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("닉네임이 존재하면 true를 반환한다.")
+    void nicknameExist() {
+      String nickname = user.getNickname();
+
+      boolean result = userRepository.existsByNickname(nickname);
+
+      assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("닉네임이 존재하지 않으면 false를 반환한다.")
+    void nicknameNotExist() {
+      String nickname = "not-exist-nickname";
+
+      boolean result = userRepository.existsByNickname(nickname);
+
+      assertThat(result).isFalse();
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 권한 테스트")
   class UserRoleTest {
 
     @Test
+    @DisplayName("회원을 저장할 때 권한을 올바르게 가지고 있는다.")
     void should_assignUserRoleCorrectly_when_saveUser() {
       em.flush();
       em.clear();
@@ -105,6 +106,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("회원은 중복되는 권한을 가지지 않는다.")
     void should_nothingHappens_when_duplicateRoles() {
       em.flush();
       em.clear();
@@ -119,11 +121,14 @@ class UserRepositoryTest extends IntegrationTest {
   }
 
   @Nested
+  @DisplayName("회원 삭제 테스트")
   class UserDeleteTest {
 
     @Test
+    @DisplayName("회원 본인이 삭제 요청을 하면 회원과 관련된 모든 정보가 삭제된다.")
     void should_deleteAllUserInfo_when_deleteMySelf() {
-      User userWithThumbnail = userTestHelper.generateUser();
+      User userWithThumbnail = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail())
+          .build();
 
       whenDeleteUser(userWithThumbnail);
 
@@ -151,7 +156,7 @@ class UserRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("썸네일이 null일 경우 썸네일은 바뀌어선 안된다.")
     void should_notChangeThumbnail_when_nullThumbnail() {
-      User beforeUser = userTestHelper.generateUser();
+      User beforeUser = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       String newIntroduce = "newIntroduce";
 
       whenUpdateUser(beforeUser, null, newIntroduce);
@@ -163,7 +168,7 @@ class UserRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("소개가 null일 경우 소개는 바뀌어선 안된다.")
     void should_notChangeThumbnail_when_nullIntroduce() {
-      User beforeUser = userTestHelper.generateUser();
+      User beforeUser = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       Thumbnail newThumbnail = thumbnailTestHelper.generateThumbnail();
 
       whenUpdateUser(beforeUser, newThumbnail, null);
@@ -175,7 +180,7 @@ class UserRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("썸네일과 소개가 null일 경우 둘 다 바뀌어선 안된다.")
     void should_notChangeThumbnail_when_nullEverything() {
-      User beforeUser = userTestHelper.generateUser();
+      User beforeUser = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
       whenUpdateUser(beforeUser, null, null);
 
@@ -220,9 +225,9 @@ class UserRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("팔로우를 여러번 해도 같은 사람이면 한 번만 들어가야한다.")
     void should_once_when_duplicateFollow() {
-      User me = userTestHelper.generateUser();
-      User other1 = userTestHelper.generateUser();
-      User other2 = userTestHelper.generateUser();
+      User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+      User other1 = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+      User other2 = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
       me.follow(other1);
       me.follow(other2);

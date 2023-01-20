@@ -6,6 +6,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.dinosaur.foodbowl.domain.auth.application.AuthService;
+import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
@@ -14,11 +16,10 @@ import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
-import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dao.RoleRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
-import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
+import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
@@ -72,7 +73,10 @@ public class IntegrationTest {
   protected GetProfileService getProfileService;
 
   @SpyBean
-  protected SignUpService signUpService;
+  protected AuthService authService;
+
+  @SpyBean
+  protected TokenService tokenService;
 
   @SpyBean
   protected DeleteAccountService deleteAccountService;
@@ -81,13 +85,13 @@ public class IntegrationTest {
   protected UpdateProfileService updateProfileService;
 
   /******* Helper *******/
-  @SpyBean
+  @Autowired
   protected UserTestHelper userTestHelper;
 
-  @SpyBean
+  @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
 
-  @SpyBean
+  @Autowired
   protected PostTestHelper postTestHelper;
 
   /******* Util *******/
