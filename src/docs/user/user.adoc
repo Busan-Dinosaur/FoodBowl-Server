@@ -63,6 +63,68 @@ include::{snippets}/user-delete/request-cookies.adoc[]
 
 include::{snippets}/user-delete/http-response.adoc[]
 
+== *로그인*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/log-in/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/log-in/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/log-in/http-response.adoc[]
+
+==== Response Cookies
+
+include::{snippets}/log-in/response-cookies.adoc[]
+
+== *로그아웃*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/log-out/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/log-out/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/log-out/http-response.adoc[]
+
+== *토큰 재발급*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/refresh/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/refresh/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/refresh/http-response.adoc[]
+
+==== Response Cookies
+
+include::{snippets}/refresh/response-cookies.adoc[]
+
 == *프로필 수정*
 
 NOTE: 회원가입이나 로그인을 통해 COOKIE를 설정하셔야 합니다.
