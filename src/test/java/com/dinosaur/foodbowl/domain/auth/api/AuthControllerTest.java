@@ -3,10 +3,10 @@ package com.dinosaur.foodbowl.domain.auth.api;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.LOGIN_ID_DUPLICATE;
-import static com.dinosaur.foodbowl.domain.user.exception.UserErrorCode.NICKNAME_DUPLICATE;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.REFRESH_TOKEN;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,8 +33,8 @@ import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.exception.UserException;
-import com.dinosaur.foodbowl.domain.user.exception.UserExceptionAdvice;
+import com.dinosaur.foodbowl.global.error.BusinessException;
+import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -212,7 +212,7 @@ class AuthControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(invalidLoginId, "loginId",
+                .value(ExceptionAdvice.getErrorMessage(invalidLoginId, "loginId",
                     AuthFieldError.LOGIN_ID_INVALID.getMessage())));
       }
 
@@ -226,7 +226,7 @@ class AuthControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(invalidPassword, "password",
+                .value(ExceptionAdvice.getErrorMessage(invalidPassword, "password",
                     AuthFieldError.PASSWORD_INVALID.getMessage())));
       }
 
@@ -240,31 +240,31 @@ class AuthControllerTest extends IntegrationTest {
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
+                .value(ExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
                     AuthFieldError.NICKNAME_INVALID.getMessage())));
       }
 
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateLoginId() throws Exception {
-        doThrow(new UserException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
+        doThrow(new BusinessException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
             .when(authService).signUp(any());
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(validLoginId, "loginId",
+                .value(ExceptionAdvice.getErrorMessage(validLoginId, "loginId",
                     LOGIN_ID_DUPLICATE.getMessage())));
       }
 
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
       void should_returnBadRequest_when_duplicateNickname() throws Exception {
-        doThrow(new UserException(validNickname, "nickname", NICKNAME_DUPLICATE))
+        doThrow(new BusinessException(validNickname, "nickname", NICKNAME_DUPLICATE))
             .when(authService).signUp(any());
         callSignUpApi(thumbnail)
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message")
-                .value(UserExceptionAdvice.getErrorMessage(validNickname, "nickname",
+                .value(ExceptionAdvice.getErrorMessage(validNickname, "nickname",
                     NICKNAME_DUPLICATE.getMessage())));
       }
 

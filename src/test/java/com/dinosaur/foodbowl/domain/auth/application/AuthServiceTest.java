@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
+import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.exception.UserException;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +57,7 @@ class AuthServiceTest extends IntegrationTest {
           .build();
 
       assertThatThrownBy(() -> authService.signUp(request))
-          .isInstanceOf(UserException.class);
+          .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -69,7 +69,7 @@ class AuthServiceTest extends IntegrationTest {
           .build();
 
       assertThatThrownBy(() -> authService.signUp(request))
-          .isInstanceOf(UserException.class);
+          .isInstanceOf(BusinessException.class);
     }
   }
 }
