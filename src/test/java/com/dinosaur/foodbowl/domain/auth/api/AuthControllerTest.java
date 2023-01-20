@@ -7,6 +7,8 @@ import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -17,18 +19,21 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.auth.dto.AuthFieldError;
+import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
@@ -275,6 +280,88 @@ class AuthControllerTest extends IntegrationTest {
         callSignUpApi(thumbnailTestHelper.getFakeImageFile())
             .andExpect(status().isBadRequest());
       }
+    }
+  }
+
+  @Nested
+  @DisplayName("로그인")
+  class Login {
+
+    private long userId = 1L;
+    private String loginId = "helloWorld";
+    private String password = "helloFood12";
+    private String encodePassword = passwordEncoder.encode(password);
+    private User user = User.builder()
+        .loginId(loginId)
+        .password(encodePassword)
+        .build();
+
+    @Test
+    @DisplayName("로그인을 성공한다.")
+    void success_login() throws Exception {
+      LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+          .loginId(loginId)
+          .password(password)
+          .build();
+
+      doReturn(user).when(userFindDao).findByLoginId(anyString());
+      doReturn(userId).when(authService).login(any(LoginRequestDto.class));
+      doNothing().when(tokenService).saveToken(anyLong(), anyString());
+
+      callLoginApi(loginRequestDto)
+          .andExpect(status().isOk())
+          .andDo(document("log-in",
+              requestFields(
+                  fieldWithPath("loginId").description("로그인 아이디"),
+                  fieldWithPath("password").description("비밀번호")
+              ),
+              responseCookies(
+                  cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token"),
+                  cookieWithName(REFRESH_TOKEN).description("인증 토큰 갱신에 필요한 refresh token")
+              )));
+    }
+
+    @Test
+    @DisplayName("로그인 아이디가 존재하지 않으면 로그인은 실패한다.")
+    void fail_login_by_not_exist_loginId() throws Exception {
+      LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+          .loginId("helloWorld2")
+          .password(password)
+          .build();
+
+      doThrow(new BusinessException(userId, "userId", USER_NOT_FOUND)).when(userFindDao)
+          .findByLoginId(anyString());
+
+      callLoginApi(loginRequestDto)
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message").value(
+              ExceptionAdvice.getErrorMessage(String.valueOf(userId), "userId",
+                  USER_NOT_FOUND.getMessage())));
+    }
+
+    @Test
+    @DisplayName("비밀번호가 일치하지 않으면 로그인은 실패한다.")
+    void fail_login_by_not_match_password() throws Exception {
+      String wrongPassword = password + "3";
+      LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+          .loginId(loginId)
+          .password(wrongPassword)
+          .build();
+
+      doReturn(user).when(userFindDao).findByLoginId(anyString());
+
+      callLoginApi(loginRequestDto)
+          .andExpect(status().isUnauthorized())
+          .andExpect(jsonPath("$.message").value(
+              ExceptionAdvice.getErrorMessage(wrongPassword, "password",
+                  PASSWORD_NOT_MATCH.getMessage())));
+    }
+
+    private ResultActions callLoginApi(LoginRequestDto loginRequestDto) throws Exception {
+      return mockMvc.perform(post("/log-in")
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+              .content(asJsonString(loginRequestDto)))
+          .andDo(print());
     }
   }
 }

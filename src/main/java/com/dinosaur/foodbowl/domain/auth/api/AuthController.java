@@ -62,4 +62,15 @@ public class AuthController {
     cookie.setMaxAge((int) expire / 1000);
     return cookie;
   }
+
+  @PostMapping("/log-in")
+  public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
+      HttpServletResponse response) {
+    long userId = authService.login(loginRequestDto);
+
+    setAccessToken(response, userId);
+    setRefreshToken(response, userId);
+
+    return ResponseEntity.ok().build();
+  }
 }
