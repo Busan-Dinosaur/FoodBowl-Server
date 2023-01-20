@@ -1,6 +1,5 @@
 package com.dinosaur.foodbowl.domain.user;
 
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_PASSWORD_LENGTH;
@@ -22,29 +21,61 @@ public class UserTestHelper {
   @Autowired
   ThumbnailTestHelper thumbnailTestHelper;
 
-  public User generateUser() {
-    return generateUser(thumbnailTestHelper.generateThumbnail());
+  public UserBuilder builder() {
+    return new UserBuilder();
   }
 
-  public User generateUserWithoutThumbnail() {
-    return generateUser(null);
-  }
-
-  private User generateUser(Thumbnail thumbnail) {
-    User userWithThumbnail = User.builder()
-        .loginId(getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-        .nickname(getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-        .password(getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-        .introduce(getRandomUUIDLengthWith(MAX_INTRODUCE_LENGTH))
-        .thumbnail(thumbnail)
-        .build();
-    return userRepository.save(userWithThumbnail);
-  }
-
-  private static String getRandomUUIDLengthWith(int length) {
+  private String getRandomUUIDLengthWith(int length) {
     String randomString = UUID.randomUUID()
         .toString();
     length = Math.min(length, randomString.length());
     return randomString.substring(0, length);
+  }
+
+  public final class UserBuilder {
+
+    private Thumbnail thumbnail;
+    private String loginId;
+    private String password;
+    private String nickname;
+    private String introduce;
+
+    private UserBuilder() {
+    }
+
+    public UserBuilder thumbnail(Thumbnail thumbnail) {
+      this.thumbnail = thumbnail;
+      return this;
+    }
+
+    public UserBuilder loginId(String loginId) {
+      this.loginId = loginId;
+      return this;
+    }
+
+    public UserBuilder password(String password) {
+      this.password = password;
+      return this;
+    }
+
+    public UserBuilder nickname(String nickname) {
+      this.nickname = nickname;
+      return this;
+    }
+
+    public UserBuilder introduce(String introduce) {
+      this.introduce = introduce;
+      return this;
+    }
+
+    public User build() {
+      return userRepository.save(User.builder()
+          .thumbnail(thumbnail)
+          .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
+          .password(password != null ? password : getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
+          .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
+          .introduce(introduce)
+          .build());
+    }
   }
 }
