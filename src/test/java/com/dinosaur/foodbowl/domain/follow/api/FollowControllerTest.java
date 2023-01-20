@@ -1,12 +1,13 @@
 package com.dinosaur.foodbowl.domain.follow.api;
 
-import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
-import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_MILLISECOND;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,7 +54,7 @@ public class FollowControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("팔로우할 유저의 아이디")
@@ -69,7 +70,7 @@ public class FollowControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("팔로우를 취소할 유저의 아이디")
