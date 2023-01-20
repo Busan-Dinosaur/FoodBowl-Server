@@ -50,14 +50,4 @@ public class FollowController {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
-  // TODO : Exception 한 곳으로 모으기
-  @ExceptionHandler
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map validationExceptionHandler(ConstraintViolationException e) {
-    List<String> errors = e.getConstraintViolations()
-        .stream()
-        .map(ConstraintViolation::getMessage)
-        .collect(Collectors.toList());
-    return Collections.singletonMap("errors", errors);
-  }
 }
