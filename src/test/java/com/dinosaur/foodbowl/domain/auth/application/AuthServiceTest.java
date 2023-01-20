@@ -1,28 +1,22 @@
 package com.dinosaur.foodbowl.domain.auth.application;
 
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
+import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
-import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class AuthServiceTest extends IntegrationTest {
-
-  private UserBuilder userBuilder;
-
-  @BeforeEach()
-  void setUp() {
-    userBuilder = userTestHelper.builder();
-  }
 
   @Nested
   @DisplayName("회원가입 테스트")
@@ -51,7 +45,7 @@ class AuthServiceTest extends IntegrationTest {
     @Test
     @DisplayName("중복되는 아이디가 존재하면 예외가 발생한다.")
     void throw_exception_exist_loginId() {
-      User existUser = userBuilder.loginId("TestLoginId").build();
+      User existUser = userTestHelper.builder().loginId("TestLoginId").build();
       SignUpRequestDto request = SignUpRequestDto.builder()
           .loginId(existUser.getLoginId())
           .build();
@@ -63,13 +57,70 @@ class AuthServiceTest extends IntegrationTest {
     @Test
     @DisplayName("중복되는 닉네임이 존재하면 예외가 발생한다.")
     void throw_exception_exist_nickname() {
-      User existUser = userBuilder.loginId("TestNickname").build();
+      User existUser = userTestHelper.builder().loginId("TestNickname").build();
       SignUpRequestDto request = SignUpRequestDto.builder()
           .nickname(existUser.getNickname())
           .build();
 
       assertThatThrownBy(() -> authService.signUp(request))
           .isInstanceOf(BusinessException.class);
+    }
+  }
+
+  @Nested
+  @DisplayName("로그인 테스트")
+  class Login {
+
+    @Test
+    @DisplayName("로그인을 성공적으로 수행한다.")
+    void success_login() {
+      String loginId = "testLoginId";
+      String password = "testPassword";
+      String encodePassword = passwordEncoder.encode(password);
+      User user = userTestHelper.builder().loginId(loginId).password(encodePassword).build();
+
+      LoginRequestDto request = LoginRequestDto.builder()
+          .loginId(loginId)
+          .password(password)
+          .build();
+
+      long userId = authService.login(request);
+
+      assertThat(user.getId()).isEqualTo(userId);
+    }
+
+    @Test
+    @DisplayName("로그인 아이디 유저가 존재하지 않으면 예외가 발생한다.")
+    void throw_exception_not_exist_loginId() {
+      String loginId = "testLoginId";
+      String password = "testPassword";
+
+      LoginRequestDto request = LoginRequestDto.builder()
+          .loginId(loginId)
+          .password(password)
+          .build();
+
+      assertThatThrownBy(() -> authService.login(request))
+          .isInstanceOf(BusinessException.class)
+          .hasMessageContaining(USER_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다.")
+    void throw_exception_not_match_password() {
+      String loginId = "testLoginId";
+      String password = "testPassword";
+      String encodePassword = passwordEncoder.encode(password);
+      userTestHelper.builder().loginId(loginId).password(encodePassword).build();
+
+      LoginRequestDto request = LoginRequestDto.builder()
+          .loginId(loginId)
+          .password("wrongPassword")
+          .build();
+
+      assertThatThrownBy(() -> authService.login(request))
+          .isInstanceOf(BusinessException.class)
+          .hasMessageContaining(PASSWORD_NOT_MATCH.getMessage());
     }
   }
 }

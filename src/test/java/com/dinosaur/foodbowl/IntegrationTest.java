@@ -17,12 +17,14 @@ import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.dao.RoleRepository;
+import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
 import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
 import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.io.File;
@@ -38,6 +40,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,10 @@ public class IntegrationTest {
 
   @SpyBean
   protected CategoryRepository categoryRepository;
+
+  /******* Dao *******/
+  @SpyBean
+  protected UserFindDao userFindDao;
 
   /******* Service *******/
   @SpyBean
@@ -108,6 +115,9 @@ public class IntegrationTest {
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
 
+  @Autowired
+  protected PasswordEncoder passwordEncoder;
+
   @PersistenceContext
   protected EntityManager em;
 
@@ -139,5 +149,15 @@ public class IntegrationTest {
     return new ClassPathResource("static").getPath() + separator +
         "thumbnail" + separator +
         LocalDate.now();
+  }
+
+  protected String asJsonString(final Object obj) {
+    try {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final String content = objectMapper.writeValueAsString(obj);
+      return content;
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
   }
 }

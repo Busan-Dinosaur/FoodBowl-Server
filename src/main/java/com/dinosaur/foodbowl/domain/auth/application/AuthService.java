@@ -2,11 +2,14 @@ package com.dinosaur.foodbowl.domain.auth.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
 
-import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
+import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
+import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
+import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AuthService {
 
+  private final UserFindDao userFindDao;
   private final UserRepository userRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final PasswordEncoder passwordEncoder;
@@ -45,5 +49,15 @@ public class AuthService {
     if (userRepository.existsByNickname(nickname)) {
       throw new BusinessException(nickname, "nickname", NICKNAME_DUPLICATE);
     }
+  }
+
+  public long login(LoginRequestDto loginRequestDto) {
+    User user = userFindDao.findByLoginId(loginRequestDto.getLoginId());
+
+    if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+      throw new BusinessException(loginRequestDto.getPassword(), "password", PASSWORD_NOT_MATCH);
+    }
+
+    return user.getId();
   }
 }
