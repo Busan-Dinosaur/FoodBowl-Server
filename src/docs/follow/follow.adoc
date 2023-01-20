@@ -1,0 +1,58 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= FOLLOW API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../foodbowl.html[API 목록으로 돌아가기]
+
+== *팔로우*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/follow/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/follow/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/follow/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/follow/http-response.adoc[]
+
+== *팔로우 취소*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/unfollow/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/unfollow/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/unfollow/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/unfollow/http-response.adoc[]
