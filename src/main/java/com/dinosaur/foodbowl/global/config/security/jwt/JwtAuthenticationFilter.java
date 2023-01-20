@@ -1,5 +1,7 @@
 package com.dinosaur.foodbowl.global.config.security.jwt;
 
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.*;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -21,7 +23,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
-    var tokenValidationDto = jwtTokenProvider.tryCheckTokenValid((HttpServletRequest) request);
+    var tokenValidationDto = jwtTokenProvider.tryCheckTokenValid((HttpServletRequest) request,
+        ACCESS_TOKEN);
 
     if (tokenValidationDto.isValid()) {
       Authentication auth = jwtTokenProvider.getAuthentication(tokenValidationDto.getToken());

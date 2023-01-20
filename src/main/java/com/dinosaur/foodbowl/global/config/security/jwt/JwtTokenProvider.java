@@ -87,7 +87,7 @@ public class JwtTokenProvider {
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
-  private static List<String> getRolesBy(Claims claims) {
+  private List<String> getRolesBy(Claims claims) {
     String[] roles = claims.get("roles")
         .toString()
         .split(",");
@@ -100,9 +100,9 @@ public class JwtTokenProvider {
         .getBody();
   }
 
-  public TokenValidationDto tryCheckTokenValid(HttpServletRequest req) {
+  public TokenValidationDto tryCheckTokenValid(HttpServletRequest req, String tokenName) {
     try {
-      String token = resolveToken(req);
+      String token = extractToken(req, tokenName);
       Long.parseLong(Jwts.parser()
           .setSigningKey(secretKey)
           .parseClaimsJws(token)
@@ -126,9 +126,9 @@ public class JwtTokenProvider {
     }
   }
 
-  public String resolveToken(HttpServletRequest req) {
+  public String extractToken(HttpServletRequest req, String tokenName) {
     Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
-        .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN))
+        .filter(cookie -> cookie.getName().equals(tokenName))
         .findFirst();
     if (accessToken.isEmpty()) {
       throw new EmptyJwtException();
@@ -137,7 +137,7 @@ public class JwtTokenProvider {
   }
 
   public Long extractUserId(HttpServletRequest req) {
-    String accessToken = resolveToken(req);
+    String accessToken = extractToken(req, ACCESS_TOKEN);
     Claims claim = getClaim(accessToken);
     return Long.parseLong(claim.getSubject());
   }
