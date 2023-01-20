@@ -79,6 +79,6 @@ public class AuthController {
   public ResponseEntity<Void> logout(@LoginUserId Long userId) {
     tokenService.deleteToken(userId);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 }

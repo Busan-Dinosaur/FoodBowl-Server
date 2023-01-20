@@ -381,7 +381,7 @@ class AuthControllerTest extends IntegrationTest {
       doNothing().when(tokenService).deleteToken(anyLong());
 
       callLogoutApi()
-          .andExpect(status().isOk())
+          .andExpect(status().isNoContent())
           .andDo(document("log-out",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token")
