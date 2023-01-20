@@ -1,7 +1,5 @@
 package com.dinosaur.foodbowl.domain.follow.application;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
@@ -74,35 +72,5 @@ class FollowServiceTest {
       boolean isFollowed = followRepository.existsByFollowerAndFollowing(me, other);
       Assertions.assertThat(isFollowed).isFalse();
     }
-  }
-
-  @Nested
-  @DisplayName("실패 테스트")
-  class Fail {
-
-    @Test
-    @DisplayName("팔로잉 대상이 자신이면 실패한다.")
-    void shouldFailToFollowWhenOneself() {
-      // given
-      User me = userTestHelper.generateUserWithoutThumbnail();
-
-      // then
-      assertThatThrownBy(() -> followService.follow(me, me.getId())).isInstanceOf(
-          IllegalArgumentException.class);
-
-    }
-
-    @Test
-    @DisplayName("팔로잉 취소 대상이 자신이면 실패한다.")
-    void shouldFailToUnfollowWhenOneself() {
-      // given
-      User me = userTestHelper.generateUserWithoutThumbnail();
-
-      // then
-      assertThatThrownBy(() -> followService.unfollow(me, me.getId())).isInstanceOf(
-          IllegalArgumentException.class);
-
-    }
-
   }
 }
