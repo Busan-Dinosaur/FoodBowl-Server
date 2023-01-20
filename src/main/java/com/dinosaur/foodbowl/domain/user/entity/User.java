@@ -120,13 +120,18 @@ public class User extends BaseEntity {
 
   public void follow(User other) {
     followingList.add(Follow.builder()
-        .following(other)
         .follower(this)
+        .following(other)
         .build());
   }
 
   public void unfollow(User other) {
-    followingList.removeIf(follow -> follow.isFollowing(other));
+    followingList.removeIf(follow -> follow.getFollowing().equals(other));
+  }
+
+  public boolean isFollowing(User other) {
+    return followingList.stream()
+        .anyMatch(follow -> follow.getFollowing().equals(other));
   }
 
   public long getPostCount() {

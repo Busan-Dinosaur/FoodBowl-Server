@@ -9,6 +9,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
@@ -91,6 +92,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected UpdateProfileService updateProfileService;
+
+  @SpyBean
+  protected FollowService followService;
 
   /******* Helper *******/
   @Autowired
