@@ -1,7 +1,6 @@
 package com.dinosaur.foodbowl.domain.follow.api;
 
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_MILLISECOND;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -54,7 +53,7 @@ public class FollowControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("팔로우할 유저의 아이디")
@@ -70,7 +69,7 @@ public class FollowControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("팔로우를 취소할 유저의 아이디")

@@ -2,7 +2,6 @@ package com.dinosaur.foodbowl.domain.user.api;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_MILLISECOND;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static com.dinosaur.foodbowl.global.error.ExceptionAdvice.getErrorMessage;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +75,7 @@ class UserControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               )));
     }
 
@@ -127,7 +126,7 @@ class UserControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               ),
               queryParameters(
                   parameterWithName("introduce")
@@ -246,7 +245,7 @@ class UserControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("유저의 아이디")
