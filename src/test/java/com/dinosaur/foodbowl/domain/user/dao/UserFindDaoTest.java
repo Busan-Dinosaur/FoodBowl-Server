@@ -18,7 +18,7 @@ class UserFindDaoTest extends IntegrationTest {
 
     @Test
     @DisplayName("해당 로그인 아이디를 가진 유저가 존재하면 유저를 반환한다.")
-    void return_has_loginId_user() {
+    void should_returnUser_when_loginIdExist() {
       String loginId = "testLoginId";
       User user = userTestHelper.builder().loginId(loginId).build();
 
@@ -29,7 +29,7 @@ class UserFindDaoTest extends IntegrationTest {
 
     @Test
     @DisplayName("해당 로그인 아이디를 가진 유저가 존재하지 않으면 예외가 발생한다.")
-    void return_loginId_exception() {
+    void should_throwException_when_loginIdNotExist() {
       String loginId = "testLoginId";
 
       assertThatThrownBy(() -> userFindDao.findByLoginId(loginId))

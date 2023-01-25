@@ -47,11 +47,11 @@ class UserRepositoryTest extends IntegrationTest {
 
   @Nested
   @DisplayName("존재하는 컬럼 테스트")
-  class ExistColumnTest {
+  class ExistTest {
 
     @Test
-    @DisplayName("아이디가 존재하면 true를 반환한다.")
-    void loginIdExist() {
+    @DisplayName("로그인 아이디가 존재하면 true 반환한다.")
+    void should_returnTrue_when_loginIdExist() {
       String loginId = user.getLoginId();
 
       boolean result = userRepository.existsByLoginId(loginId);
@@ -60,8 +60,8 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("아이다가 존재하지 않으면 false를 반환한다.")
-    void loginIdNotExist() {
+    @DisplayName("로그인 아이디가 존재하지 않으면 false 반환한다.")
+    void should_returnFalse_when_loginIdNotExist() {
       String loginId = "not-exist-loginId";
 
       boolean result = userRepository.existsByLoginId(loginId);
@@ -70,8 +70,8 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("닉네임이 존재하면 true를 반환한다.")
-    void nicknameExist() {
+    @DisplayName("닉네임이 존재하면 true 반환한다.")
+    void should_returnTrue_when_nicknameExist() {
       String nickname = user.getNickname();
 
       boolean result = userRepository.existsByNickname(nickname);
@@ -80,8 +80,8 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("닉네임이 존재하지 않으면 false를 반환한다.")
-    void nicknameNotExist() {
+    @DisplayName("닉네임이 존재하지 않으면 false 반환한다.")
+    void should_returnFalse_when_nicknameNotExist() {
       String nickname = "not-exist-nickname";
 
       boolean result = userRepository.existsByNickname(nickname);

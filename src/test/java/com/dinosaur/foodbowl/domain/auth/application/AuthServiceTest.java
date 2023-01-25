@@ -24,7 +24,7 @@ class AuthServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("회원가입을 정상적으로 수행한다.")
-    void Should_Success_When_SignUp() {
+    void should_success_when_signUp() {
 
       SignUpRequestDto request = SignUpRequestDto.builder()
           .loginId("TestLoginId")
@@ -44,7 +44,7 @@ class AuthServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("중복되는 아이디가 존재하면 예외가 발생한다.")
-    void Should_ThrowException_When_ExistDuplicateLoginID() {
+    void should_throwException_when_existDuplicateLoginId() {
       User existUser = userTestHelper.builder().loginId("TestLoginId").build();
       SignUpRequestDto request = SignUpRequestDto.builder()
           .loginId(existUser.getLoginId())
@@ -56,7 +56,7 @@ class AuthServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("중복되는 닉네임이 존재하면 예외가 발생한다.")
-    void Should_ThrowException_When_ExistDuplicateNickname() {
+    void should_throwException_when_existDuplicateNickname() {
       User existUser = userTestHelper.builder().loginId("TestNickname").build();
       SignUpRequestDto request = SignUpRequestDto.builder()
           .nickname(existUser.getNickname())
@@ -73,7 +73,7 @@ class AuthServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("로그인을 성공적으로 수행한다.")
-    void Should_Success_When_Login() {
+    void should_success_when_login() {
       String loginId = "testLoginId";
       String password = "testPassword";
       String encodePassword = passwordEncoder.encode(password);
@@ -91,7 +91,7 @@ class AuthServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("로그인 아이디 유저가 존재하지 않으면 예외가 발생한다.")
-    void Should_ThrowException_When_LoginIDNotExist() {
+    void should_throwException_when_loginIdNotExist() {
       String loginId = "testLoginId";
       String password = "testPassword";
 
@@ -107,7 +107,7 @@ class AuthServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다.")
-    void Should_ThrowException_When_PasswordNotMatch() {
+    void should_throwException_when_passwordNotMatch() {
       String loginId = "testLoginId";
       String password = "testPassword";
       String encodePassword = passwordEncoder.encode(password);
