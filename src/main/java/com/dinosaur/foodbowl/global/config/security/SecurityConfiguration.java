@@ -1,7 +1,6 @@
 package com.dinosaur.foodbowl.global.config.security;
 
 import com.dinosaur.foodbowl.global.config.security.jwt.JwtAuthenticationFilter;
-import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +15,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 
-  private final JwtTokenProvider jwtTokenProvider;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,8 +40,7 @@ public class SecurityConfiguration {
         .and()
         .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
         .and()
-        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-            UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
@@ -66,3 +64,4 @@ public class SecurityConfiguration {
     return source;
   }
 }
+
