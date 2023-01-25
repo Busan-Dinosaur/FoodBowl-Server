@@ -24,7 +24,7 @@ class TokenServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("토큰 검증에 성공한다.")
-    void success_validate_token() {
+    void Should_Success_When_ValidToken() {
       String refreshToken = jwtTokenProvider.createRefreshToken();
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), refreshToken, TEST_TOKEN_VALID_MILLISECOND,
@@ -36,7 +36,7 @@ class TokenServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("유저의 리프레쉬 토큰이 존재하지 않는 경우 예외가 발생한다.")
-    void throw_exception_by_not_exist_token() {
+    void Should_ThrowException_When_RefreshTokenNotExist() {
       TokenValidationDto tokenValidationDto = TokenValidationDto.of(false, EMPTY);
 
       assertThatThrownBy(() -> tokenService.validate(userId, tokenValidationDto))
@@ -46,7 +46,7 @@ class TokenServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("유저의 리프레쉬 토큰과 일치하지 않는 경우 예외가 발생한다.")
-    void throw_exception_by_not_match_token() {
+    void Should_ThrowException_When_RefreshTokenNotMatch() {
       String refreshToken = jwtTokenProvider.createRefreshToken();
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), refreshToken, TEST_TOKEN_VALID_MILLISECOND,
