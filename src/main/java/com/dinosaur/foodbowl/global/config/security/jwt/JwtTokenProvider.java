@@ -1,6 +1,7 @@
 package com.dinosaur.foodbowl.global.config.security.jwt;
 
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EMPTY;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EXPIRED;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.MALFORMED;
@@ -26,22 +27,26 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.BasicJsonParser;
+import org.springframework.boot.json.JsonParser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
-  public static final long ACCESS_TOKEN_VALID_MILLISECOND = 30 * 60 * 1000L;
-  public static final long REFRESH_TOKEN_VALID_MILLISECOND = 14 * 24 * 60 * 60 * 1000L;
+  private final Decoder decoder = Base64.getUrlDecoder();
+  private final JsonParser jsonParser = new BasicJsonParser();
+  private final String CLAIMS_ROLES_NAME = "roles";
+  private final String DELIMITER = ",";
 
   @Value("${spring.jwt.secret}")
   private String secretKey;
@@ -59,12 +64,12 @@ public class JwtTokenProvider {
 
   private String createAccessToken(String userPk, String... roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
-    claims.put("roles", String.join(",", roles));
+    claims.put(CLAIMS_ROLES_NAME, String.join(DELIMITER, roles));
     Date now = new Date();
     return Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_VALID_MILLISECOND))
+        .setExpiration(new Date(now.getTime() + ACCESS_TOKEN.getValidMilliSecond()))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
@@ -74,27 +79,28 @@ public class JwtTokenProvider {
 
     return Jwts.builder()
         .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_VALID_MILLISECOND))
+        .setExpiration(new Date(now.getTime() + REFRESH_TOKEN.getValidMilliSecond()))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
 
   public Authentication getAuthentication(String token) {
     Claims claims = getClaim(token);
-    List<String> roles = getRolesBy(claims);
+    List<String> roles = getRoles(claims);
     UserDetails userDetails = new JwtUserEntity(claims.getSubject(), roles);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
-  private List<String> getRolesBy(Claims claims) {
-    String[] roles = claims.get("roles")
+  private List<String> getRoles(Claims claims) {
+    String[] roles = claims.get(CLAIMS_ROLES_NAME)
         .toString()
-        .split(",");
+        .split(DELIMITER);
     return List.of(roles);
   }
 
   private Claims getClaim(String token) {
-    return Jwts.parser().setSigningKey(secretKey)
+    return Jwts.parser()
+        .setSigningKey(secretKey)
         .parseClaimsJws(token)
         .getBody();
   }
@@ -102,11 +108,7 @@ public class JwtTokenProvider {
   public TokenValidationDto tryCheckTokenValid(HttpServletRequest req, JwtToken jwtToken) {
     try {
       String token = extractToken(req, jwtToken);
-      Long.parseLong(Jwts.parser()
-          .setSigningKey(secretKey)
-          .parseClaimsJws(token)
-          .getBody()
-          .getSubject());
+      getClaim(token);
       return TokenValidationDto.of(true, VALID, token);
     } catch (MalformedJwtException e) {
       return TokenValidationDto.of(false, MALFORMED);
@@ -135,9 +137,16 @@ public class JwtTokenProvider {
     return accessToken.get().getValue();
   }
 
-  public Long extractUserId(HttpServletRequest req) {
-    String accessToken = extractToken(req, ACCESS_TOKEN);
-    Claims claim = getClaim(accessToken);
-    return Long.parseLong(claim.getSubject());
+  public Long extractUserIdFromPayload(String token) {
+    String payloadJWT = token.split("\\.")[1];
+    String payload = new String(decoder.decode(payloadJWT));
+
+    Map<String, Object> jsonArray = jsonParser.parseMap(payload);
+
+    if (!jsonArray.containsKey("sub")) {
+      throw new WrongFormatJwtException();
+    }
+
+    return Long.parseLong(jsonArray.get("sub").toString());
   }
 }

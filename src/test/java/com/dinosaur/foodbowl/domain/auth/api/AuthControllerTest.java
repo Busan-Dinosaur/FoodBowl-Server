@@ -5,15 +5,12 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EMPTY;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
-import static com.dinosaur.foodbowl.global.error.ErrorCode.TOKEN_INVALID;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -28,6 +25,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -42,10 +40,10 @@ import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.global.config.security.dto.TokenValidationDto;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
 import jakarta.servlet.http.Cookie;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,7 +51,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -62,6 +59,84 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class AuthControllerTest extends IntegrationTest {
+
+  @Nested
+  @DisplayName("인증 상태 확인")
+  class HealthCheck {
+
+    /**
+     * userId: 1L roles: ROLE_회원 expired: 2073년 1월 25일
+     */
+    private final long userId = 1L;
+    private String validAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDY1MTAwOCwiZXhwIjozMjUxNDUxMDA4fQ.XFm88FEYzCcmkWlDW35_KjNQGF_TXcrIVdxF5vPIP0k";
+    private String validRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzQ2NTUxNTAsImV4cCI6MTgzMjMzNTE1MH0.VclGNv3wakvPhJCrO8LdcFyBg7ggkbOKqAuTDtMTPhU";
+    private String expiredAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDY1MTM2NiwiZXhwIjoxNjc0NjUxMzY2fQ.3FWhJDTZt3rhnLJ-gFrBL_fnNcoc8J-nFrWGtTOa5P8";
+    private String expiredRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzQ2NTEzNjYsImV4cCI6MTY3NDY1MTM2Nn0.ZnJd4e3UsJOwzU15orSTmLH3F-6OiZuRnQdr79C5VMw";
+
+    @Test
+    @DisplayName("AT 유효하면 값을 반환한다.")
+    void should_returnValue_when_accessTokenValid() throws Exception {
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), validAccessToken)))
+          .andDo(print())
+          .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("AT 유효하지 않으면 401 예외가 발생한다.")
+    void should_throwException_when_accessTokenNotValid() throws Exception {
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "invalid-token")))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("AT 만료되고 RT 유효하면 값을 반환한다.")
+    void should_returnValue_when_accessTokenExpired_refreshTokenValid() throws Exception {
+      redisTemplate.opsForValue()
+          .set(String.valueOf(userId), validRefreshToken, 60 * 1000L, TimeUnit.MILLISECONDS);
+
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
+                  new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
+          .andDo(print())
+          .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("AT 만료되고 RT 유효하지 않으면 401 예외가 발생한다.")
+    void should_throwException_when_accessTokenExpired_refreshTokenNotValid() throws Exception {
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
+                  new Cookie(REFRESH_TOKEN.getName(), "invalid-token")))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("AT 만료되고 RT 만료되면 401 예외가 발생한다.")
+    void should_throwException_when_accessTokenExpired_refreshTokenExpired() throws Exception {
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
+                  new Cookie(REFRESH_TOKEN.getName(), expiredRefreshToken)))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("AT 만료되고 RT 다르면 401 예외가 발생한다.")
+    void should_throwException_when_accessTokenExpired_refreshTokenNotMatch() throws Exception {
+      redisTemplate.opsForValue()
+          .set(String.valueOf(userId), "other-token", 60 * 1000L, TimeUnit.MILLISECONDS);
+
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
+                  new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+  }
 
   @Nested
   @DisplayName("회원가입")
@@ -93,22 +168,6 @@ class AuthControllerTest extends IntegrationTest {
           .andDo(print());
     }
 
-    private void mockingValidResponseWithoutThumbnail() {
-      User user = User.builder()
-          .loginId(validLoginId)
-          .password(validPassword)
-          .nickname(validNickname)
-          .introduce(validIntroduce)
-          .build();
-      ReflectionTestUtils.setField(user, "id", userId);
-      SignUpResponseDto responseDto = SignUpResponseDto.of(user);
-      ReflectionTestUtils.setField(responseDto, "userId", userId);
-
-      doReturn(user).when(authUtil).getUserByJWT();
-      doReturn(responseDto).when(authService).signUp(any(SignUpRequestDto.class));
-      doNothing().when(tokenService).saveToken(anyLong(), anyString());
-    }
-
     private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart(HttpMethod.POST, "/sign-up")
               .file(thumbnail)
@@ -117,23 +176,30 @@ class AuthControllerTest extends IntegrationTest {
           .andDo(print());
     }
 
-    private void mockingValidResponse() {
+    private void mockingValidResponse(Thumbnail thumbnail) {
       SignUpResponseDto responseDto = SignUpResponseDto.of(
           User.builder()
               .loginId(validLoginId)
               .password(validPassword)
               .nickname(validNickname)
               .introduce(validIntroduce)
-              .thumbnail(Thumbnail.builder()
-                  .height(200)
-                  .width(200)
-                  .path("/thumbnail/2022-01-11/random_name.jpeg")
-                  .build())
+              .thumbnail(thumbnail)
               .build());
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
+      String accessToken = "accessToken";
+      String refreshToken = "refreshToken";
       doReturn(responseDto).when(authService).signUp(any(SignUpRequestDto.class));
-      doNothing().when(tokenService).saveToken(anyLong(), anyString());
+      doReturn(accessToken).when(tokenService).createAccessToken(anyLong(), any(RoleType.class));
+      doReturn(refreshToken).when(tokenService).createRefreshToken(anyLong());
+      doReturn(new Cookie(ACCESS_TOKEN.getName(), accessToken))
+          .when(cookieService)
+          .generateCookie(ACCESS_TOKEN.getName(), accessToken,
+              (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
+      doReturn(new Cookie(REFRESH_TOKEN.getName(), refreshToken))
+          .when(cookieService)
+          .generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+              (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
     }
 
     @Nested
@@ -142,8 +208,13 @@ class AuthControllerTest extends IntegrationTest {
 
       @Test
       @DisplayName("썸네일이 있을 경우 회원가입은 성공한다.")
-      void Should_Success_When_SignUp_With_Thumbnail() throws Exception {
-        mockingValidResponse();
+      void should_success_when_signUp_with_thumbnail() throws Exception {
+        Thumbnail mockThumbnail = Thumbnail.builder()
+            .height(200)
+            .width(200)
+            .path("/thumbnail/2022-01-11/random_name.jpeg")
+            .build();
+        mockingValidResponse(mockThumbnail);
         callSignUpApi(thumbnail)
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.userId").exists())
@@ -186,8 +257,8 @@ class AuthControllerTest extends IntegrationTest {
 
       @Test
       @DisplayName("썸네일이 없어도 회원가입은 성공한다.")
-      void Should_Success_When_SignUp_With_NotInThumbnail() throws Exception {
-        mockingValidResponseWithoutThumbnail();
+      void should_success_when_signUp_with_notInThumbnail() throws Exception {
+        mockingValidResponse(null);
         callSignUpApiWithoutThumbnail()
             .andExpect(status().isCreated());
       }
@@ -199,8 +270,8 @@ class AuthControllerTest extends IntegrationTest {
 
       @Test
       @DisplayName("너무 긴 요청 값일 경우 회원가입은 실패한다.")
-      void Should_FailToSignUp_IfRequestValueIsLong() throws Exception {
-        mockingValidResponse();
+      void should_failToSignUp_ifRequestValueIsLong() throws Exception {
+        mockingValidResponse(null);
 
         params.set("loginId", "a".repeat(MAX_LOGIN_ID_LENGTH + 1));
         callSignUpApi(thumbnail).andExpect(status().isBadRequest());
@@ -219,8 +290,8 @@ class AuthControllerTest extends IntegrationTest {
       @ValueSource(strings = {"aaa", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
           "0123456789012", "012345678901234567890123456789"})
       @DisplayName("로그인 아이디 유효성 검사 실패 시 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_ValidateNotPass(String invalidLoginId) throws Exception {
-        mockingValidResponse();
+      void should_failToSignUp_when_validateNotPass(String invalidLoginId) throws Exception {
+        mockingValidResponse(null);
         params.set("loginId", invalidLoginId);
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
@@ -233,9 +304,9 @@ class AuthControllerTest extends IntegrationTest {
       @ValueSource(strings = {"aaaaaaa", "0123456789", "onlyEnglish", "###########", "cant blank",
           "         ", "012345678901234567890"})
       @DisplayName("비밀번호 유효성 검사 실패 시 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_PasswordValidateNotPass(String invalidPassword)
+      void should_failToSignUp_when_passwordValidateNotPass(String invalidPassword)
           throws Exception {
-        mockingValidResponse();
+        mockingValidResponse(null);
         params.set("password", invalidPassword);
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
@@ -248,9 +319,9 @@ class AuthControllerTest extends IntegrationTest {
       @ValueSource(strings = {"", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
           "01234567890123456", "         ", "012345678901234567890"})
       @DisplayName("닉네임 유효성 검사 실패 시 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_NicknameValidateNotPass(String invalidNickname)
+      void should_failToSignUp_when_nicknameValidateNotPass(String invalidNickname)
           throws Exception {
-        mockingValidResponse();
+        mockingValidResponse(null);
         params.set("nickname", invalidNickname);
         callSignUpApi(thumbnail)
             .andExpect(status().isBadRequest())
@@ -261,7 +332,7 @@ class AuthControllerTest extends IntegrationTest {
 
       @Test
       @DisplayName("아이디가 중복일 경우 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_LoginIDDuplicate() throws Exception {
+      void should_failToSignUp_when_loginIDDuplicate() throws Exception {
         doThrow(new BusinessException(validLoginId, "loginId", LOGIN_ID_DUPLICATE))
             .when(authService).signUp(any());
         callSignUpApi(thumbnail)
@@ -273,7 +344,7 @@ class AuthControllerTest extends IntegrationTest {
 
       @Test
       @DisplayName("닉네임이 중복일 경우 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_NicknameDuplicate() throws Exception {
+      void should_failToSignUp_when_nicknameDuplicate() throws Exception {
         doThrow(new BusinessException(validNickname, "nickname", NICKNAME_DUPLICATE))
             .when(authService).signUp(any());
         callSignUpApi(thumbnail)
@@ -285,8 +356,8 @@ class AuthControllerTest extends IntegrationTest {
 
       @Test
       @DisplayName("썸네일이 이미지가 아닐 경우 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_ThumbnailIsNotImage() throws Exception {
-        mockingValidResponse();
+      void should_failToSignUp_when_thumbnailIsNotImage() throws Exception {
+        mockingValidResponse(null);
         callSignUpApi(thumbnailTestHelper.getFakeImageFile())
             .andExpect(status().isBadRequest());
       }
@@ -308,14 +379,25 @@ class AuthControllerTest extends IntegrationTest {
 
     @Test
     @DisplayName("로그인을 성공한다.")
-    void success_login() throws Exception {
+    void should_success_when_login() throws Exception {
       LoginRequestDto loginRequestDto = LoginRequestDto.builder()
           .loginId(loginId)
           .password(password)
           .build();
 
+      String accessToken = "accessToken";
+      String refreshToken = "refreshToken";
       doReturn(userId).when(authService).login(any(LoginRequestDto.class));
-      doNothing().when(tokenService).saveToken(anyLong(), anyString());
+      doReturn(accessToken).when(tokenService).createAccessToken(anyLong(), any(RoleType.class));
+      doReturn(refreshToken).when(tokenService).createRefreshToken(anyLong());
+      doReturn(new Cookie(ACCESS_TOKEN.getName(), accessToken))
+          .when(cookieService)
+          .generateCookie(ACCESS_TOKEN.getName(), accessToken,
+              (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
+      doReturn(new Cookie(REFRESH_TOKEN.getName(), refreshToken))
+          .when(cookieService)
+          .generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+              (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
       callLoginApi(loginRequestDto)
           .andExpect(status().isOk())
@@ -332,32 +414,36 @@ class AuthControllerTest extends IntegrationTest {
 
     @Test
     @DisplayName("로그인 아이디가 존재하지 않으면 로그인은 실패한다.")
-    void Should_FailToLogin_When_LoginIDNotExist() throws Exception {
+    void should_failToLogin_when_loginIdNotExist() throws Exception {
+      String loginId = "helloWorld2";
       LoginRequestDto loginRequestDto = LoginRequestDto.builder()
-          .loginId("helloWorld2")
+          .loginId(loginId)
           .password(password)
           .build();
 
-      doThrow(new BusinessException(userId, "userId", USER_NOT_FOUND)).when(userFindDao)
-          .findByLoginId(anyString());
+      doThrow(new BusinessException(loginId, "loginId", USER_NOT_FOUND))
+          .when(authService)
+          .login(any(LoginRequestDto.class));
 
       callLoginApi(loginRequestDto)
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message").value(
-              ExceptionAdvice.getErrorMessage(String.valueOf(userId), "userId",
+              ExceptionAdvice.getErrorMessage(loginId, "loginId",
                   USER_NOT_FOUND.getMessage())));
     }
 
     @Test
     @DisplayName("비밀번호가 일치하지 않으면 로그인은 실패한다.")
-    void Should_FailToLogin_When_PasswordNotMatch() throws Exception {
+    void should_failToLogin_when_passwordNotMatch() throws Exception {
       String wrongPassword = password + "3";
       LoginRequestDto loginRequestDto = LoginRequestDto.builder()
           .loginId(loginId)
           .password(wrongPassword)
           .build();
 
-      doReturn(user).when(userFindDao).findByLoginId(anyString());
+      doThrow(new BusinessException(wrongPassword, "password", PASSWORD_NOT_MATCH))
+          .when(authService)
+          .login(any(LoginRequestDto.class));
 
       callLoginApi(loginRequestDto)
           .andExpect(status().isUnauthorized())
@@ -383,7 +469,7 @@ class AuthControllerTest extends IntegrationTest {
 
     @Test
     @DisplayName("로그아웃을 성공한다.")
-    void Should_Success_When_Logout() throws Exception {
+    void should_success_when_logout() throws Exception {
       doNothing().when(tokenService).deleteToken(anyLong());
 
       callLogoutApi()
@@ -396,7 +482,7 @@ class AuthControllerTest extends IntegrationTest {
 
     @Test
     @DisplayName("로그인을 하지 않은(토큰이 존재하지 않는) 유저는 로그아웃이 실패한다.")
-    void Should_FailToLogout_When_TokenNotExist() throws Exception {
+    void should_failToLogout_when_tokenNotExist() throws Exception {
       mockMvc.perform(post("/log-out"))
           .andDo(print())
           .andExpect(status().isUnauthorized());
@@ -405,78 +491,6 @@ class AuthControllerTest extends IntegrationTest {
     private ResultActions callLogoutApi() throws Exception {
       return mockMvc.perform(post("/log-out")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
-          .andDo(print());
-    }
-  }
-
-  @Nested
-  @DisplayName("토큰 재발급")
-  class Refresh {
-
-    private long userId = 1L;
-    private String accessToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
-    private String refreshToken = jwtTokenProvider.createRefreshToken();
-
-    @Test
-    @DisplayName("토큰 재발급에 성공한다.")
-    void success() throws Exception {
-      doNothing().when(tokenService).validate(anyLong(), any(TokenValidationDto.class));
-
-      callRefresh()
-          .andExpect(status().isNoContent())
-          .andDo(document("refresh",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token"),
-                  cookieWithName(REFRESH_TOKEN.getName()).description("인증 토큰 갱신에 필요한 refresh token")
-              ),
-              responseCookies(
-                  cookieWithName(ACCESS_TOKEN.getName()).description("재발급된 access token"),
-                  cookieWithName(REFRESH_TOKEN.getName()).description("재발급된 refresh token")
-              )));
-    }
-
-    @Test
-    @DisplayName("accessToken이 존재하지 않는 경우 토큰 재발급에 실패한다.")
-    void Should_FailToRefresh_When_AccessTokenNotExist() throws Exception {
-      mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(REFRESH_TOKEN.getName(), refreshToken)))
-          .andDo(print())
-          .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("refreshToken이 존재하지 않는 경우 토큰 재발급에 실패한다.")
-    void Should_FailToRefresh_When_RefreshTokenNotExist() throws Exception {
-      doThrow(new BusinessException(refreshToken, "token", HttpStatus.BAD_REQUEST,
-          EMPTY.getMsg())).when(tokenService).validate(anyLong(), any(TokenValidationDto.class));
-
-      mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(ACCESS_TOKEN.getName(), accessToken)))
-          .andDo(print())
-          .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message").value(
-              ExceptionAdvice.getErrorMessage(refreshToken, "token", EMPTY.getMsg())));
-    }
-
-    @Test
-    @DisplayName("토큰이 일치하지 않는 경우 토큰 재발급에 실패한다.")
-    void Should_FailToRefresh_When_TokenNotMatch() throws Exception {
-      doThrow(new BusinessException(refreshToken, "token", TOKEN_INVALID)).when(tokenService)
-          .validate(anyLong(), any(TokenValidationDto.class));
-
-      mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(ACCESS_TOKEN.getName(), accessToken),
-                  new Cookie(REFRESH_TOKEN.getName(), refreshToken)))
-          .andDo(print())
-          .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message").value(
-              ExceptionAdvice.getErrorMessage(refreshToken, "token", TOKEN_INVALID.getMessage())));
-    }
-
-    private ResultActions callRefresh() throws Exception {
-      return mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(ACCESS_TOKEN.getName(), accessToken),
-                  new Cookie(REFRESH_TOKEN.getName(), refreshToken)))
           .andDo(print());
     }
   }

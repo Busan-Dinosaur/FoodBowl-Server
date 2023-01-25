@@ -7,6 +7,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
+import com.dinosaur.foodbowl.domain.auth.application.CookieService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
@@ -86,6 +87,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected TokenService tokenService;
+
+  @SpyBean
+  protected CookieService cookieService;
 
   @SpyBean
   protected DeleteAccountService deleteAccountService;
