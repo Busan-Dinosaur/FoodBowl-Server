@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.global.config.security.jwt;
 
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EMPTY;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EXPIRED;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.MALFORMED;
@@ -39,10 +40,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-  public static final long ACCESS_TOKEN_VALID_MILLISECOND = 15 * 60 * 1000L;
+  public static final long ACCESS_TOKEN_VALID_MILLISECOND = 30 * 60 * 1000L;
   public static final long REFRESH_TOKEN_VALID_MILLISECOND = 14 * 24 * 60 * 60 * 1000L;
-  public static final String ACCESS_TOKEN = "accessToken";
-  public static final String REFRESH_TOKEN = "refreshToken";
 
   @Value("${spring.jwt.secret}")
   private String secretKey;
@@ -100,9 +99,9 @@ public class JwtTokenProvider {
         .getBody();
   }
 
-  public TokenValidationDto tryCheckTokenValid(HttpServletRequest req, String tokenName) {
+  public TokenValidationDto tryCheckTokenValid(HttpServletRequest req, JwtToken jwtToken) {
     try {
-      String token = extractToken(req, tokenName);
+      String token = extractToken(req, jwtToken);
       Long.parseLong(Jwts.parser()
           .setSigningKey(secretKey)
           .parseClaimsJws(token)
@@ -126,9 +125,9 @@ public class JwtTokenProvider {
     }
   }
 
-  public String extractToken(HttpServletRequest req, String tokenName) {
+  public String extractToken(HttpServletRequest req, JwtToken jwtToken) {
     Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
-        .filter(cookie -> cookie.getName().equals(tokenName))
+        .filter(cookie -> cookie.getName().equals(jwtToken.getName()))
         .findFirst();
     if (accessToken.isEmpty()) {
       throw new EmptyJwtException();

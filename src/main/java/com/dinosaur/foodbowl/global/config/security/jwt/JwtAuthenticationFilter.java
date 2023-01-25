@@ -1,6 +1,6 @@
 package com.dinosaur.foodbowl.global.config.security.jwt;
 
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.*;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

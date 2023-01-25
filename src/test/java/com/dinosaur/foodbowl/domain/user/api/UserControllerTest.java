@@ -1,7 +1,7 @@
 package com.dinosaur.foodbowl.domain.user.api;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_MILLISECOND;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static com.dinosaur.foodbowl.global.error.ExceptionAdvice.getErrorMessage;
@@ -69,12 +69,12 @@ class UserControllerTest extends IntegrationTest {
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
       doNothing().when(deleteAccountService).deleteMySelf(any());
       mockMvc.perform(delete("/users")
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("user-delete",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description(
+                  cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
                           + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
               )));
@@ -92,7 +92,7 @@ class UserControllerTest extends IntegrationTest {
     @DisplayName("잘못된 토큰으로 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_invalidToken() throws Exception {
       mockMvc.perform(delete("/users")
-              .cookie(new Cookie(ACCESS_TOKEN, userToken + "haha")))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken + "haha")))
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
@@ -125,7 +125,7 @@ class UserControllerTest extends IntegrationTest {
           .andExpect(header().string("location", "/users/" + userId))
           .andDo(document("update-profile",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description(
+                  cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
                           + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
               ),
@@ -201,14 +201,14 @@ class UserControllerTest extends IntegrationTest {
     private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
       return mockMvc.perform(multipart(HttpMethod.PATCH, "/users")
           .file(thumbnail)
-          .cookie(new Cookie(ACCESS_TOKEN, userToken))
+          .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .queryParams(params)
           .contentType(MediaType.MULTIPART_FORM_DATA));
     }
 
     private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
       return mockMvc.perform(multipart(HttpMethod.PATCH, "/users")
-          .cookie(new Cookie(ACCESS_TOKEN, userToken))
+          .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .queryParams(params)
           .contentType(MediaType.MULTIPART_FORM_DATA));
     }
@@ -232,7 +232,7 @@ class UserControllerTest extends IntegrationTest {
     void should_successfully_when_validUserId() throws Exception {
       mockingDto();
       mockMvc.perform(get("/users/{userId}", userId)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
           .andExpect(jsonPath("$.nickname").value(validNickname))
@@ -244,7 +244,7 @@ class UserControllerTest extends IntegrationTest {
           .andDo(print())
           .andDo(document("get-profile",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description(
+                  cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
                           + "만료 시간: " + ACCESS_TOKEN_VALID_MILLISECOND / 1000 + "초")
               ),
@@ -268,7 +268,7 @@ class UserControllerTest extends IntegrationTest {
     void should_successfully_when_thumbnailIsNull() throws Exception {
       mockingDtoWithoutThumbnail();
       mockMvc.perform(get("/users/" + userId)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
           .andExpect(jsonPath("$.nickname").value(validNickname))
@@ -289,7 +289,7 @@ class UserControllerTest extends IntegrationTest {
           .when(getProfileService)
           .getProfile(Long.parseLong(notExistUserId));
       mockMvc.perform(get("/users/" + notExistUserId)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
               .value(getErrorMessage(notExistUserId, field, USER_NOT_FOUND.getMessage())))

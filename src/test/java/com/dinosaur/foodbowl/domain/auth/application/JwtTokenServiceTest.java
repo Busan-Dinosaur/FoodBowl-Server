@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class TokenServiceTest extends IntegrationTest {
+class JwtTokenServiceTest extends IntegrationTest {
 
   @Nested
   @DisplayName("리프레쉬 토큰 검증")

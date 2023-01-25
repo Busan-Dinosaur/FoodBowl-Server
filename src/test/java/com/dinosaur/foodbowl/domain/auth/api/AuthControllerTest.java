@@ -3,8 +3,8 @@ package com.dinosaur.foodbowl.domain.auth.api;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.REFRESH_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EMPTY;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.NICKNAME_DUPLICATE;
@@ -166,8 +166,9 @@ class AuthControllerTest extends IntegrationTest {
                     partWithName("thumbnail").description("유저가 등록할 썸네일").optional()
                 ),
                 responseCookies(
-                    cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token"),
-                    cookieWithName(REFRESH_TOKEN).description("인증 토큰 갱신에 필요한 refresh token")
+                    cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token"),
+                    cookieWithName(REFRESH_TOKEN.getName()).description(
+                        "인증 토큰 갱신에 필요한 refresh token")
                 ),
                 responseFields(
                     fieldWithPath("userId")
@@ -232,7 +233,8 @@ class AuthControllerTest extends IntegrationTest {
       @ValueSource(strings = {"aaaaaaa", "0123456789", "onlyEnglish", "###########", "cant blank",
           "         ", "012345678901234567890"})
       @DisplayName("비밀번호 유효성 검사 실패 시 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_PasswordValidateNotPass(String invalidPassword) throws Exception {
+      void Should_FailToSignUp_When_PasswordValidateNotPass(String invalidPassword)
+          throws Exception {
         mockingValidResponse();
         params.set("password", invalidPassword);
         callSignUpApi(thumbnail)
@@ -246,7 +248,8 @@ class AuthControllerTest extends IntegrationTest {
       @ValueSource(strings = {"", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
           "01234567890123456", "         ", "012345678901234567890"})
       @DisplayName("닉네임 유효성 검사 실패 시 회원가입은 실패한다.")
-      void Should_FailToSignUp_When_NicknameValidateNotPass(String invalidNickname) throws Exception {
+      void Should_FailToSignUp_When_NicknameValidateNotPass(String invalidNickname)
+          throws Exception {
         mockingValidResponse();
         params.set("nickname", invalidNickname);
         callSignUpApi(thumbnail)
@@ -322,8 +325,8 @@ class AuthControllerTest extends IntegrationTest {
                   fieldWithPath("password").description("비밀번호")
               ),
               responseCookies(
-                  cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token"),
-                  cookieWithName(REFRESH_TOKEN).description("인증 토큰 갱신에 필요한 refresh token")
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token"),
+                  cookieWithName(REFRESH_TOKEN.getName()).description("인증 토큰 갱신에 필요한 refresh token")
               )));
     }
 
@@ -387,7 +390,7 @@ class AuthControllerTest extends IntegrationTest {
           .andExpect(status().isNoContent())
           .andDo(document("log-out",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token")
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
               )));
     }
 
@@ -401,7 +404,7 @@ class AuthControllerTest extends IntegrationTest {
 
     private ResultActions callLogoutApi() throws Exception {
       return mockMvc.perform(post("/log-out")
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andDo(print());
     }
   }
@@ -423,12 +426,12 @@ class AuthControllerTest extends IntegrationTest {
           .andExpect(status().isNoContent())
           .andDo(document("refresh",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description("사용자 인증에 필요한 access token"),
-                  cookieWithName(REFRESH_TOKEN).description("인증 토큰 갱신에 필요한 refresh token")
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token"),
+                  cookieWithName(REFRESH_TOKEN.getName()).description("인증 토큰 갱신에 필요한 refresh token")
               ),
               responseCookies(
-                  cookieWithName(ACCESS_TOKEN).description("재발급된 access token"),
-                  cookieWithName(REFRESH_TOKEN).description("재발급된 refresh token")
+                  cookieWithName(ACCESS_TOKEN.getName()).description("재발급된 access token"),
+                  cookieWithName(REFRESH_TOKEN.getName()).description("재발급된 refresh token")
               )));
     }
 
@@ -436,7 +439,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("accessToken이 존재하지 않는 경우 토큰 재발급에 실패한다.")
     void Should_FailToRefresh_When_AccessTokenNotExist() throws Exception {
       mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(REFRESH_TOKEN, refreshToken)))
+              .cookie(new Cookie(REFRESH_TOKEN.getName(), refreshToken)))
           .andDo(print())
           .andExpect(status().isUnauthorized());
     }
@@ -448,7 +451,7 @@ class AuthControllerTest extends IntegrationTest {
           EMPTY.getMsg())).when(tokenService).validate(anyLong(), any(TokenValidationDto.class));
 
       mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(ACCESS_TOKEN, accessToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), accessToken)))
           .andDo(print())
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message").value(
@@ -462,7 +465,8 @@ class AuthControllerTest extends IntegrationTest {
           .validate(anyLong(), any(TokenValidationDto.class));
 
       mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(ACCESS_TOKEN, accessToken), new Cookie(REFRESH_TOKEN, refreshToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), accessToken),
+                  new Cookie(REFRESH_TOKEN.getName(), refreshToken)))
           .andDo(print())
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message").value(
@@ -471,7 +475,8 @@ class AuthControllerTest extends IntegrationTest {
 
     private ResultActions callRefresh() throws Exception {
       return mockMvc.perform(post("/refresh")
-              .cookie(new Cookie(ACCESS_TOKEN, accessToken), new Cookie(REFRESH_TOKEN, refreshToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), accessToken),
+                  new Cookie(REFRESH_TOKEN.getName(), refreshToken)))
           .andDo(print());
     }
   }

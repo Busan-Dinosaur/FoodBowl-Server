@@ -1,9 +1,9 @@
 package com.dinosaur.foodbowl.domain.auth.api;
 
 import static com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType.ROLE_회원;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_MILLISECOND;
-import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider.REFRESH_TOKEN_VALID_MILLISECOND;
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
@@ -48,14 +48,16 @@ public class AuthController {
 
   private void setAccessToken(HttpServletResponse response, long userId) {
     String accessToken = jwtTokenProvider.createAccessToken(userId, ROLE_회원);
-    Cookie cookie = generateCookie(ACCESS_TOKEN, accessToken, ACCESS_TOKEN_VALID_MILLISECOND);
+    Cookie cookie = generateCookie(ACCESS_TOKEN.getName(), accessToken,
+        ACCESS_TOKEN_VALID_MILLISECOND);
     response.addCookie(cookie);
   }
 
   private void setRefreshToken(HttpServletResponse response, long userId) {
     String refreshToken = jwtTokenProvider.createRefreshToken();
     tokenService.saveToken(userId, refreshToken);
-    Cookie cookie = generateCookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALID_MILLISECOND);
+    Cookie cookie = generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+        REFRESH_TOKEN_VALID_MILLISECOND);
     response.addCookie(cookie);
   }
 
