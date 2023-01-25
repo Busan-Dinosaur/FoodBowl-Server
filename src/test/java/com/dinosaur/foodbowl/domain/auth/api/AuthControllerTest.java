@@ -311,7 +311,6 @@ class AuthControllerTest extends IntegrationTest {
           .password(password)
           .build();
 
-      doReturn(user).when(userFindDao).findByLoginId(anyString());
       doReturn(userId).when(authService).login(any(LoginRequestDto.class));
       doNothing().when(tokenService).saveToken(anyLong(), anyString());
 
