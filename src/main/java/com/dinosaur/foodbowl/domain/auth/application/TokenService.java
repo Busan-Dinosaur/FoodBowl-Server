@@ -16,7 +16,7 @@ public class TokenService {
   private final RedisTemplate redisTemplate;
   private final JwtTokenProvider jwtTokenProvider;
 
-  public String createAccessToken(long userId, RoleType roleType) {
+  public String createAccessToken(long userId, RoleType... roleType) {
     return jwtTokenProvider.createAccessToken(userId, roleType);
   }
 

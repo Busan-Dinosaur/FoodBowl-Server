@@ -1,7 +1,9 @@
 package com.dinosaur.foodbowl.domain.user.entity.role;
 
+import static com.dinosaur.foodbowl.global.error.ErrorCode.TYPE_INVALID;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -56,6 +59,13 @@ public class Role {
 
     RoleType(long id) {
       this.id = id;
+    }
+
+    public static RoleType from(String name) {
+      return Arrays.stream(RoleType.values())
+          .filter(type -> type.toString().equals(name))
+          .findFirst()
+          .orElseThrow(() -> new BusinessException(name, "name", TYPE_INVALID));
     }
   }
 }

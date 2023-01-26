@@ -1,5 +1,7 @@
 package com.dinosaur.foodbowl.global.config.security.jwt;
 
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.CLAIMS_ROLES;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.DELIMITER;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.EMPTY;
@@ -45,8 +47,6 @@ public class JwtTokenProvider {
 
   private final Decoder decoder = Base64.getUrlDecoder();
   private final JsonParser jsonParser = new BasicJsonParser();
-  private final String CLAIMS_ROLES_NAME = "roles";
-  private final String DELIMITER = ",";
 
   @Value("${spring.jwt.secret}")
   private String secretKey;
@@ -64,7 +64,7 @@ public class JwtTokenProvider {
 
   private String createAccessToken(String userPk, String... roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
-    claims.put(CLAIMS_ROLES_NAME, String.join(DELIMITER, roles));
+    claims.put(CLAIMS_ROLES.getName(), String.join(DELIMITER.getName(), roles));
     Date now = new Date();
     return Jwts.builder()
         .setClaims(claims)
@@ -92,9 +92,9 @@ public class JwtTokenProvider {
   }
 
   private List<String> getRoles(Claims claims) {
-    String[] roles = claims.get(CLAIMS_ROLES_NAME)
+    String[] roles = claims.get(CLAIMS_ROLES.getName())
         .toString()
-        .split(DELIMITER);
+        .split(DELIMITER.getName());
     return List.of(roles);
   }
 
@@ -137,16 +137,16 @@ public class JwtTokenProvider {
     return accessToken.get().getValue();
   }
 
-  public Long extractUserIdFromPayload(String token) {
+  public Object extractPayload(String token, String key) {
     String payloadJWT = token.split("\\.")[1];
     String payload = new String(decoder.decode(payloadJWT));
 
     Map<String, Object> jsonArray = jsonParser.parseMap(payload);
 
-    if (!jsonArray.containsKey("sub")) {
+    if (!jsonArray.containsKey(key)) {
       throw new WrongFormatJwtException();
     }
 
-    return Long.parseLong(jsonArray.get("sub").toString());
+    return jsonArray.get(key);
   }
 }

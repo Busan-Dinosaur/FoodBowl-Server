@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.domain.auth.application;
 
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.CLAIMS_SUB;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.IntegrationTest;
@@ -24,7 +25,8 @@ class TokenServiceTest extends IntegrationTest {
     void should_success_when_createAccessToken() {
       String accessToken = tokenService.createAccessToken(userId, RoleType.ROLE_회원);
 
-      Long result = jwtTokenProvider.extractUserIdFromPayload(accessToken);
+      Long result = Long.parseLong(
+          jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString());
 
       assertThat(result).isEqualTo(userId);
     }

@@ -1,11 +1,14 @@
 package com.dinosaur.foodbowl.global.config.security.jwt;
 
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.CLAIMS_ROLES;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.CLAIMS_SUB;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.DELIMITER;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 
-import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.global.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -14,6 +17,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -33,33 +37,42 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
-    var accessTokenValidation = jwtTokenProvider.tryCheckTokenValid((HttpServletRequest) request,
-        ACCESS_TOKEN);
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+    var accessTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, ACCESS_TOKEN);
 
     if (accessTokenValidation.isValid()) {
       Authentication auth = jwtTokenProvider.getAuthentication(accessTokenValidation.getToken());
       SecurityContextHolder.getContext().setAuthentication(auth);
     } else if (accessTokenValidation.getTokenType() == JwtValidationType.EXPIRED) {
-      var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(
-          (HttpServletRequest) request, REFRESH_TOKEN);
-      Long userId = jwtTokenProvider.extractUserIdFromPayload(
-          jwtTokenProvider.extractToken((HttpServletRequest) request, ACCESS_TOKEN));
-      HttpServletResponse httpResponse = (HttpServletResponse) response;
+      var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, REFRESH_TOKEN);
+      String accessToken = jwtTokenProvider.extractToken(httpRequest, ACCESS_TOKEN);
+      Long userId = Long.parseLong(
+          jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString());
 
       if (refreshTokenValidation.isValid() && tokenService.isValid(userId,
           refreshTokenValidation.getToken())) {
-        String accessToken = tokenService.createAccessToken(userId, RoleType.ROLE_회원);
-        String refreshToken = tokenService.createRefreshToken(userId);
+        RoleType[] roles = Arrays.stream(
+                jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName())
+                    .toString()
+                    .split(DELIMITER.getName()))
+            .map(RoleType::from)
+            .toArray(RoleType[]::new);
 
-        Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
+        String renewedAccessToken = tokenService.createAccessToken(userId, roles);
+        String renewedRefreshToken = tokenService.createRefreshToken(userId);
+
+        Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), renewedAccessToken,
             (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-        Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+        Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(),
+            renewedRefreshToken,
             (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
         httpResponse.addCookie(accessCookie);
         httpResponse.addCookie(refreshCookie);
 
-        Authentication auth = jwtTokenProvider.getAuthentication(accessToken);
+        Authentication auth = jwtTokenProvider.getAuthentication(renewedAccessToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
     } else {
