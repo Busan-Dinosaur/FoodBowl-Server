@@ -74,6 +74,14 @@ class AuthControllerTest extends IntegrationTest {
     private String expiredRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzQ2NTEzNjYsImV4cCI6MTY3NDY1MTM2Nn0.ZnJd4e3UsJOwzU15orSTmLH3F-6OiZuRnQdr79C5VMw";
 
     @Test
+    @DisplayName("AT 존재하지 않으면 401 예외가 발생한다.")
+    void should_throwException_when_accessTokenNotExist() throws Exception {
+      mockMvc.perform(get("/health-check"))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @DisplayName("AT 유효하면 값을 반환한다.")
     void should_returnValue_when_accessTokenValid() throws Exception {
       mockMvc.perform(get("/health-check")
@@ -102,6 +110,15 @@ class AuthControllerTest extends IntegrationTest {
                   new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
           .andDo(print())
           .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("AT 만료되고 RT 존재하지 않으면 401 예외가 발생한다.")
+    void should_throwException_when_accessTokenExpired_refreshTokenNotExist() throws Exception {
+      mockMvc.perform(get("/health-check")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken)))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
     }
 
     @Test
