@@ -193,11 +193,11 @@ class AuthControllerTest extends IntegrationTest {
       doReturn(accessToken).when(tokenService).createAccessToken(anyLong(), any(RoleType.class));
       doReturn(refreshToken).when(tokenService).createRefreshToken(anyLong());
       doReturn(new Cookie(ACCESS_TOKEN.getName(), accessToken))
-          .when(cookieService)
+          .when(cookieUtils)
           .generateCookie(ACCESS_TOKEN.getName(), accessToken,
               (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
       doReturn(new Cookie(REFRESH_TOKEN.getName(), refreshToken))
-          .when(cookieService)
+          .when(cookieUtils)
           .generateCookie(REFRESH_TOKEN.getName(), refreshToken,
               (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
     }
@@ -391,11 +391,11 @@ class AuthControllerTest extends IntegrationTest {
       doReturn(accessToken).when(tokenService).createAccessToken(anyLong(), any(RoleType.class));
       doReturn(refreshToken).when(tokenService).createRefreshToken(anyLong());
       doReturn(new Cookie(ACCESS_TOKEN.getName(), accessToken))
-          .when(cookieService)
+          .when(cookieUtils)
           .generateCookie(ACCESS_TOKEN.getName(), accessToken,
               (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
       doReturn(new Cookie(REFRESH_TOKEN.getName(), refreshToken))
-          .when(cookieService)
+          .when(cookieUtils)
           .generateCookie(REFRESH_TOKEN.getName(), refreshToken,
               (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 

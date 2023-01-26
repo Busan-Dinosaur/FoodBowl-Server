@@ -3,7 +3,7 @@ package com.dinosaur.foodbowl.global.config.security.jwt;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 
-import com.dinosaur.foodbowl.domain.auth.application.CookieService;
+import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import jakarta.servlet.FilterChain;
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final TokenService tokenService;
-  private final CookieService cookieService;
+  private final CookieUtils cookieUtils;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
@@ -51,9 +51,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String accessToken = tokenService.createAccessToken(userId, RoleType.ROLE_회원);
         String refreshToken = tokenService.createRefreshToken(userId);
 
-        Cookie accessCookie = cookieService.generateCookie(ACCESS_TOKEN.getName(), accessToken,
+        Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
             (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-        Cookie refreshCookie = cookieService.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+        Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
             (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
         httpResponse.addCookie(accessCookie);

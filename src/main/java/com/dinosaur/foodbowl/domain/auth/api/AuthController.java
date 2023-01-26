@@ -5,7 +5,7 @@ import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_T
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
-import com.dinosaur.foodbowl.domain.auth.application.CookieService;
+import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
@@ -29,7 +29,7 @@ public class AuthController {
 
   private final AuthService authService;
   private final TokenService tokenService;
-  private final CookieService cookieService;
+  private final CookieUtils cookieUtils;
 
   @GetMapping("/health-check")
   public String healthCheck() {
@@ -44,9 +44,9 @@ public class AuthController {
     String accessToken = tokenService.createAccessToken(signUpResponseDto.getUserId(), ROLE_회원);
     String refreshToken = tokenService.createRefreshToken(signUpResponseDto.getUserId());
 
-    Cookie accessCookie = cookieService.generateCookie(ACCESS_TOKEN.getName(), accessToken,
+    Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
         (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-    Cookie refreshCookie = cookieService.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+    Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
         (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
     response.addCookie(accessCookie);
@@ -64,9 +64,9 @@ public class AuthController {
     String accessToken = tokenService.createAccessToken(userId, ROLE_회원);
     String refreshToken = tokenService.createRefreshToken(userId);
 
-    Cookie accessCookie = cookieService.generateCookie(ACCESS_TOKEN.getName(), accessToken,
+    Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
         (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-    Cookie refreshCookie = cookieService.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+    Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
         (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
     response.addCookie(accessCookie);

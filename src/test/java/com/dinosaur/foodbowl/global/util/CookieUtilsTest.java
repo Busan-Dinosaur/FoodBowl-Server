@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.auth.application;
+package com.dinosaur.foodbowl.global.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class CookieServiceTest extends IntegrationTest {
+class CookieUtilsTest extends IntegrationTest {
 
   @Nested
   @DisplayName("쿠키 생성")
@@ -21,7 +21,7 @@ class CookieServiceTest extends IntegrationTest {
       String value = "cookieValue";
       int expire = 1;
 
-      Cookie cookie = cookieService.generateCookie(name, value, expire);
+      Cookie cookie = cookieUtils.generateCookie(name, value, expire);
 
       assertThat(cookie.getName()).isEqualTo(name);
       assertThat(cookie.getMaxAge()).isEqualTo(1);
