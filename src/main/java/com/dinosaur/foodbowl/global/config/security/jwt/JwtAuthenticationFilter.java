@@ -66,8 +66,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), renewedAccessToken,
             (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
         Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(),
-            renewedRefreshToken,
-            (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
+            renewedRefreshToken, (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
         httpResponse.addCookie(accessCookie);
         httpResponse.addCookie(refreshCookie);
