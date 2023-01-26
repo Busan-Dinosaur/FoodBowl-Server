@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
           jwtTokenProvider.extractToken((HttpServletRequest) request, ACCESS_TOKEN));
       HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-      if (refreshTokenValidation.isValid() && tokenService.validate(userId,
+      if (refreshTokenValidation.isValid() && tokenService.isValid(userId,
           refreshTokenValidation.getToken())) {
         String accessToken = tokenService.createAccessToken(userId, RoleType.ROLE_회원);
         String refreshToken = tokenService.createRefreshToken(userId);

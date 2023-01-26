@@ -34,7 +34,7 @@ public class TokenService {
     redisTemplate.delete(String.valueOf(userId));
   }
 
-  public boolean validate(long userId, String token) {
+  public boolean isValid(long userId, String token) {
     String refreshToken = (String) redisTemplate.opsForValue().get(String.valueOf(userId));
 
     if (refreshToken == null || !refreshToken.equals(token)) {

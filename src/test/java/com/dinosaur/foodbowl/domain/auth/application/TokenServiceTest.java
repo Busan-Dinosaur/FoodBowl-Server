@@ -85,7 +85,7 @@ class TokenServiceTest extends IntegrationTest {
           .set(String.valueOf(userId), testToken, TEST_TOKEN_VALID_MILLISECOND,
               TimeUnit.MILLISECONDS);
 
-      boolean result = tokenService.validate(userId, testToken);
+      boolean result = tokenService.isValid(userId, testToken);
 
       assertThat(result).isTrue();
     }
@@ -93,7 +93,7 @@ class TokenServiceTest extends IntegrationTest {
     @Test
     @DisplayName("Key 대한 Token 존재하지 않을 때 false 반환한다.")
     void should_returnFalse_when_keyNotExist() {
-      boolean result = tokenService.validate(2L, testToken);
+      boolean result = tokenService.isValid(2L, testToken);
 
       assertThat(result).isFalse();
     }
@@ -105,7 +105,7 @@ class TokenServiceTest extends IntegrationTest {
           .set(String.valueOf(userId), "invalid-token", TEST_TOKEN_VALID_MILLISECOND,
               TimeUnit.MILLISECONDS);
 
-      boolean result = tokenService.validate(userId, testToken);
+      boolean result = tokenService.isValid(userId, testToken);
 
       assertThat(result).isFalse();
     }
