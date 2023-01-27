@@ -43,23 +43,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     var accessTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, ACCESS_TOKEN);
 
     if (accessTokenValidation.isValid()) {
-      Authentication auth = jwtTokenProvider.getAuthentication(accessTokenValidation.getToken());
-      SecurityContextHolder.getContext().setAuthentication(auth);
+      setAuth(accessTokenValidation.getToken());
     } else if (accessTokenValidation.getTokenType() == JwtValidationType.EXPIRED) {
       var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, REFRESH_TOKEN);
       String accessToken = jwtTokenProvider.extractToken(httpRequest, ACCESS_TOKEN);
       Long userId = Long.parseLong(
           jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString());
+      RoleType[] roles = getRoleTypes(
+          jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName()).toString());
 
       if (refreshTokenValidation.isValid() && tokenService.isValid(userId,
           refreshTokenValidation.getToken())) {
-        RoleType[] roles = Arrays.stream(
-                jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName())
-                    .toString()
-                    .split(DELIMITER.getName()))
-            .map(RoleType::from)
-            .toArray(RoleType[]::new);
-
         String renewedAccessToken = tokenService.createAccessToken(userId, roles);
         String renewedRefreshToken = tokenService.createRefreshToken(userId);
 
@@ -71,13 +65,23 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         httpResponse.addCookie(accessCookie);
         httpResponse.addCookie(refreshCookie);
 
-        Authentication auth = jwtTokenProvider.getAuthentication(renewedAccessToken);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        setAuth(renewedAccessToken);
       }
     } else {
       log.info(accessTokenValidation.getTokenType().getMsg());
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  private void setAuth(String token) {
+    Authentication auth = jwtTokenProvider.getAuthentication(token);
+    SecurityContextHolder.getContext().setAuthentication(auth);
+  }
+
+  private RoleType[] getRoleTypes(String jsonRoles) {
+    return Arrays.stream(jsonRoles.split(DELIMITER.getName()))
+        .map(RoleType::from)
+        .toArray(RoleType[]::new);
   }
 }
