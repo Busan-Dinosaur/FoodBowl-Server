@@ -22,7 +22,6 @@ import lombok.ToString;
 @Entity
 @Table(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"role"})
 @Getter
 public class UserRole extends BaseEntity {
 

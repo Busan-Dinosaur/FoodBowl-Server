@@ -19,7 +19,6 @@ import lombok.ToString;
 @Table(name = "thumbnail")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"id", "path"})
 public class Thumbnail extends BaseEntity {
 
   public static final int MAX_PATH_LENGTH = 512;

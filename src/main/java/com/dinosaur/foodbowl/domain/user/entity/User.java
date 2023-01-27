@@ -36,7 +36,6 @@ import lombok.ToString;
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"loginId", "nickname", "introduce", "userRole"})
 public class User extends BaseEntity {
 
   public static final int MAX_LOGIN_ID_LENGTH = 45;
