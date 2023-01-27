@@ -1,5 +1,8 @@
 package com.dinosaur.foodbowl.domain.post.entity;
 
+import static jakarta.persistence.CascadeType.REMOVE;
+
+import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -13,11 +16,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -30,6 +37,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Post extends BaseEntity {
 
   @Id
+  @Getter
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", updatable = false, nullable = false)
   private Long id;
@@ -49,15 +57,20 @@ public class Post extends BaseEntity {
   @Column(name = "content", nullable = false)
   private String content;
 
+  @OneToMany(mappedBy = "photo", cascade = REMOVE)
+  private List<Photo> photos = new ArrayList<>();
+
   @LastModifiedDate
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
   @Builder
-  private Post(User user, Thumbnail thumbnail, Store store, String content) {
+  private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos) {
     this.user = user;
     this.thumbnail = thumbnail;
     this.store = store;
     this.content = content;
+    this.photos = photos;
   }
+
 }
