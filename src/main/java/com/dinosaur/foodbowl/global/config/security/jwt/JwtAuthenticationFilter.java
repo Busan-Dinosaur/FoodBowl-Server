@@ -7,7 +7,7 @@ import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_T
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.global.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

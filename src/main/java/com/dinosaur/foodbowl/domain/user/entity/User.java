@@ -8,9 +8,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
-import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +28,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Table(name = "user")
@@ -43,30 +40,30 @@ public class User extends BaseEntity {
   public static final int MAX_NICKNAME_LENGTH = 45;
   public static final int MAX_INTRODUCE_LENGTH = 255;
 
+  @Getter
   @Id
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
-  @Getter
   private Long id;
 
   @ManyToOne(fetch = LAZY, cascade = ALL)
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
   @Getter
+  @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
   private String loginId;
 
-  @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
   @Getter
+  @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
   private String password;
 
-  @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
   @Getter
+  @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
   private String nickname;
 
-  @Column(name = "introduce", length = MAX_INTRODUCE_LENGTH)
   @Getter
+  @Column(name = "introduce", length = MAX_INTRODUCE_LENGTH)
   private String introduce;
 
   @Getter

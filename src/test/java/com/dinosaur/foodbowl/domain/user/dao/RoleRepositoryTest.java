@@ -3,8 +3,8 @@ package com.dinosaur.foodbowl.domain.user.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.Role;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

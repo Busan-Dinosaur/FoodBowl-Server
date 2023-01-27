@@ -2,7 +2,7 @@ package com.dinosaur.foodbowl.domain.auth.application;
 
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;

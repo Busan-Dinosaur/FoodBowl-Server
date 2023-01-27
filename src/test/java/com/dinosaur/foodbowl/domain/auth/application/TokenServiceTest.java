@@ -4,7 +4,7 @@ import static com.dinosaur.foodbowl.global.config.security.jwt.JwtConstants.CLAI
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
