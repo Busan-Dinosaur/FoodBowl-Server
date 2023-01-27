@@ -6,7 +6,7 @@ import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
 import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
+import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,9 @@ public class UserController {
   private final DeleteAccountService deleteAccountService;
   private final UpdateProfileService updateProfileService;
   private final GetProfileService getProfileService;
-  private final AuthUtil authUtil;
 
   @DeleteMapping
-  public ResponseEntity<Void> deleteAccount() {
-    User me = authUtil.getUserByJWT();
+  public ResponseEntity<Void> deleteAccount(@LoginUser User me) {
     deleteAccountService.deleteMySelf(me);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .build();
@@ -40,8 +38,7 @@ public class UserController {
 
   @PatchMapping
   public ResponseEntity<Void> updateProfile(
-      @ModelAttribute @Valid UpdateProfileRequestDto requestDto) {
-    User me = authUtil.getUserByJWT();
+      @ModelAttribute @Valid UpdateProfileRequestDto requestDto, @LoginUser User me) {
     long userId = updateProfileService.updateProfile(me, requestDto);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .location(URI.create("/users/" + userId))
