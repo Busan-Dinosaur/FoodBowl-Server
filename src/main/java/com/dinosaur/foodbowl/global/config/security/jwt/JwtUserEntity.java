@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.global.config.security;
+package com.dinosaur.foodbowl.global.config.security.jwt;
 
 import java.util.ArrayList;
 import java.util.Collection;

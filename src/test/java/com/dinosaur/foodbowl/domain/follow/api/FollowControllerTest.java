@@ -1,12 +1,12 @@
 package com.dinosaur.foodbowl.domain.follow.api;
 
-import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
-import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.DEFAULT_TOKEN_VALID_MILLISECOND;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -51,9 +51,9 @@ public class FollowControllerTest extends IntegrationTest {
           .andDo(print())
           .andDo(document("follow",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description(
+                  cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("팔로우할 유저의 아이디")
@@ -67,9 +67,9 @@ public class FollowControllerTest extends IntegrationTest {
           .andDo(print())
           .andDo(document("unfollow",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN).description(
+                  cookieWithName(ACCESS_TOKEN.getName()).description(
                       "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                          + "만료 시간: " + DEFAULT_TOKEN_VALID_MILLISECOND / 1000 + "초")
+                          + "만료 시간: " + ACCESS_TOKEN.getValidMilliSecond() / 1000 + "초")
               ),
               pathParameters(
                   parameterWithName("userId").description("팔로우를 취소할 유저의 아이디")
@@ -109,13 +109,13 @@ public class FollowControllerTest extends IntegrationTest {
 
     private ResultActions callFollowApi(Long userId) throws Exception {
       return mockMvc.perform(post("/follows/{userId}", userId)
-          .cookie(new Cookie(ACCESS_TOKEN, userToken))
+          .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .contentType(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions callUnfollowApi(Long userId) throws Exception {
       return mockMvc.perform(delete("/follows/{userId}", userId)
-          .cookie(new Cookie(ACCESS_TOKEN, userToken))
+          .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .contentType(MediaType.APPLICATION_JSON));
     }
 

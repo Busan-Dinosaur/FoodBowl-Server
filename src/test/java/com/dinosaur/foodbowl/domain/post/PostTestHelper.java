@@ -31,7 +31,7 @@ public class PostTestHelper {
     return new PostBuilder();
   }
 
-  private static String getRandomUUIDLengthWith(int length) {
+  private String getRandomUUIDLengthWith(int length) {
     String randomString = UUID.randomUUID()
         .toString();
     length = Math.min(length, randomString.length());
@@ -70,7 +70,7 @@ public class PostTestHelper {
 
     public Post build() {
       return postRepository.save(Post.builder()
-          .user(user != null ? user : userTestHelper.generateUser())
+          .user(user != null ? user : userTestHelper.builder().build())
           .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
           .store(store != null ? store : storeTestHelper.builder().build())
           .content(content != null ? content : getRandomUUIDLengthWith(100))

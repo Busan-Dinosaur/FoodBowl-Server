@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.user.dto.response;
+package com.dinosaur.foodbowl.domain.auth.dto.response;
 
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import lombok.Builder;

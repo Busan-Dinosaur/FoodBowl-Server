@@ -19,4 +19,9 @@ public class UserFindDao {
     return memberRepository.findById(id)
         .orElseThrow(() -> new BusinessException(id, "userId", USER_NOT_FOUND));
   }
+
+  public User findByLoginId(final String loginId) {
+    return memberRepository.findByLoginId(loginId)
+        .orElseThrow(() -> new BusinessException(loginId, "loginId", USER_NOT_FOUND));
+  }
 }

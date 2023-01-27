@@ -1,5 +1,6 @@
-package com.dinosaur.foodbowl.global.config.security;
+package com.dinosaur.foodbowl.global.config.security.dto;
 
+import com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType;
 import lombok.Getter;
 
 @Getter

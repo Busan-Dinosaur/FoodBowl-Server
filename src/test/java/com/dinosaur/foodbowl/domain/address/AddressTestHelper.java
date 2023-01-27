@@ -22,7 +22,7 @@ public class AddressTestHelper {
     return new AddressBuilder();
   }
 
-  private static String getRandomUUIDLengthWith(int length) {
+  private String getRandomUUIDLengthWith(int length) {
     String randomString = UUID.randomUUID()
         .toString();
     length = Math.min(length, randomString.length());
