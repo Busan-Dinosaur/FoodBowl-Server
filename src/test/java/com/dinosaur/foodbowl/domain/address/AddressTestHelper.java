@@ -18,15 +18,15 @@ public class AddressTestHelper {
   @Autowired
   private AddressRepository addressRepository;
 
-  public AddressBuilder builder() {
-    return new AddressBuilder();
-  }
-
   private String getRandomUUIDLengthWith(int length) {
     String randomString = UUID.randomUUID()
         .toString();
     length = Math.min(length, randomString.length());
     return randomString.substring(0, length);
+  }
+
+  public AddressBuilder builder() {
+    return new AddressBuilder();
   }
 
   public final class AddressBuilder {
@@ -103,12 +103,10 @@ public class AddressTestHelper {
               : getRandomUUIDLengthWith(MAX_ROAD_NAME_LENGTH))
           .mainBuildingNo(mainBuildingNo != null ? mainBuildingNo
               : getRandomUUIDLengthWith(MAX_BUILDING_NO_LENGTH))
-          .subBuildingNo(subBuildingNo != null ? subBuildingNo
-              : getRandomUUIDLengthWith(MAX_BUILDING_NO_LENGTH))
-          .longitude(longitude != null ? longitude : BigDecimal.valueOf(Math.random()))
-          .latitude(latitude != null ? latitude : BigDecimal.valueOf(Math.random()))
+          .subBuildingNo(subBuildingNo)
+          .longitude(longitude)
+          .latitude(latitude)
           .build());
     }
   }
-
 }

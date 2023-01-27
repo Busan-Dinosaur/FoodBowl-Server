@@ -7,13 +7,14 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
-import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
+import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
+import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
@@ -23,9 +24,7 @@ import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
 import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
+import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -113,9 +112,6 @@ public class IntegrationTest {
   /******* Util *******/
   @SpyBean
   protected ThumbnailFileUtil thumbnailFileUtil;
-
-  @SpyBean
-  protected AuthUtil authUtil;
 
   /******* Spring Bean *******/
   @Autowired
