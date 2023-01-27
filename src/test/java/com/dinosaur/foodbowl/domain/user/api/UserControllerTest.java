@@ -5,6 +5,7 @@ import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_T
 import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static com.dinosaur.foodbowl.global.error.ExceptionAdvice.getErrorMessage;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -30,8 +31,8 @@ import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
@@ -60,7 +61,7 @@ class UserControllerTest extends IntegrationTest {
     void setup() {
       User user = User.builder().build();
       ReflectionTestUtils.setField(user, "id", userId);
-      doReturn(user).when(authUtil).getUserByJWT();
+      doReturn(user).when(userFindDao).findById(anyLong());
     }
 
     @Test
@@ -192,7 +193,7 @@ class UserControllerTest extends IntegrationTest {
       SignUpResponseDto responseDto = SignUpResponseDto.of(user);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
-      doReturn(user).when(authUtil).getUserByJWT();
+      doReturn(user).when(userFindDao).findById(anyLong());
       doReturn(userId).when(updateProfileService)
           .updateProfile(any(User.class), any(UpdateProfileRequestDto.class));
     }

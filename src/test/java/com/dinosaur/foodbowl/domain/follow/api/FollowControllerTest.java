@@ -1,6 +1,7 @@
 package com.dinosaur.foodbowl.domain.follow.api;
 
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -13,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,8 +40,7 @@ public class FollowControllerTest extends IntegrationTest {
       User me = User.builder().build();
       User other = User.builder().build();
       ReflectionTestUtils.setField(me, "id", myId);
-      doReturn(me).when(authUtil).getUserByJWT();
-      doReturn(myId).when(authUtil).getUserIdByJWT();
+      doReturn(me).when(userFindDao).findById(anyLong());
       doReturn(other).when(userFindDao).findById(otherId);
     }
 

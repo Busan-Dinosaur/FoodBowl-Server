@@ -1,16 +1,17 @@
 package com.dinosaur.foodbowl.domain.auth.api;
 
-import static com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType.ROLE_회원;
+import static com.dinosaur.foodbowl.domain.user.entity.Role.RoleType.ROLE_회원;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
-import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
-import com.dinosaur.foodbowl.global.util.resolver.LoginUserId;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.util.CookieUtils;
+import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -76,8 +77,8 @@ public class AuthController {
   }
 
   @PostMapping("/log-out")
-  public ResponseEntity<Void> logout(@LoginUserId Long userId) {
-    tokenService.deleteToken(userId);
+  public ResponseEntity<Void> logout(@LoginUser User user) {
+    tokenService.deleteToken(user.getId());
 
     return ResponseEntity.noContent().build();
   }

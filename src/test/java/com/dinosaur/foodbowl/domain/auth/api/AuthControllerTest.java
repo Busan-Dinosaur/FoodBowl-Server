@@ -38,8 +38,8 @@ import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
 import jakarta.servlet.http.Cookie;
@@ -487,6 +487,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("로그아웃을 성공한다.")
     void should_success_when_logout() throws Exception {
+      doReturn(userTestHelper.builder().build()).when(userFindDao).findById(anyLong());
       doNothing().when(tokenService).deleteToken(anyLong());
 
       callLogoutApi()
