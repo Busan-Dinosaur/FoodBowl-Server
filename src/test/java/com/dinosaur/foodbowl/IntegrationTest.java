@@ -9,7 +9,10 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
+import com.dinosaur.foodbowl.domain.photo.PhotoTestHelper;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
+import com.dinosaur.foodbowl.domain.post.application.PostService;
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
@@ -72,6 +75,9 @@ public class IntegrationTest {
   @SpyBean
   protected UserFindDao userFindDao;
 
+  @SpyBean
+  protected PostRepository postRepository;
+
   /******* Service *******/
   @SpyBean
   protected GetProfileService getProfileService;
@@ -88,6 +94,9 @@ public class IntegrationTest {
   @SpyBean
   protected FollowService followService;
 
+  @SpyBean
+  protected PostService postService;
+
   /******* Helper *******/
   @SpyBean
   protected UserTestHelper userTestHelper;
@@ -97,6 +106,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected PostTestHelper postTestHelper;
+
+  @SpyBean
+  protected PhotoTestHelper photoTestHelper;
 
   /******* Util *******/
   @SpyBean

@@ -8,10 +8,14 @@ import static com.dinosaur.foodbowl.domain.address.entity.Address.MAX_ROAD_NAME_
 import com.dinosaur.foodbowl.domain.address.entity.Address;
 import java.math.BigDecimal;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+@Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AddressDto {
 
   @Length(max = MAX_ADDRESS_NAME_LENGTH)
