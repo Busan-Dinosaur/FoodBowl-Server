@@ -5,16 +5,26 @@ import static com.dinosaur.foodbowl.domain.store.entity.Store.MAX_STORE_NAME_LEN
 import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
 import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class StoreDto {
 
   private AddressDto addressDto;
   private Category category;
+  @Getter
   @Length(max = MAX_STORE_NAME_LENGTH)
   private String storeName;
 
-  public Store toEntity() {
+  public Store toEntity(Category category) {
     return Store.builder()
         .address(addressDto.toEntity())
         .category(category)
