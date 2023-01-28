@@ -1,6 +1,6 @@
 package com.dinosaur.foodbowl.domain.post.entity;
 
-import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.CascadeType.ALL;
 
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
@@ -50,14 +50,14 @@ public class Post extends BaseEntity {
   @JoinColumn(name = "thumbnail_id", nullable = false)
   private Thumbnail thumbnail;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
   @JoinColumn(name = "store_id", nullable = false)
   private Store store;
 
   @Column(name = "content", nullable = false)
   private String content;
 
-  @OneToMany(mappedBy = "photo", cascade = REMOVE)
+  @OneToMany(mappedBy = "post", cascade = ALL)
   private List<Photo> photos = new ArrayList<>();
 
   @LastModifiedDate
