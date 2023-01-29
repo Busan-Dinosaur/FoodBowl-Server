@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
-import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
@@ -28,12 +27,13 @@ class PostServiceTest extends IntegrationTest {
     public void should_success_when_valid_request() {
       // given
       User user = userTestHelper.generateUserWithoutThumbnail();
-      StoreDto storeDto = generateStoreDto(generateAddressDto());
-      List<MultipartFile> photoFiles = List.of(photoTestHelper.getPhotoFile());
-      PostCreateRequestDto requestDto = getPostCreateRequestDto(storeDto, photoFiles);
+      StoreDto storeDto = postTestHelper.generateStoreDto();
+      AddressDto addressDto = postTestHelper.generateAddressDto();
+      List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
+      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto, addressDto);
 
       // when
-      Long postId = postService.createPost(user, requestDto);
+      Long postId = postService.createPost(user, requestDto, images);
       em.flush();
       em.clear();
 
@@ -52,40 +52,15 @@ class PostServiceTest extends IntegrationTest {
     public void should_fail_when_no_file() {
       // given
       User user = userTestHelper.generateUserWithoutThumbnail();
-      StoreDto storeDto = generateStoreDto(generateAddressDto());
-      PostCreateRequestDto requestDto = getPostCreateRequestDto(storeDto, Collections.emptyList());
+      StoreDto storeDto = postTestHelper.generateStoreDto();
+      AddressDto addressDto = postTestHelper.generateAddressDto();
+      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto,
+          addressDto);
 
       // then
-      Assertions.assertThatThrownBy(() -> postService.createPost(user, requestDto))
+      Assertions.assertThatThrownBy(
+              () -> postService.createPost(user, requestDto, Collections.emptyList()))
           .isInstanceOf(IndexOutOfBoundsException.class);
     }
-  }
-
-  private PostCreateRequestDto getPostCreateRequestDto(StoreDto storeDto,
-      List<MultipartFile> photoFiles) {
-    return PostCreateRequestDto.builder()
-        .photoFiles(photoFiles)
-        .storeDto(storeDto)
-        .content("test")
-        .categoryId(CategoryType.전체.getId())
-        .build();
-  }
-
-  private StoreDto generateStoreDto(AddressDto addressDto) {
-    return StoreDto.builder()
-        .addressDto(addressDto)
-        .storeName("test")
-        .build();
-  }
-
-  private AddressDto generateAddressDto() {
-    return AddressDto.builder()
-        .addressName("부산광역시 부산대학로 1")
-        .region1depthName("부산광역시")
-        .region2depthName("금정구")
-        .region3depthName("장전동")
-        .roadName("부산대학로")
-        .mainBuildingNo("1")
-        .build();
   }
 }

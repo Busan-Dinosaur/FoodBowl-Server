@@ -1,8 +1,12 @@
 package com.dinosaur.foodbowl.domain.post;
 
+import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
+import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
+import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.StoreTestHelper;
+import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
@@ -76,5 +80,31 @@ public class PostTestHelper {
           .content(content != null ? content : getRandomUUIDLengthWith(100))
           .build());
     }
+  }
+
+  public StoreDto generateStoreDto() {
+    return StoreDto.builder()
+        .storeName("test")
+        .build();
+  }
+
+  public PostCreateRequestDto getPostCreateRequestDto(StoreDto storeDto, AddressDto addressDto) {
+    return PostCreateRequestDto.builder()
+        .store(storeDto)
+        .address(addressDto)
+        .content("test")
+        .categoryId(CategoryType.전체.getId())
+        .build();
+  }
+
+  public AddressDto generateAddressDto() {
+    return AddressDto.builder()
+        .addressName("부산광역시 부산대학로 1")
+        .region1depthName("부산광역시")
+        .region2depthName("금정구")
+        .region3depthName("장전동")
+        .roadName("부산대학로")
+        .mainBuildingNo("1")
+        .build();
   }
 }
