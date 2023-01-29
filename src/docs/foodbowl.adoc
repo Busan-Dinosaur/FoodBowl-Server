@@ -12,3 +12,5 @@ endif::[]
 == *USER API*
 
 link:user/user.html[API 문서 보기]
+link:follow/follow.html[API 문서 보기]
+link:post/post.html[API 문서 보기]
