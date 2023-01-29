@@ -33,7 +33,7 @@ include::{snippets}/create-post/request-parts.adoc[]
 
 ==== Response
 
-include::{snippets}/follow/http-response.adoc[]
+include::{snippets}/create-post/http-response.adoc[]
 
 ==== Response Body
 

@@ -12,5 +12,11 @@ endif::[]
 == *USER API*
 
 link:user/user.html[API 문서 보기]
+
+== *FOLLOW API*
+
 link:follow/follow.html[API 문서 보기]
+
+== *POST API*
+
 link:post/post.html[API 문서 보기]
