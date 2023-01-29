@@ -8,7 +8,6 @@ import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dao.StoreRepository;
-import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -32,27 +31,27 @@ public class PostService {
   private final PhotoUtil photoUtil;
 
   @Transactional
-  public Long createPost(User user, PostCreateRequestDto postCreateRequestDto) {
-    List<Photo> photos = photoUtil.save(postCreateRequestDto.getPhotoFiles());
+  public Long createPost(User user, PostCreateRequestDto postCreateRequestDto, List<MultipartFile> images) {
+    List<Photo> photos = photoUtil.save(images);
     Category category = categoryRepository.getReferenceById(postCreateRequestDto.getCategoryId());
-    Store store = getStore(postCreateRequestDto.getStoreDto(), category);
-    Thumbnail thumbnail = getThumbnail(postCreateRequestDto);
+    Store store = getStore(postCreateRequestDto, category);
+    Thumbnail thumbnail = getThumbnail(images);
 
     Post post = postCreateRequestDto.toEntity(user, store, photos, thumbnail);
 
     return postRepository.save(post).getId();
   }
 
-  private Thumbnail getThumbnail(PostCreateRequestDto postCreateRequestDto) {
-    MultipartFile firstFile = postCreateRequestDto.getPhotoFiles().get(0);
+  private Thumbnail getThumbnail(List<MultipartFile> images) {
+    MultipartFile firstFile = images.get(0);
     return thumbnailUtil.saveIfExist(firstFile).orElse(null);
   }
 
-  private Store getStore(StoreDto storeDto, Category category) {
-    if (storeRepository.existsByStoreName(storeDto.getStoreName())) {
-      return storeRepository.findByStoreName(storeDto.getStoreName());
+  private Store getStore(PostCreateRequestDto request, Category category) {
+    if (storeRepository.existsByStoreName(request.getStore().getStoreName())) {
+      return storeRepository.findByStoreName(request.getStore().getStoreName());
     }
-    return storeDto.toEntity(category);
+    return request.getStore().toEntity(category, request.getAddress());
   }
 
 }

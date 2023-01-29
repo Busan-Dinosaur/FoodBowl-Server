@@ -1,5 +1,6 @@
 package com.dinosaur.foodbowl.domain.post.dto;
 
+import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,12 +29,11 @@ public class PostCreateRequestDto {
   @NotNull
   private String content;
   @NotNull
-  private StoreDto storeDto;
+  private StoreDto store;
+  @NotNull
+  private AddressDto address;
   @NotNull
   private Long categoryId;
-  @Valid
-  @Size(min = 1, message = "게시글의 사진은 최소 1장 이상이어야 합니다.")
-  private List<MultipartFile> photoFiles;
 
   public Post toEntity(User user, Store store, List<Photo> photos, Thumbnail thumbnail) {
     return Post.builder()
