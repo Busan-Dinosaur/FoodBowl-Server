@@ -1,7 +1,7 @@
 package com.dinosaur.foodbowl.domain.user.dao;
 
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.entity.role.UserRole;
+import com.dinosaur.foodbowl.domain.user.entity.UserRole;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

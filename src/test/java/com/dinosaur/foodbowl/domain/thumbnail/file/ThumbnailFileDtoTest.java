@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.global.util.thumbnail.file;
+package com.dinosaur.foodbowl.domain.thumbnail.file;
 
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

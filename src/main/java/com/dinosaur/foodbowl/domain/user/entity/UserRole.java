@@ -1,8 +1,7 @@
-package com.dinosaur.foodbowl.domain.user.entity.role;
+package com.dinosaur.foodbowl.domain.user.entity;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,18 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+@Getter
 @Entity
 @Table(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"role"})
-@Getter
+@EqualsAndHashCode(of = {"user", "role"}, callSuper = false)
 public class UserRole extends BaseEntity {
 
   @Id
@@ -43,23 +41,5 @@ public class UserRole extends BaseEntity {
   public UserRole(User user, Role role) {
     this.user = user;
     this.role = role;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    UserRole userRole = (UserRole) o;
-    return Objects.equals(user.getId(), userRole.getUser().getId()) &&
-        Objects.equals(role.getId(), userRole.getRole().getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(user.getId(), role.getId());
   }
 }

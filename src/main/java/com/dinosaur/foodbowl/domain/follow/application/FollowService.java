@@ -1,6 +1,5 @@
 package com.dinosaur.foodbowl.domain.follow.application;
 
-import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class FollowService {
 
   private final UserFindDao userFindDao;
-  private final FollowRepository followRepository;
 
   @Transactional
   public void follow(User me, Long otherId) {
@@ -36,5 +34,4 @@ public class FollowService {
 
     me.unfollow(other);
   }
-
 }

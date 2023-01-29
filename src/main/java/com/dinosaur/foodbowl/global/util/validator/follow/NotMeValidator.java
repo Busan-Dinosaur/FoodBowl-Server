@@ -1,14 +1,11 @@
 package com.dinosaur.foodbowl.global.util.validator.follow;
 
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-public class IsMeValidator implements ConstraintValidator<NotMe, Long> {
-
-  @Autowired
-  private AuthUtil authUtil;
+public class NotMeValidator implements ConstraintValidator<NotMe, Long> {
 
   @Override
   public void initialize(NotMe constraintAnnotation) {
@@ -16,7 +13,10 @@ public class IsMeValidator implements ConstraintValidator<NotMe, Long> {
 
   @Override
   public boolean isValid(Long userId, ConstraintValidatorContext context) {
-    if (userId.equals(authUtil.getUserIdByJWT())) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    long loginUserId = Long.parseLong(authentication.getName());
+
+    if (userId.equals(loginUserId)) {
       context.disableDefaultConstraintViolation();
       context.buildConstraintViolationWithTemplate("자신에 대한 요청은 불가능합니다.")
           .addConstraintViolation();

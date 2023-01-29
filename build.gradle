@@ -11,6 +11,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -18,10 +19,6 @@ configurations {
 
 repositories {
     mavenCentral()
-}
-
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
 }
 
 dependencies {
@@ -33,6 +30,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -59,19 +58,20 @@ test {
     finalizedBy jacocoTestReport
 }
 
-asciidoctor {
-    inputs.dir snippetsDir
-    dependsOn test
-}
-
 asciidoctor.doFirst {
     delete file("src/main/resources/static/docs")
 }
 
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
+}
+
 bootJar {
     dependsOn asciidoctor
-    from("${asciidoctor.outputDir}") {
-        into "static/docs"
+    from("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
     }
 }
 

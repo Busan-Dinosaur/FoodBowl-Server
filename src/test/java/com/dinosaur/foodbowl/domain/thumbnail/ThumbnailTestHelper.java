@@ -1,8 +1,8 @@
-package com.dinosaur.foodbowl.global.util.thumbnail;
+package com.dinosaur.foodbowl.domain.thumbnail;
 
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
+import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;

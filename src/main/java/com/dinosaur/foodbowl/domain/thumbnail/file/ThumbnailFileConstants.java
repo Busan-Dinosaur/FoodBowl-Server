@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.global.util.thumbnail.file;
+package com.dinosaur.foodbowl.domain.thumbnail.file;
 
 import static java.io.File.separator;
 

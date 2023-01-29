@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.user.entity.role;
+package com.dinosaur.foodbowl.domain.user.entity;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.TYPE_INVALID;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -17,14 +17,12 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+@Getter
 @Entity
 @Table(name = "role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"roleType"})
-@Getter
 public class Role {
 
   private static final int MAX_NAME_LENGTH = 45;

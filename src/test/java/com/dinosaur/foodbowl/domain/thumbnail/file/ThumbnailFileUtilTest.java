@@ -1,6 +1,6 @@
-package com.dinosaur.foodbowl.global.util.thumbnail.file;
+package com.dinosaur.foodbowl.domain.thumbnail.file;
 
-import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
+import static com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

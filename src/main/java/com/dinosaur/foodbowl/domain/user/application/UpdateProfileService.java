@@ -1,9 +1,9 @@
 package com.dinosaur.foodbowl.domain.user.application;
 
+import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailUtil;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dto.request.UpdateProfileRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

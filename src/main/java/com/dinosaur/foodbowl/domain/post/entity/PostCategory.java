@@ -1,6 +1,6 @@
-package com.dinosaur.foodbowl.domain.follow.entity;
+package com.dinosaur.foodbowl.domain.post.entity;
 
-import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,32 +14,30 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "follow")
+@Table(name = "post_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"following", "follower"}, callSuper = false)
-public class Follow extends BaseEntity {
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
+public class PostCategory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "following_id", nullable = false, updatable = false)
-  private User following;
+  @JoinColumn(name = "post_id", nullable = false, updatable = false)
+  private Post post;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "follower_id", nullable = false, updatable = false)
-  private User follower;
+  @JoinColumn(name = "category_id", nullable = false, updatable = false)
+  private Category category;
 
   @Builder
-  private Follow(User following, User follower) {
-    this.following = following;
-    this.follower = follower;
+  private PostCategory(Post post, Category category) {
+    this.post = post;
+    this.category = category;
   }
 }

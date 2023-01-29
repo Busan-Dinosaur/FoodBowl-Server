@@ -1,5 +1,8 @@
 package com.dinosaur.foodbowl.global.util.resolver;
 
+import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,18 +13,22 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-public class LoginUserIdArgumentResolver implements HandlerMethodArgumentResolver {
+@RequiredArgsConstructor
+public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+
+  private final UserFindDao userFindDao;
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
-    return parameter.hasParameterAnnotation(LoginUserId.class) && parameter.getParameterType()
-        .equals(Long.class);
+    return parameter.hasParameterAnnotation(LoginUser.class) && parameter.getParameterType()
+        .equals(User.class);
   }
 
   @Override
-  public Long resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+  public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return Long.parseLong(authentication.getName());
+    long loginUserId = Long.parseLong(authentication.getName());
+    return userFindDao.findById(loginUserId);
   }
 }

@@ -13,7 +13,7 @@ import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.WRONG_FORMAT;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.WRONG_SIGNATURE;
 
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.global.config.security.dto.TokenValidationDto;
 import com.dinosaur.foodbowl.global.config.security.exception.EmptyJwtException;
 import com.dinosaur.foodbowl.global.config.security.exception.WrongFormatJwtException;

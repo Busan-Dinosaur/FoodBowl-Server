@@ -29,7 +29,7 @@ public class Address extends BaseEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "address_name", nullable = false, length = MAX_ADDRESS_NAME_LENGTH)
+  @Column(name = "address_name", nullable = false, unique = true, length = MAX_ADDRESS_NAME_LENGTH)
   private String addressName;
 
   @Column(name = "region_1depth_name", nullable = false, length = MAX_REGION_DEPTH_NAME_LENGTH)

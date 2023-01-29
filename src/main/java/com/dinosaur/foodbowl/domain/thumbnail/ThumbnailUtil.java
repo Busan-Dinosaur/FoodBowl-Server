@@ -1,9 +1,9 @@
-package com.dinosaur.foodbowl.global.util.thumbnail;
+package com.dinosaur.foodbowl.domain.thumbnail;
 
-import static com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType.DEFAULT;
+import static com.dinosaur.foodbowl.domain.thumbnail.ThumbnailType.DEFAULT;
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
+import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.NonNull;

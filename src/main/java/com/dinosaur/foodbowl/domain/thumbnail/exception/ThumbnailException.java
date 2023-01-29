@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.global.util.thumbnail.exception;
+package com.dinosaur.foodbowl.domain.thumbnail.exception;
 
 public class ThumbnailException extends RuntimeException {
 

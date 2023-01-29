@@ -4,10 +4,10 @@ import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.StoreTestHelper;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
+import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,15 +27,15 @@ public class PostTestHelper {
   @Autowired
   PostRepository postRepository;
 
-  public PostBuilder builder() {
-    return new PostBuilder();
-  }
-
   private String getRandomUUIDLengthWith(int length) {
     String randomString = UUID.randomUUID()
         .toString();
     length = Math.min(length, randomString.length());
     return randomString.substring(0, length);
+  }
+
+  public PostBuilder builder() {
+    return new PostBuilder();
   }
 
   public final class PostBuilder {

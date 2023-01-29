@@ -1,5 +1,4 @@
-package com.dinosaur.foodbowl.global.util.thumbnail;
-
+package com.dinosaur.foodbowl.domain.thumbnail;
 
 import static java.awt.Image.SCALE_SMOOTH;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;

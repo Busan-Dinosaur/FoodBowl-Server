@@ -1,12 +1,12 @@
-package com.dinosaur.foodbowl.global.util.thumbnail.file;
+package com.dinosaur.foodbowl.domain.thumbnail.file;
 
-import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
+import static com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileConstants.ROOT_PATH;
 
+import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailType;
+import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailUtil;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailUtil;
-import com.dinosaur.foodbowl.global.util.thumbnail.exception.ThumbnailException;
+import com.dinosaur.foodbowl.domain.thumbnail.exception.ThumbnailException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

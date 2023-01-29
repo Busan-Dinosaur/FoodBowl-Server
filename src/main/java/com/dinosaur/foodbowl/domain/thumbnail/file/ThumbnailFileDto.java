@@ -1,7 +1,7 @@
-package com.dinosaur.foodbowl.global.util.thumbnail.file;
+package com.dinosaur.foodbowl.domain.thumbnail.file;
 
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
-import static com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileConstants.DEFAULT_THUMBNAIL_PATH;
+import static com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileConstants.DEFAULT_THUMBNAIL_PATH;
 import static java.io.File.separator;
 
 import java.io.BufferedInputStream;

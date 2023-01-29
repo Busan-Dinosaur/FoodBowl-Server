@@ -1,6 +1,6 @@
 package com.dinosaur.foodbowl.global.config.web;
 
-import com.dinosaur.foodbowl.global.util.resolver.LoginUserIdArgumentResolver;
+import com.dinosaur.foodbowl.global.util.resolver.LoginUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfiguration implements WebMvcConfigurer {
 
-  private final LoginUserIdArgumentResolver loginUserIdArgumentResolver;
+  private final LoginUserArgumentResolver loginUserArgumentResolver;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-    resolvers.add(loginUserIdArgumentResolver);
+    resolvers.add(loginUserArgumentResolver);
   }
 }
