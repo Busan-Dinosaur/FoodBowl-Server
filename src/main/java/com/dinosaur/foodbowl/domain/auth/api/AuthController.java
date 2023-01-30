@@ -8,6 +8,7 @@ import com.dinosaur.foodbowl.domain.auth.application.AuthService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.auth.dto.response.CheckResponseDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.CookieUtils;
@@ -15,6 +16,7 @@ import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -55,6 +58,13 @@ public class AuthController {
 
     return ResponseEntity.created(URI.create("/users/" + signUpResponseDto.getUserId()))
         .body(signUpResponseDto);
+  }
+
+  @GetMapping("/sign-up/check/nickname")
+  public ResponseEntity<CheckResponseDto> checkNickname(@RequestParam @NotNull String nickname) {
+    CheckResponseDto response = authService.checkNickname(nickname);
+
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/log-in")
