@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 public class Nickname {
 
   public static final int MAX_NICKNAME_LENGTH = 45;
-  public static final String pattern = "^[a-zA-Z0-9가-힣]{1,16}";
+  public static final String PATTERN = "^[a-zA-Z0-9가-힣]{1,16}";
   public static final String NICKNAME_INVALID = "닉네임은 1~16자 한글, 영어, 숫자만 가능합니다.";
 
-  @Pattern(regexp = pattern, message = NICKNAME_INVALID)
+  @Pattern(regexp = PATTERN, message = NICKNAME_INVALID)
   @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
   private String nickname;
 
