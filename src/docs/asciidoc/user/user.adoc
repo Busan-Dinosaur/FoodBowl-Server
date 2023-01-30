@@ -13,6 +13,28 @@ endif::[]
 
 link:../foodbowl.html[API 목록으로 돌아가기]
 
+== *닉네임 유효성 및 중복 검사*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/nickname-check/http-request.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/nickname-check/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/nickname-check/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/nickname-check/response-fields.adoc[]
+
 == *회원가입*
 
 === 요청
