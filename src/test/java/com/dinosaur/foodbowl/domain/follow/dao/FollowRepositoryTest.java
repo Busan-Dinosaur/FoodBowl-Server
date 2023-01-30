@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ class FollowRepositoryTest extends IntegrationTest {
       User user = User.builder()
           .loginId(loginId)
           .password(password)
-          .nickname(nickname)
+          .nickname(Nickname.from(nickname))
           .introduce(introduce)
           .build();
       return userRepository.save(user);

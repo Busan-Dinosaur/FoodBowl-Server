@@ -2,7 +2,7 @@ package com.dinosaur.foodbowl.domain.auth.api;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
+import static com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
@@ -40,6 +40,7 @@ import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
 import jakarta.servlet.http.Cookie;
@@ -198,7 +199,7 @@ class AuthControllerTest extends IntegrationTest {
           User.builder()
               .loginId(validLoginId)
               .password(validPassword)
-              .nickname(validNickname)
+              .nickname(Nickname.from(validNickname))
               .introduce(validIntroduce)
               .thumbnail(thumbnail)
               .build());
@@ -344,7 +345,7 @@ class AuthControllerTest extends IntegrationTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(ExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
-                    AuthFieldError.NICKNAME_INVALID.getMessage())));
+                    Nickname.NICKNAME_INVALID)));
       }
 
       @Test

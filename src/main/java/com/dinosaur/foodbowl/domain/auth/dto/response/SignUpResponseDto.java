@@ -1,6 +1,8 @@
 package com.dinosaur.foodbowl.domain.auth.dto.response;
 
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,7 +11,8 @@ public class SignUpResponseDto {
 
   private final Long userId;
   private final String loginId;
-  private final String nickname;
+  @JsonUnwrapped
+  private final Nickname nickname;
   private final String introduce;
   private final String thumbnailURL;
 
@@ -24,7 +27,7 @@ public class SignUpResponseDto {
   }
 
   @Builder
-  private SignUpResponseDto(Long userId, String loginId, String nickname, String introduce,
+  private SignUpResponseDto(Long userId, String loginId, Nickname nickname, String introduce,
       String thumbnailURL) {
     this.userId = userId;
     this.loginId = loginId;

@@ -10,6 +10,7 @@ import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +30,7 @@ class AuthServiceTest extends IntegrationTest {
       SignUpRequestDto request = SignUpRequestDto.builder()
           .loginId("TestLoginId")
           .password("TestPassword")
-          .nickname("TestNickname")
+          .nickname(Nickname.from("TestNickname"))
           .build();
 
       SignUpResponseDto response = authService.signUp(request);

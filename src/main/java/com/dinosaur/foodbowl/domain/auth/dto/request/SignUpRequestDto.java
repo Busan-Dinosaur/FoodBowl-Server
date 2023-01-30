@@ -5,7 +5,9 @@ import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH
 
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.util.validator.image.ImageOrNull;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,15 +27,15 @@ public class SignUpRequestDto {
   private String loginId;
   @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$", message = Message.PASSWORD_INVALID)
   private String password;
-  @Pattern(regexp = "^[a-zA-Z0-9가-힣]{1,16}", message = Message.NICKNAME_INVALID)
-  private String nickname;
+  @Valid
+  private Nickname nickname;
   @Length(max = MAX_INTRODUCE_LENGTH)
   private String introduce;
   @ImageOrNull
   private MultipartFile thumbnail;
 
   @Builder
-  private SignUpRequestDto(String loginId, String password, String nickname,
+  private SignUpRequestDto(String loginId, String password, Nickname nickname,
       String introduce, MultipartFile thumbnail) {
     this.loginId = loginId;
     this.password = password;

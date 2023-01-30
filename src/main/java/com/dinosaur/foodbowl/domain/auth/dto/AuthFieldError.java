@@ -4,7 +4,6 @@ public enum AuthFieldError {
 
   LOGIN_ID_INVALID(Message.LOGIN_ID_INVALID),
   PASSWORD_INVALID(Message.PASSWORD_INVALID),
-  NICKNAME_INVALID(Message.NICKNAME_INVALID),
   ;
 
   private final String message;
@@ -21,6 +20,5 @@ public enum AuthFieldError {
 
     public static final String LOGIN_ID_INVALID = "로그인 아이디는 4~12자 영어, 숫자, '_'만 가능합니다.";
     public static final String PASSWORD_INVALID = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.";
-    public static final String NICKNAME_INVALID = "닉네임은 1~16자 한글, 영어, 숫자만 가능합니다.";
   }
 }

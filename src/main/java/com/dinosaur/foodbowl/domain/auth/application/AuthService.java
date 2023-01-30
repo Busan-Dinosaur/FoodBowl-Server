@@ -12,6 +12,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class AuthService {
   @Transactional
   public SignUpResponseDto signUp(SignUpRequestDto request) {
     checkDuplicateLoginId(request.getLoginId());
-    checkDuplicateNickname(request.getNickname());
+    checkDuplicateNickname(request.getNickname().getNickname());
 
     Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail.orElse(null), passwordEncoder));
@@ -46,7 +47,7 @@ public class AuthService {
   }
 
   private void checkDuplicateNickname(String nickname) {
-    if (userRepository.existsByNickname(nickname)) {
+    if (userRepository.existsByNickname(Nickname.from(nickname))) {
       throw new BusinessException(nickname, "nickname", NICKNAME_DUPLICATE);
     }
   }

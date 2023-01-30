@@ -9,8 +9,10 @@ import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -37,7 +39,6 @@ public class User extends BaseEntity {
 
   public static final int MAX_LOGIN_ID_LENGTH = 45;
   public static final int MAX_PASSWORD_LENGTH = 512;
-  public static final int MAX_NICKNAME_LENGTH = 45;
   public static final int MAX_INTRODUCE_LENGTH = 255;
 
   @Getter
@@ -59,8 +60,8 @@ public class User extends BaseEntity {
   private String password;
 
   @Getter
-  @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
-  private String nickname;
+  @Embedded
+  private Nickname nickname;
 
   @Getter
   @Column(name = "introduce", length = MAX_INTRODUCE_LENGTH)
@@ -77,7 +78,7 @@ public class User extends BaseEntity {
   private final List<Post> posts = new ArrayList<>();
 
   @Builder
-  private User(Thumbnail thumbnail, String loginId, String password, String nickname,
+  private User(Thumbnail thumbnail, String loginId, String password, Nickname nickname,
       String introduce) {
     this.thumbnail = thumbnail;
     this.loginId = loginId;
