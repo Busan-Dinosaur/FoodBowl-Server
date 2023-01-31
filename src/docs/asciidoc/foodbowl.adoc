@@ -16,3 +16,7 @@ link:user/user.html[API 문서 보기]
 == *FOLLOW API*
 
 link:follow/follow.html[API 문서 보기]
+
+== *COMMENT API*
+
+link:comment/comment.html[API 문서 보기]
