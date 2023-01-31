@@ -39,7 +39,7 @@ public class PostService {
     List<Photo> photos = photoUtil.save(images);
     Category category = categoryRepository.getReferenceById(request.getCategoryId());
     Store store = storeFindDao.findStoreByName(request.getStore(), request.getAddress(), category);
-    Thumbnail thumbnail = getThumbnail(images);
+    Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0)).orElse(null);
 
     Post post = request.toEntity(user, store, photos, thumbnail);
 
@@ -50,11 +50,6 @@ public class PostService {
     if (images.isEmpty()) {
       throw new BusinessException(images, "images", POST_HAS_NOT_IMAGE);
     }
-  }
-
-  private Thumbnail getThumbnail(List<MultipartFile> images) {
-    MultipartFile firstFile = images.get(0);
-    return thumbnailUtil.saveIfExist(firstFile).orElse(null);
   }
 
 }
