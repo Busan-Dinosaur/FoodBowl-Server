@@ -20,7 +20,7 @@ public class ProfileResponseDto {
       long postCount) {
     return ProfileResponseDto.builder()
         .userId(user.getId())
-        .nickname(user.getNickname())
+        .nickname(user.getNickname().getNickname())
         .introduce(user.getIntroduce())
         .followerCount(followerCount)
         .followingCount(followingCount)

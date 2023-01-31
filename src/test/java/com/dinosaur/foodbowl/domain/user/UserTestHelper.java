@@ -1,13 +1,13 @@
 package com.dinosaur.foodbowl.domain.user;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_PASSWORD_LENGTH;
 
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,7 +73,8 @@ public class UserTestHelper {
           .thumbnail(thumbnail)
           .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
           .password(password != null ? password : getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
+          .nickname(nickname != null ? Nickname.from(nickname)
+              : Nickname.from(getRandomUUIDLengthWith(Nickname.MAX_NICKNAME_LENGTH)))
           .introduce(introduce)
           .build());
     }

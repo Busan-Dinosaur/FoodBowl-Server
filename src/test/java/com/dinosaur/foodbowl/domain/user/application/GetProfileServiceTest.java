@@ -41,7 +41,7 @@ class GetProfileServiceTest extends IntegrationTest {
       ProfileResponseDto result = getProfileService.getProfile(me.getId());
 
       assertThat(result.getUserId()).isEqualTo(me.getId());
-      assertThat(result.getNickname()).isEqualTo(me.getNickname());
+      assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
       assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
       assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
       assertThat(result.getFollowerCount()).isEqualTo(1);
@@ -67,7 +67,7 @@ class GetProfileServiceTest extends IntegrationTest {
       ProfileResponseDto result = getProfileService.getProfile(me.getId());
 
       assertThat(result.getUserId()).isEqualTo(me.getId());
-      assertThat(result.getNickname()).isEqualTo(me.getNickname());
+      assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
       assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
       assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
       assertThat(result.getPostCount()).isEqualTo(myPostCount);

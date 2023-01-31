@@ -9,6 +9,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,7 @@ class UserRepositoryTest extends IntegrationTest {
     @DisplayName("유니크 컬럼에 중복이 발생하면 예외가 발생한다.")
     void should_throwException_when_uniqueColumnIsDuplicate() {
       assertThatThrownBy(() -> userBuilder.loginId(user.getLoginId()).build());
-      assertThatThrownBy(() -> userBuilder.nickname(user.getNickname()).build());
+      assertThatThrownBy(() -> userBuilder.nickname((user.getNickname()).getNickname()).build());
     }
 
     @Test
@@ -72,7 +73,7 @@ class UserRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("닉네임이 존재하면 true 반환한다.")
     void should_returnTrue_when_nicknameExist() {
-      String nickname = user.getNickname();
+      Nickname nickname = Nickname.from(user.getNickname().getNickname());
 
       boolean result = userRepository.existsByNickname(nickname);
 
@@ -82,7 +83,7 @@ class UserRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("닉네임이 존재하지 않으면 false 반환한다.")
     void should_returnFalse_when_nicknameNotExist() {
-      String nickname = "not-exist-nickname";
+      Nickname nickname = Nickname.from("not-exist-nickname");
 
       boolean result = userRepository.existsByNickname(nickname);
 

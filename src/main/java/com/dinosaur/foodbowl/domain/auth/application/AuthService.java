@@ -6,14 +6,17 @@ import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
 
 import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.auth.dto.response.CheckResponseDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailUtil;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class AuthService {
   @Transactional
   public SignUpResponseDto signUp(SignUpRequestDto request) {
     checkDuplicateLoginId(request.getLoginId());
-    checkDuplicateNickname(request.getNickname());
+    checkDuplicateNickname(request.getNickname().getNickname());
 
     Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
     User user = userRepository.save(request.toEntity(userThumbnail.orElse(null), passwordEncoder));
@@ -46,7 +49,7 @@ public class AuthService {
   }
 
   private void checkDuplicateNickname(String nickname) {
-    if (userRepository.existsByNickname(nickname)) {
+    if (userRepository.existsByNickname(Nickname.from(nickname))) {
       throw new BusinessException(nickname, "nickname", NICKNAME_DUPLICATE);
     }
   }
@@ -59,5 +62,17 @@ public class AuthService {
     }
 
     return user.getId();
+  }
+
+  public CheckResponseDto checkNickname(final String nickname) {
+    if (!Pattern.matches(Nickname.PATTERN, nickname)) {
+      return CheckResponseDto.of(false, Nickname.NICKNAME_INVALID);
+    }
+
+    if (userRepository.existsByNickname(Nickname.from(nickname))) {
+      return CheckResponseDto.of(false, NICKNAME_DUPLICATE.getMessage());
+    }
+
+    return CheckResponseDto.of(true, "사용 가능한 닉네임입니다.");
   }
 }

@@ -2,7 +2,7 @@ package com.dinosaur.foodbowl.domain.auth.api;
 
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_INTRODUCE_LENGTH;
 import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_LOGIN_ID_LENGTH;
-import static com.dinosaur.foodbowl.domain.user.entity.User.MAX_NICKNAME_LENGTH;
+import static com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname.MAX_NICKNAME_LENGTH;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.REFRESH_TOKEN;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.LOGIN_ID_DUPLICATE;
@@ -11,6 +11,7 @@ import static com.dinosaur.foodbowl.global.error.ErrorCode.PASSWORD_NOT_MATCH;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.USER_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -36,10 +37,12 @@ import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.auth.dto.AuthFieldError;
 import com.dinosaur.foodbowl.domain.auth.dto.request.LoginRequestDto;
 import com.dinosaur.foodbowl.domain.auth.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.auth.dto.response.CheckResponseDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.error.ExceptionAdvice;
 import jakarta.servlet.http.Cookie;
@@ -198,7 +201,7 @@ class AuthControllerTest extends IntegrationTest {
           User.builder()
               .loginId(validLoginId)
               .password(validPassword)
-              .nickname(validNickname)
+              .nickname(Nickname.from(validNickname))
               .introduce(validIntroduce)
               .thumbnail(thumbnail)
               .build());
@@ -344,7 +347,7 @@ class AuthControllerTest extends IntegrationTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
                 .value(ExceptionAdvice.getErrorMessage(invalidNickname, "nickname",
-                    AuthFieldError.NICKNAME_INVALID.getMessage())));
+                    Nickname.NICKNAME_INVALID)));
       }
 
       @Test
@@ -509,6 +512,38 @@ class AuthControllerTest extends IntegrationTest {
     private ResultActions callLogoutApi() throws Exception {
       return mockMvc.perform(post("/log-out")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("닉네임 유효성 및 중복 검사")
+  class CheckNickname {
+
+    @Test
+    @DisplayName("닉네임 유효성 및 중복 검사에 성공한다.")
+    void should_success_when_checkNickname() throws Exception {
+      CheckResponseDto response = CheckResponseDto.of(true, "사용 가능한 닉네임입니다.");
+      doReturn(response).when(authService).checkNickname(anyString());
+
+      String nickname = "hello";
+      callCheckNicknameApi(nickname)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.available").value(true))
+          .andExpect(jsonPath("$.message").value("사용 가능한 닉네임입니다."))
+          .andDo(document("nickname-check",
+              queryParameters(
+                  parameterWithName("nickname").description("유저가 입력한 닉네임")
+              ),
+              responseFields(
+                  fieldWithPath("available").description("true: 사용 가능 +\nfalse: 사용 불가능"),
+                  fieldWithPath("message").description("사용 불가능한 이유")
+              )));
+    }
+
+    private ResultActions callCheckNicknameApi(String nickname) throws Exception {
+      return mockMvc.perform(get("/sign-up/check/nickname")
+              .queryParam("nickname", nickname))
           .andDo(print());
     }
   }
