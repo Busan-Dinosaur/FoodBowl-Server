@@ -6,6 +6,7 @@ import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -59,7 +60,7 @@ class PostServiceTest extends IntegrationTest {
       // then
       Assertions.assertThatThrownBy(
               () -> postService.createPost(user, requestDto, Collections.emptyList()))
-          .isInstanceOf(IndexOutOfBoundsException.class);
+          .isInstanceOf(BusinessException.class);
     }
   }
 }
