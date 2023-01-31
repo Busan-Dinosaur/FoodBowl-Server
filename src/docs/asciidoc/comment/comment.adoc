@@ -68,3 +68,25 @@ include::{snippets}/comment-update/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/comment-update/response-headers.adoc[]
+
+== *댓글 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-delete/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-delete/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/comment-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-delete/http-response.adoc[]
