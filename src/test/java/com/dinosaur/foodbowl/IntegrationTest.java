@@ -6,6 +6,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.dinosaur.foodbowl.domain.auth.application.AuthService;
+import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
@@ -13,20 +15,20 @@ import com.dinosaur.foodbowl.domain.photo.PhotoTestHelper;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
+import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
+import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
-import com.dinosaur.foodbowl.domain.user.application.signup.SignUpService;
 import com.dinosaur.foodbowl.domain.user.dao.RoleRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
-import com.dinosaur.foodbowl.global.config.security.JwtTokenProvider;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
-import com.dinosaur.foodbowl.global.util.thumbnail.file.ThumbnailFileUtil;
+import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
+import com.dinosaur.foodbowl.global.util.CookieUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.io.File;
@@ -40,8 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +76,7 @@ public class IntegrationTest {
   @SpyBean
   protected CategoryRepository categoryRepository;
 
+  /******* Dao *******/
   @SpyBean
   protected UserFindDao userFindDao;
 
@@ -83,7 +88,13 @@ public class IntegrationTest {
   protected GetProfileService getProfileService;
 
   @SpyBean
-  protected SignUpService signUpService;
+  protected AuthService authService;
+
+  @SpyBean
+  protected TokenService tokenService;
+
+  @SpyBean
+  protected CookieUtils cookieUtils;
 
   @SpyBean
   protected DeleteAccountService deleteAccountService;
@@ -98,13 +109,13 @@ public class IntegrationTest {
   protected PostService postService;
 
   /******* Helper *******/
-  @SpyBean
+  @Autowired
   protected UserTestHelper userTestHelper;
 
-  @SpyBean
+  @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
 
-  @SpyBean
+  @Autowired
   protected PostTestHelper postTestHelper;
 
   @SpyBean
@@ -114,15 +125,18 @@ public class IntegrationTest {
   @SpyBean
   protected ThumbnailFileUtil thumbnailFileUtil;
 
-  @SpyBean
-  protected AuthUtil authUtil;
-
   /******* Spring Bean *******/
   @Autowired
   protected WebApplicationContext webApplicationContext;
 
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
+
+  @Autowired
+  protected PasswordEncoder passwordEncoder;
+
+  @Autowired
+  protected RedisTemplate redisTemplate;
 
   @PersistenceContext
   protected EntityManager em;
@@ -155,5 +169,15 @@ public class IntegrationTest {
     return new ClassPathResource("static").getPath() + separator +
         "thumbnail" + separator +
         LocalDate.now();
+  }
+
+  protected String asJsonString(final Object obj) {
+    try {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final String content = objectMapper.writeValueAsString(obj);
+      return content;
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
   }
 }

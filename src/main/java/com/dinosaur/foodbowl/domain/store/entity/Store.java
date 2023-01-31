@@ -36,18 +36,12 @@ public class Store extends BaseEntity {
   @JoinColumn(name = "address_id", nullable = false)
   private Address address;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id", nullable = false)
-  private Category category;
-
-  @Column(name = "store_name", length = MAX_STORE_NAME_LENGTH, nullable = false)
+  @Column(name = "store_name", nullable = false, unique = true, length = MAX_STORE_NAME_LENGTH)
   private String storeName;
 
   @Builder
   private Store(Address address, Category category, String storeName) {
     this.address = address;
-    this.category = category;
     this.storeName = storeName;
   }
-
 }

@@ -5,7 +5,6 @@ import static com.dinosaur.foodbowl.domain.store.entity.Store.MAX_STORE_NAME_LEN
 import com.dinosaur.foodbowl.domain.address.AddressTestHelper;
 import com.dinosaur.foodbowl.domain.address.entity.Address;
 import com.dinosaur.foodbowl.domain.category.CategoryTestHelper;
-import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.domain.store.dao.StoreRepository;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import java.util.UUID;
@@ -24,21 +23,20 @@ public class StoreTestHelper {
   @Autowired
   CategoryTestHelper categoryTestHelper;
 
-  public StoreBuilder builder() {
-    return new StoreBuilder();
-  }
-
-  private static String getRandomUUIDLengthWith(int length) {
+  private String getRandomUUIDLengthWith(int length) {
     String randomString = UUID.randomUUID()
         .toString();
     length = Math.min(length, randomString.length());
     return randomString.substring(0, length);
   }
 
+  public StoreBuilder builder() {
+    return new StoreBuilder();
+  }
+
   public final class StoreBuilder {
 
     private Address address;
-    private Category category;
     private String storeName;
 
     private StoreBuilder() {
@@ -46,11 +44,6 @@ public class StoreTestHelper {
 
     public StoreBuilder address(Address address) {
       this.address = address;
-      return this;
-    }
-
-    public StoreBuilder category(Category category) {
-      this.category = category;
       return this;
     }
 
@@ -62,7 +55,6 @@ public class StoreTestHelper {
     public Store build() {
       return storeRepository.save(Store.builder()
           .address(address != null ? address : addressTestHelper.builder().build())
-          .category(category != null ? category : categoryTestHelper.generateRandomCategory())
           .storeName(storeName != null ? storeName : getRandomUUIDLengthWith(MAX_STORE_NAME_LENGTH))
           .build());
     }

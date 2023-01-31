@@ -25,7 +25,7 @@ class PostServiceTest extends IntegrationTest {
     @DisplayName("올바른 요청에 대한 게시글 생성은 성공한다.")
     public void should_success_when_valid_request() {
       // given
-      User user = userTestHelper.generateUserWithoutThumbnail();
+      User user = userTestHelper.builder().build();
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
       List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
@@ -51,7 +51,7 @@ class PostServiceTest extends IntegrationTest {
     @DisplayName("사진이 한장도 없으면 게시글 생성은 실패한다.")
     public void should_fail_when_no_file() {
       // given
-      User user = userTestHelper.generateUserWithoutThumbnail();
+      User user = userTestHelper.builder().build();
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
       PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,

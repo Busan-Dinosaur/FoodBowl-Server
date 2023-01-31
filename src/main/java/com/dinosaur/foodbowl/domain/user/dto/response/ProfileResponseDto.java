@@ -20,7 +20,7 @@ public class ProfileResponseDto {
       long postCount) {
     return ProfileResponseDto.builder()
         .userId(user.getId())
-        .nickname(user.getNickname())
+        .nickname(user.getNickname().getNickname())
         .introduce(user.getIntroduce())
         .followerCount(followerCount)
         .followingCount(followingCount)
@@ -30,7 +30,7 @@ public class ProfileResponseDto {
   }
 
   @Builder
-  private ProfileResponseDto(long userId, @NonNull String nickname, @NonNull String introduce,
+  private ProfileResponseDto(long userId, @NonNull String nickname, String introduce,
       long followerCount, long followingCount, long postCount, String thumbnailURL) {
     this.userId = userId;
     this.followerCount = followerCount;

@@ -2,7 +2,8 @@ package com.dinosaur.foodbowl.global.config.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
+import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.util.List;

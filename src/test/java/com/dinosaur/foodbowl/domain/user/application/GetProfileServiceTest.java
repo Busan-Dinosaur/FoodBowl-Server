@@ -3,19 +3,21 @@ package com.dinosaur.foodbowl.domain.user.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.IntegrationTest;
+import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.user.dto.response.ProfileResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailTestHelper;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class GetProfileServiceTest extends IntegrationTest {
 
-  @AfterAll
-  static void deleteAll() {
-    ThumbnailTestHelper.deleteAllThumbnails();
+  private UserBuilder userBuilder;
+
+  @BeforeEach
+  void setUp() {
+    userBuilder = userTestHelper.builder();
   }
 
   @Nested
@@ -25,9 +27,9 @@ class GetProfileServiceTest extends IntegrationTest {
     @Test
     @DisplayName("내가 2명을 팔로우하고 1명이 팔로잉 할 때 나의 팔로워는 1명, 팔로잉은 2명이다.")
     void should_getProfileExactly_when_follower1following2() {
-      User me = userTestHelper.generateUser();
-      User userA = userTestHelper.generateUser();
-      User userB = userTestHelper.generateUser();
+      User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+      User userA = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+      User userB = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
       me.follow(userA);
       me.follow(userB);
@@ -39,7 +41,7 @@ class GetProfileServiceTest extends IntegrationTest {
       ProfileResponseDto result = getProfileService.getProfile(me.getId());
 
       assertThat(result.getUserId()).isEqualTo(me.getId());
-      assertThat(result.getNickname()).isEqualTo(me.getNickname());
+      assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
       assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
       assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
       assertThat(result.getFollowerCount()).isEqualTo(1);
@@ -49,8 +51,8 @@ class GetProfileServiceTest extends IntegrationTest {
     @Test
     @DisplayName("내가 쓴 게시글이 10개일 때 postCount는 10이어야 한다.")
     void should_getPostCountExactly_when_myPostIs10() {
-      User me = userTestHelper.generateUser();
-      User other = userTestHelper.generateUser();
+      User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+      User other = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       int myPostCount = 10;
 
       postTestHelper.builder().user(other).build();
@@ -65,7 +67,7 @@ class GetProfileServiceTest extends IntegrationTest {
       ProfileResponseDto result = getProfileService.getProfile(me.getId());
 
       assertThat(result.getUserId()).isEqualTo(me.getId());
-      assertThat(result.getNickname()).isEqualTo(me.getNickname());
+      assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
       assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
       assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
       assertThat(result.getPostCount()).isEqualTo(myPostCount);

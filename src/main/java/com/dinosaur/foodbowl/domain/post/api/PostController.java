@@ -3,7 +3,7 @@ package com.dinosaur.foodbowl.domain.post.api;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
+import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -20,14 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/posts")
 public class PostController {
 
-  private final AuthUtil authUtil;
   private final PostService postService;
 
   @PostMapping
   public ResponseEntity<Void> createPost(
+      @LoginUser User me,
       @RequestPart(required = true) List<MultipartFile> images,
       @Valid @RequestPart PostCreateRequestDto request) {
-    User me = authUtil.getUserByJWT();
 
     Long postId = postService.createPost(me, request, images);
 

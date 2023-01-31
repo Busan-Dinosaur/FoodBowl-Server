@@ -54,7 +54,7 @@ public class Post extends BaseEntity {
   @JoinColumn(name = "store_id", nullable = false)
   private Store store;
 
-  @Column(name = "content", nullable = false)
+  @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
   private String content;
 
   @OneToMany(mappedBy = "post", cascade = ALL)

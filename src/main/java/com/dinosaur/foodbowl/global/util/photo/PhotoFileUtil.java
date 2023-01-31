@@ -1,8 +1,6 @@
 package com.dinosaur.foodbowl.global.util.photo;
 
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
-import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.global.util.thumbnail.ThumbnailType;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

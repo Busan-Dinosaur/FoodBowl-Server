@@ -1,7 +1,8 @@
 package com.dinosaur.foodbowl.domain.post.api;
 
-import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
@@ -17,8 +18,8 @@ import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
+import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
@@ -49,8 +50,7 @@ public class PostControllerTest extends IntegrationTest {
     void setup() {
       User me = User.builder().build();
       ReflectionTestUtils.setField(me, "id", userId);
-      doReturn(me).when(authUtil).getUserByJWT();
-      doReturn(userId).when(authUtil).getUserIdByJWT();
+      doReturn(me).when(userFindDao).findById(anyLong());
     }
 
 
@@ -147,7 +147,7 @@ public class PostControllerTest extends IntegrationTest {
               .file(request)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .accept(MediaType.APPLICATION_JSON)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andDo(print());
     }
 
@@ -157,7 +157,7 @@ public class PostControllerTest extends IntegrationTest {
               .file(request)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .accept(MediaType.APPLICATION_JSON)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andDo(print());
     }
   }

@@ -27,6 +27,7 @@ public class Follow extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
+
   @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "following_id", nullable = false, updatable = false)
@@ -41,5 +42,4 @@ public class Follow extends BaseEntity {
     this.following = following;
     this.follower = follower;
   }
-
 }

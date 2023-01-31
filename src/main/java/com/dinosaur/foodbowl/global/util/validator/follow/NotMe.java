@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {IsMeValidator.class})
+@Constraint(validatedBy = {NotMeValidator.class})
 public @interface NotMe {
 
   String message() default "Unable to request yourself";

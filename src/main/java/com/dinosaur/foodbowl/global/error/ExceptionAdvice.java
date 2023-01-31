@@ -53,6 +53,8 @@ public class ExceptionAdvice {
 
   public static String getErrorMessage(String invalidValue, String errorField,
       String errorMessage) {
-    return String.format("[%s] %s: %s", invalidValue, errorField, errorMessage);
+    String[] layerErrorFields = errorField.split("\\.");
+    return String.format("[%s] %s: %s",
+        invalidValue, layerErrorFields[layerErrorFields.length - 1], errorMessage);
   }
 }
