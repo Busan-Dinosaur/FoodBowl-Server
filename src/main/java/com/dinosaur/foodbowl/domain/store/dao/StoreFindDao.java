@@ -12,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class StoreFindDao {
+
   private final StoreRepository storeRepository;
 
-  public Store findStoreByName(StoreRequestDto store, AddressRequestDto address, Category category) {
+  public Store findStoreByName(StoreRequestDto store, AddressRequestDto address) {
     if (storeRepository.existsByStoreName(store.getStoreName())) {
       return storeRepository.findByStoreName(store.getStoreName());
     }
-    return store.toEntity(category, address);
+    return store.toEntity(address);
   }
 }

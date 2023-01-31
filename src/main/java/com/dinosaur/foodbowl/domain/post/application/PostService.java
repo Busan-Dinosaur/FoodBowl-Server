@@ -37,13 +37,18 @@ public class PostService {
   public Long createPost(User user, PostCreateRequestDto request, List<MultipartFile> images) {
     checkImages(images);
     List<Photo> photos = photoUtil.save(images);
-    Category category = categoryRepository.getReferenceById(request.getCategoryId());
-    Store store = storeFindDao.findStoreByName(request.getStore(), request.getAddress(), category);
+    Store store = storeFindDao.findStoreByName(request.getStore(), request.getAddress());
     Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0)).orElse(null);
 
     Post post = request.toEntity(user, store, photos, thumbnail);
+    addCategories(request, post);
 
     return postRepository.save(post).getId();
+  }
+
+  private void addCategories(PostCreateRequestDto request, Post post) {
+    request.getCategoryIds()
+        .forEach(id -> post.addCategory(categoryRepository.getReferenceById(id)));
   }
 
   private void checkImages(List<MultipartFile> images) {

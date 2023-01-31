@@ -21,10 +21,9 @@ public class StoreRequestDto {
   @Length(max = MAX_STORE_NAME_LENGTH)
   private String storeName;
 
-  public Store toEntity(Category category, AddressRequestDto addressRequestDto) {
+  public Store toEntity(AddressRequestDto addressRequestDto) {
     return Store.builder()
         .address(addressRequestDto.toEntity())
-        .category(category)
         .storeName(storeName)
         .build();
   }

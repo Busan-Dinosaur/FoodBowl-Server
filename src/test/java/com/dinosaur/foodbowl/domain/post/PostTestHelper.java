@@ -12,6 +12,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -88,12 +89,13 @@ public class PostTestHelper {
         .build();
   }
 
-  public PostCreateRequestDto getPostCreateRequestDto(StoreRequestDto storeRequestDto, AddressRequestDto addressRequestDto) {
+  public PostCreateRequestDto getPostCreateRequestDto(StoreRequestDto storeRequestDto,
+      AddressRequestDto addressRequestDto) {
     return PostCreateRequestDto.builder()
         .store(storeRequestDto)
         .address(addressRequestDto)
         .content("test")
-        .categoryId(CategoryType.전체.getId())
+        .categoryIds(List.of(CategoryType.전체.getId(), CategoryType.분식.getId()))
         .build();
   }
 

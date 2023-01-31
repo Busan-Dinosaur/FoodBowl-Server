@@ -3,12 +3,15 @@ package com.dinosaur.foodbowl.domain.post.dto;
 import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
+import com.dinosaur.foodbowl.domain.post.entity.PostCategory;
 import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +30,10 @@ public class PostCreateRequestDto {
   private StoreRequestDto store;
   @NotNull
   private AddressRequestDto address;
+  @Valid
   @NotNull
-  private Long categoryId;
+  private List<Long> categoryIds;
+
 
   public Post toEntity(User user, Store store, List<Photo> photos, Thumbnail thumbnail) {
     return Post.builder()

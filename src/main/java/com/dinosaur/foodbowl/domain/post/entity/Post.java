@@ -2,6 +2,7 @@ package com.dinosaur.foodbowl.domain.post.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
 
+import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
@@ -20,7 +21,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -60,17 +63,28 @@ public class Post extends BaseEntity {
   @OneToMany(mappedBy = "post", cascade = ALL)
   private List<Photo> photos = new ArrayList<>();
 
+  @OneToMany(mappedBy = "post")
+  private Set<PostCategory> postCategories = new HashSet<>();
+
   @LastModifiedDate
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
   @Builder
-  private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos) {
+  private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos,
+      Set<PostCategory> postCategories) {
     this.user = user;
     this.thumbnail = thumbnail;
     this.store = store;
     this.content = content;
     this.photos = photos;
+    this.postCategories = postCategories;
   }
 
+  public void addCategory(Category category) {
+    this.postCategories.add(PostCategory.builder()
+        .post(this)
+        .category(category)
+        .build());
+  }
 }
