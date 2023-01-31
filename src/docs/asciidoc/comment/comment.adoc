@@ -38,3 +38,33 @@ include::{snippets}/comment-write/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/comment-write/response-headers.adoc[]
+
+== *댓글 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-update/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-update/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/comment-update/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/comment-update/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-update/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/comment-update/response-headers.adoc[]
