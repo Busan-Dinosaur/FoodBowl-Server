@@ -19,7 +19,7 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class AddressDto {
+public class AddressRequestDto {
 
   @NotNull
   @Length(max = MAX_ADDRESS_NAME_LENGTH)

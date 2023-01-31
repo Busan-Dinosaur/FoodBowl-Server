@@ -1,12 +1,10 @@
 package com.dinosaur.foodbowl.domain.post.application;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
+import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
-import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
+import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import java.util.Collections;
 import java.util.List;
@@ -27,10 +25,11 @@ class PostServiceTest extends IntegrationTest {
     public void should_success_when_valid_request() {
       // given
       User user = userTestHelper.generateUserWithoutThumbnail();
-      StoreDto storeDto = postTestHelper.generateStoreDto();
-      AddressDto addressDto = postTestHelper.generateAddressDto();
+      StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+      AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
       List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
-      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto, addressDto);
+      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
+          addressRequestDto);
 
       // when
       Long postId = postService.createPost(user, requestDto, images);
@@ -52,10 +51,10 @@ class PostServiceTest extends IntegrationTest {
     public void should_fail_when_no_file() {
       // given
       User user = userTestHelper.generateUserWithoutThumbnail();
-      StoreDto storeDto = postTestHelper.generateStoreDto();
-      AddressDto addressDto = postTestHelper.generateAddressDto();
-      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto,
-          addressDto);
+      StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+      AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
+          addressRequestDto);
 
       // then
       Assertions.assertThatThrownBy(

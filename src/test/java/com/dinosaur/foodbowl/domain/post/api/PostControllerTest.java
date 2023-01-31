@@ -1,7 +1,6 @@
 package com.dinosaur.foodbowl.domain.post.api;
 
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -15,18 +14,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
-import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
+import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
-import com.dinosaur.foodbowl.domain.post.dto.PostCreateResponseDto;
-import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
-import com.dinosaur.foodbowl.domain.user.dto.request.SignUpRequestDto;
+import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.role.Role.RoleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -65,10 +60,10 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("올바른 요청이면 게시글 생성은 성공한다.")
       void should_success_create_post() throws Exception {
-        StoreDto storeDto = postTestHelper.generateStoreDto();
-        AddressDto addressDto = postTestHelper.generateAddressDto();
-        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto,
-            addressDto);
+        StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+        AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
+            addressRequestDto);
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));
@@ -97,10 +92,10 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("사진이 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_image() throws Exception {
-        StoreDto storeDto = postTestHelper.generateStoreDto();
-        AddressDto addressDto = postTestHelper.generateAddressDto();
-        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto,
-            addressDto);
+        StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+        AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
+            addressRequestDto);
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));
@@ -114,8 +109,9 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("가게가 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_store() throws Exception {
-        AddressDto addressDto = postTestHelper.generateAddressDto();
-        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(null, addressDto);
+        AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(null,
+            addressRequestDto);
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));
@@ -129,8 +125,8 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("가게의 주소 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_address() throws Exception {
-        StoreDto storeDto = postTestHelper.generateStoreDto();
-        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeDto, null);
+        StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto, null);
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));

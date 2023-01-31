@@ -1,9 +1,9 @@
 package com.dinosaur.foodbowl.domain.post.dto;
 
-import com.dinosaur.foodbowl.domain.address.dto.AddressDto;
+import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
-import com.dinosaur.foodbowl.domain.store.dto.StoreDto;
+import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
@@ -25,9 +24,9 @@ public class PostCreateRequestDto {
   @NotNull
   private String content;
   @NotNull
-  private StoreDto store;
+  private StoreRequestDto store;
   @NotNull
-  private AddressDto address;
+  private AddressRequestDto address;
   @NotNull
   private Long categoryId;
 
