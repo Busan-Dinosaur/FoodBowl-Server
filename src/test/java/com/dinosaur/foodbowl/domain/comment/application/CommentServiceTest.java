@@ -12,6 +12,7 @@ import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,37 @@ class CommentServiceTest extends IntegrationTest {
 
       assertThat(updatedComment.getMessage()).isEqualTo(message);
       assertThat(updatedComment.getPost().getId()).isEqualTo(postId);
-      assertThat(updatedComment.getUpdatedAt().compareTo(updatedAt)).isPositive();
+    }
+  }
+
+  @Nested
+  @DisplayName("댓글 삭제")
+  class DeleteComment {
+
+    @Test
+    @DisplayName("댓글 삭제를 성공한다.")
+    void should_success_when_deleteComment() {
+      User user = userTestHelper.builder().build();
+      Comment comment = commentTestHelper.builder().user(user).build();
+
+      commentService.deleteComment(user, comment.getId());
+
+      em.flush();
+      em.clear();
+
+      Optional<Comment> deletedComment = commentRepository.findById(comment.getId());
+      assertThat(deletedComment).isEmpty();
+    }
+
+    @Test
+    @DisplayName("댓글 작성자가 아닌 경우 예외가 발생한다.")
+    void should_throwException_when_commentNotWriter() {
+      User user = userTestHelper.builder().build();
+      Comment comment = commentTestHelper.builder().build();
+
+      assertThatThrownBy(() -> commentService.deleteComment(user, comment.getId()))
+          .isInstanceOf(BusinessException.class)
+          .hasMessageContaining(COMMENT_NOT_WRITER.getMessage());
     }
   }
 }

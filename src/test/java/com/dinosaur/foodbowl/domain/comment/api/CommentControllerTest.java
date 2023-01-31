@@ -12,6 +12,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -168,6 +169,44 @@ class CommentControllerTest extends IntegrationTest {
     private ResultActions callUpdateCommentApi(String id, String message) throws Exception {
       return mockMvc.perform(patch("/comments/{id}", id)
               .queryParam("message", message)
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("댓글 삭제")
+  class DeleteComment {
+
+    @Test
+    @DisplayName("댓글 삭제에 성공한다.")
+    void should_success_when_deleteComment() throws Exception {
+      mockingAuth();
+
+      doNothing().when(commentService).deleteComment(any(User.class), anyLong());
+
+      callDeleteCommentApi("1")
+          .andExpect(status().isNoContent())
+          .andDo(document("comment-delete",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
+              ),
+              pathParameters(
+                  parameterWithName("id").description("삭제하고자 하는 댓글 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("ID로 변환할 수 없으면 예외가 발생한다.")
+    void should_throwException_when_IdNotConvert() throws Exception {
+      mockingAuth();
+
+      callDeleteCommentApi("hello")
+          .andExpect(status().isBadRequest());
+    }
+
+    private ResultActions callDeleteCommentApi(String id) throws Exception {
+      return mockMvc.perform(delete("/comments/{id}", id)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
