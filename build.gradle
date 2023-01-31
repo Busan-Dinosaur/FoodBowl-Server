@@ -4,6 +4,8 @@ plugins {
     id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    // Generate commands related to querydsl on the Gradle tab.
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.dinosaur'
@@ -36,6 +38,15 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    /******* Start Querydsl *******/
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+
+    // To response to java.lang.NoClassDefFoundError
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    /******* End Querydsl *******/
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -101,3 +112,32 @@ jacocoTestReport {
     dependsOn test
 }
 /******* End JaCoCo *******/
+
+/******* Start Querydsl *******/
+// Where To Create Querydsl Q Class
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+// Add sourceSets when build
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+// Enable querydsl to inherit the compileClassPath
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+// Set options to use when compiling querydsl
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+clean {
+    delete file(querydslDir)
+}
+/******* End Querydsl *******/
