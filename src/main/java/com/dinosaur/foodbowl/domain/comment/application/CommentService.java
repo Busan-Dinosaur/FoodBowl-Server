@@ -18,6 +18,7 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final PostFindDao postFindDao;
 
+  @Transactional
   public void writeComment(User loginUser, CommentWriteRequestDto request) {
     Post post = postFindDao.findById(request.getPostId());
     Comment comment = request.toEntity(loginUser, post);
