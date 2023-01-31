@@ -13,7 +13,7 @@ endif::[]
 
 link:../foodbowl.html[API 목록으로 돌아가기]
 
-== *게시글*
+== *게시글 생성*
 
 === 요청
 
@@ -35,6 +35,6 @@ include::{snippets}/post-create/request-parts.adoc[]
 
 include::{snippets}/post-create/http-response.adoc[]
 
-==== Response Body
+==== Response Headers
 
-include::{snippets}/post-create/response-body.adoc[]
+include::{snippets}/post-create/response-headers.adoc[]

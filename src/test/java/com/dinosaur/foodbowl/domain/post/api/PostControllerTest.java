@@ -3,14 +3,14 @@ package com.dinosaur.foodbowl.domain.post.api;
 import static com.dinosaur.foodbowl.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -67,19 +68,19 @@ public class PostControllerTest extends IntegrationTest {
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));
-
-        doReturn(1L).when(postService).createPost(any(User.class), any(), any());
+        long createdPostId = 1L;
+        doReturn(createdPostId).when(postService).createPost(any(User.class), any(), any());
 
         callCreatePostApi(request)
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.postId").exists())
+            .andExpect(header().string(HttpHeaders.LOCATION, "/posts/" + createdPostId))
             .andDo(document("post-create",
                 requestParts(
                     partWithName("images").description("게시글 사진"),
                     partWithName("request").description("게시글 내용, 상점, 주소, 카테고리 id")
                 ),
-                responseFields(
-                    fieldWithPath("postId").description("생성된 게시글 id")
+                responseHeaders(
+                    headerWithName(HttpHeaders.LOCATION).description("생성된 게시글의 URI 입니다.")
                 )
             ));
       }
@@ -126,7 +127,8 @@ public class PostControllerTest extends IntegrationTest {
       @DisplayName("가게의 주소 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_address() throws Exception {
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
-        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto, null);
+        PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
+            null);
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));

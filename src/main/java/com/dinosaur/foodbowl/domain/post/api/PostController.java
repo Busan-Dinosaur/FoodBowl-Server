@@ -8,6 +8,7 @@ import com.dinosaur.foodbowl.global.util.auth.AuthUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class PostController {
 
     Long postId = postService.createPost(me, request, images);
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(PostCreateResponseDto.of(postId));
+    return ResponseEntity.created(URI.create("/posts/" + postId))
+        .build();
   }
 }
