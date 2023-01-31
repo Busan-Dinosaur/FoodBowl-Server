@@ -14,7 +14,9 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
+import com.dinosaur.foodbowl.domain.comment.dao.CommentFindDao;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
@@ -101,6 +103,9 @@ public class IntegrationTest {
   @SpyBean
   protected PostFindDao postFindDao;
 
+  @SpyBean
+  protected CommentFindDao commentFindDao;
+
   /******* Service *******/
   @SpyBean
   protected GetProfileService getProfileService;
@@ -135,6 +140,9 @@ public class IntegrationTest {
 
   @Autowired
   protected PostTestHelper postTestHelper;
+
+  @Autowired
+  protected CommentTestHelper commentTestHelper;
 
   /******* Util *******/
   @SpyBean

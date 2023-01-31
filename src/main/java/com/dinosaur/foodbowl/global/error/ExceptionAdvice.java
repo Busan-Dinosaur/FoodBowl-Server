@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
@@ -29,7 +30,7 @@ public class ExceptionAdvice {
         .body(ErrorResponse.from(errorMessage));
   }
 
-  @ExceptionHandler
+  @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<ErrorResponse> validationExceptionHandler(ConstraintViolationException e) {
     String errorMessage = e.getConstraintViolations()
@@ -38,6 +39,13 @@ public class ExceptionAdvice {
         .collect(Collectors.joining(", "));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(ErrorResponse.from(errorMessage));
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> methodArgumentTypeMismatchException(
+      MethodArgumentTypeMismatchException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ErrorResponse.from(e.getMessage()));
   }
 
   private static String getErrorMessage(BindException e) {
