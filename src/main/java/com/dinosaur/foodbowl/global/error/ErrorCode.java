@@ -18,6 +18,10 @@ public enum ErrorCode {
 
   /******* Post *******/
   POST_NOT_FOUND("게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
+  /******* Comment *******/
+  COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  COMMENT_NOT_WRITER("댓글 작성자가 아닙니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;
