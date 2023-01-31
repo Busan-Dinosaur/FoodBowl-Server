@@ -9,7 +9,7 @@ import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
-import com.dinosaur.foodbowl.domain.store.dao.StoreRepository;
+import com.dinosaur.foodbowl.domain.store.dao.StoreFindDao;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -28,20 +28,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostService {
 
   private final PostRepository postRepository;
-  private final StoreRepository storeRepository;
+  private final StoreFindDao storeFindDao;
   private final CategoryRepository categoryRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final PhotoUtil photoUtil;
 
   @Transactional
-  public Long createPost(User user, PostCreateRequestDto postCreateRequestDto, List<MultipartFile> images) {
+  public Long createPost(User user, PostCreateRequestDto request, List<MultipartFile> images) {
     checkImages(images);
     List<Photo> photos = photoUtil.save(images);
-    Category category = categoryRepository.getReferenceById(postCreateRequestDto.getCategoryId());
-    Store store = getStore(postCreateRequestDto, category);
+    Category category = categoryRepository.getReferenceById(request.getCategoryId());
+    Store store = storeFindDao.findStoreByName(request.getStore(), request.getAddress(), category);
     Thumbnail thumbnail = getThumbnail(images);
 
-    Post post = postCreateRequestDto.toEntity(user, store, photos, thumbnail);
+    Post post = request.toEntity(user, store, photos, thumbnail);
 
     return postRepository.save(post).getId();
   }
@@ -55,13 +55,6 @@ public class PostService {
   private Thumbnail getThumbnail(List<MultipartFile> images) {
     MultipartFile firstFile = images.get(0);
     return thumbnailUtil.saveIfExist(firstFile).orElse(null);
-  }
-
-  private Store getStore(PostCreateRequestDto request, Category category) {
-    if (storeRepository.existsByStoreName(request.getStore().getStoreName())) {
-      return storeRepository.findByStoreName(request.getStore().getStoreName());
-    }
-    return request.getStore().toEntity(category, request.getAddress());
   }
 
 }
