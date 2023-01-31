@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoreRequestDto {
   @NotNull
   @Length(max = MAX_STORE_NAME_LENGTH)

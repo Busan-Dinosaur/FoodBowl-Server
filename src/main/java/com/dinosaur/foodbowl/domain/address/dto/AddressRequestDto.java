@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.Length;
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressRequestDto {
 
   @NotNull
