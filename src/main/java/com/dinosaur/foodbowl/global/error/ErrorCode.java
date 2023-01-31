@@ -14,7 +14,11 @@ public enum ErrorCode {
   TYPE_INVALID("유효하지 않은 역할입니다.", HttpStatus.BAD_REQUEST),
 
   /******* Auth *******/
-  TOKEN_INVALID("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST);
+  TOKEN_INVALID("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST),
+
+  /******* Post *******/
+  POST_NOT_FOUND("게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  ;
 
   private final String message;
   private final HttpStatus httpStatus;
