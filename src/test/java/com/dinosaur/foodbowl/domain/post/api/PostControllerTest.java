@@ -73,7 +73,7 @@ public class PostControllerTest extends IntegrationTest {
         callCreatePostApi(request)
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.postId").exists())
-            .andDo(document("create-post",
+            .andDo(document("post-create",
                 requestParts(
                     partWithName("images").description("게시글 사진"),
                     partWithName("request").description("게시글 내용, 상점, 주소, 카테고리 id")

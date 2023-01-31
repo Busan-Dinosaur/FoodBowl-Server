@@ -19,22 +19,22 @@ link:../foodbowl.html[API 목록으로 돌아가기]
 
 ==== Request
 
-include::{snippets}/create-post/http-request.adoc[]
+include::{snippets}/post-create/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/create-post/request-cookies.adoc[]
+include::{snippets}/post-create/request-cookies.adoc[]
 
 ==== Request Parts
 
-include::{snippets}/create-post/request-parts.adoc[]
+include::{snippets}/post-create/request-parts.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/create-post/http-response.adoc[]
+include::{snippets}/post-create/http-response.adoc[]
 
 ==== Response Body
 
-include::{snippets}/create-post/response-body.adoc[]
+include::{snippets}/post-create/response-body.adoc[]
