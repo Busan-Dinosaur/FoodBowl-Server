@@ -42,4 +42,15 @@ public class CommentService {
     comment.updateMessage(message);
     return comment.getPost().getId();
   }
+
+  @Transactional
+  public void deleteComment(User user, Long commentId) {
+    Comment comment = commentFindDao.findById(commentId);
+
+    if (!comment.getUser().equals(user)) {
+      throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);
+    }
+
+    commentRepository.delete(comment);
+  }
 }
