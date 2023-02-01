@@ -17,10 +17,12 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Comment extends BaseEntity {
 
-  private static final int MAX_MESSAGE_LENGTH = 255;
+  public static final int MAX_MESSAGE_LENGTH = 255;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +61,10 @@ public class Comment extends BaseEntity {
     this.comment = comment;
     this.post = post;
     this.user = user;
+    this.message = message;
+  }
+
+  public void updateMessage(String message) {
     this.message = message;
   }
 }

@@ -490,7 +490,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("로그아웃을 성공한다.")
     void should_success_when_logout() throws Exception {
-      doReturn(userTestHelper.builder().build()).when(userFindDao).findById(anyLong());
+      doReturn(userTestHelper.builder().build()).when(userFindService).findById(anyLong());
       doNothing().when(tokenService).deleteToken(anyLong());
 
       callLogoutApi()

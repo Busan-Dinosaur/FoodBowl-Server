@@ -42,8 +42,8 @@ class FollowServiceTest extends IntegrationTest {
       followService.follow(me, other.getId());
       em.flush();
       em.clear();
-      me = userFindDao.findById(me.getId());
-      other = userFindDao.findById(other.getId());
+      me = userFindService.findById(me.getId());
+      other = userFindService.findById(other.getId());
 
       // when
       followService.unfollow(me, other.getId());
