@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.post.dao;
+package com.dinosaur.foodbowl.domain.post.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class PostFindDaoTest extends IntegrationTest {
+class PostFindServiceTest extends IntegrationTest {
 
   @Nested
   @DisplayName("게시글 ID로 찾기")
@@ -22,7 +22,7 @@ class PostFindDaoTest extends IntegrationTest {
     void should_returnPost_when_existId() {
       Post savedPost = postTestHelper.builder().build();
 
-      Post findPost = postFindDao.findById(savedPost.getId());
+      Post findPost = postFindService.findById(savedPost.getId());
 
       assertThat(savedPost).isEqualTo(findPost);
     }
@@ -32,7 +32,7 @@ class PostFindDaoTest extends IntegrationTest {
     void should_throwException_when_notExistId() {
       long postId = -999l;
 
-      assertThatThrownBy(() -> postFindDao.findById(postId))
+      assertThatThrownBy(() -> postFindService.findById(postId))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_NOT_FOUND.getMessage());
     }

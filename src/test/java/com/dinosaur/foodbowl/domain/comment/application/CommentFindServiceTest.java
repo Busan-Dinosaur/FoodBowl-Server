@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.comment.dao;
+package com.dinosaur.foodbowl.domain.comment.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.COMMENT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class CommentFindDaoTest extends IntegrationTest {
+class CommentFindServiceTest extends IntegrationTest {
 
   @Nested
   @DisplayName("댓글 ID로 찾기")
@@ -22,7 +22,7 @@ class CommentFindDaoTest extends IntegrationTest {
     void should_returnComment_when_IdExist() {
       Comment savedComment = commentTestHelper.builder().build();
 
-      Comment findComment = commentFindDao.findById(savedComment.getId());
+      Comment findComment = commentFindService.findById(savedComment.getId());
 
       assertThat(savedComment).isEqualTo(findComment);
     }
@@ -32,7 +32,7 @@ class CommentFindDaoTest extends IntegrationTest {
     void should_throwException_when_IdNotExist() {
       long commentId = -999l;
 
-      assertThatThrownBy(() -> commentFindDao.findById(commentId))
+      assertThatThrownBy(() -> commentFindService.findById(commentId))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(COMMENT_NOT_FOUND.getMessage());
     }

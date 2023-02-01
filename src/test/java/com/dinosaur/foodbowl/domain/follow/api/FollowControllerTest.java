@@ -40,8 +40,8 @@ public class FollowControllerTest extends IntegrationTest {
       User me = User.builder().build();
       User other = User.builder().build();
       ReflectionTestUtils.setField(me, "id", myId);
-      doReturn(me).when(userFindDao).findById(anyLong());
-      doReturn(other).when(userFindDao).findById(otherId);
+      doReturn(me).when(userFindService).findById(anyLong());
+      doReturn(other).when(userFindService).findById(otherId);
     }
 
     @Test

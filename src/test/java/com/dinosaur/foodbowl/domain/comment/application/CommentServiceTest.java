@@ -72,7 +72,7 @@ class CommentServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Comment updatedComment = commentFindDao.findById(comment.getId());
+      Comment updatedComment = commentFindService.findById(comment.getId());
 
       assertThat(updatedComment.getMessage()).isEqualTo(message);
       assertThat(updatedComment.getPost().getId()).isEqualTo(postId);

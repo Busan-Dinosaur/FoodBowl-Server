@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.user.dao;
+package com.dinosaur.foodbowl.domain.user.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class UserFindDaoTest extends IntegrationTest {
+class UserFindServiceTest extends IntegrationTest {
 
   @Nested
   @DisplayName("로그인 아이디로 유저 찾기")
@@ -22,7 +22,7 @@ class UserFindDaoTest extends IntegrationTest {
       String loginId = "testLoginId";
       User user = userTestHelper.builder().loginId(loginId).build();
 
-      User findUser = userFindDao.findByLoginId(loginId);
+      User findUser = userFindService.findByLoginId(loginId);
 
       assertThat(user).isEqualTo(findUser);
     }
@@ -32,7 +32,7 @@ class UserFindDaoTest extends IntegrationTest {
     void should_throwException_when_loginIdNotExist() {
       String loginId = "testLoginId";
 
-      assertThatThrownBy(() -> userFindDao.findByLoginId(loginId))
+      assertThatThrownBy(() -> userFindService.findByLoginId(loginId))
           .isInstanceOf(BusinessException.class);
     }
   }

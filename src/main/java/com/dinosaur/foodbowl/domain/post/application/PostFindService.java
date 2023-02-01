@@ -1,7 +1,8 @@
-package com.dinosaur.foodbowl.domain.post.dao;
+package com.dinosaur.foodbowl.domain.post.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_FOUND;
 
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PostFindDao {
+public class PostFindService {
 
   private final PostRepository postRepository;
 

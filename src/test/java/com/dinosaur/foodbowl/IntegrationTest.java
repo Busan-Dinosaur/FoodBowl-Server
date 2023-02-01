@@ -15,13 +15,13 @@ import com.dinosaur.foodbowl.domain.auth.application.AuthService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
+import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
-import com.dinosaur.foodbowl.domain.comment.dao.CommentFindDao;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
-import com.dinosaur.foodbowl.domain.post.dao.PostFindDao;
+import com.dinosaur.foodbowl.domain.post.application.PostFindService;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
@@ -29,8 +29,8 @@ import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
+import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.dao.RoleRepository;
-import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -96,16 +96,6 @@ public class IntegrationTest {
   @SpyBean
   protected CommentRepository commentRepository;
 
-  /******* Dao *******/
-  @SpyBean
-  protected UserFindDao userFindDao;
-
-  @SpyBean
-  protected PostFindDao postFindDao;
-
-  @SpyBean
-  protected CommentFindDao commentFindDao;
-
   /******* Service *******/
   @SpyBean
   protected GetProfileService getProfileService;
@@ -117,7 +107,7 @@ public class IntegrationTest {
   protected TokenService tokenService;
 
   @SpyBean
-  protected CookieUtils cookieUtils;
+  protected UserFindService userFindService;
 
   @SpyBean
   protected DeleteAccountService deleteAccountService;
@@ -129,9 +119,15 @@ public class IntegrationTest {
   protected FollowService followService;
 
   @SpyBean
+  protected PostFindService postFindService;
+
+  @SpyBean
   protected CommentService commentService;
 
-  /******* Helper *******/
+  @SpyBean
+  protected CommentFindService commentFindService;
+
+  /******* TestHelper *******/
   @Autowired
   protected UserTestHelper userTestHelper;
 
@@ -147,6 +143,9 @@ public class IntegrationTest {
   /******* Util *******/
   @SpyBean
   protected ThumbnailFileUtil thumbnailFileUtil;
+
+  @SpyBean
+  protected CookieUtils cookieUtils;
 
   /******* Spring Bean *******/
   @Autowired
@@ -215,6 +214,6 @@ public class IntegrationTest {
     doReturn(tokenDto).when(jwtTokenProvider)
         .tryCheckTokenValid(any(HttpServletRequest.class), any(JwtToken.class));
     doReturn(auth).when(jwtTokenProvider).getAuthentication(anyString());
-    doReturn(user).when(userFindDao).findById(anyLong());
+    doReturn(user).when(userFindService).findById(anyLong());
   }
 }

@@ -2,11 +2,10 @@ package com.dinosaur.foodbowl.domain.comment.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.COMMENT_NOT_WRITER;
 
-import com.dinosaur.foodbowl.domain.comment.dao.CommentFindDao;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.comment.dto.request.CommentWriteRequestDto;
 import com.dinosaur.foodbowl.domain.comment.entity.Comment;
-import com.dinosaur.foodbowl.domain.post.dao.PostFindDao;
+import com.dinosaur.foodbowl.domain.post.application.PostFindService;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
@@ -20,12 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
   private final CommentRepository commentRepository;
-  private final CommentFindDao commentFindDao;
-  private final PostFindDao postFindDao;
+  private final CommentFindService commentFindService;
+  private final PostFindService postFindService;
 
   @Transactional
   public void writeComment(User loginUser, CommentWriteRequestDto request) {
-    Post post = postFindDao.findById(request.getPostId());
+    Post post = postFindService.findById(request.getPostId());
     Comment comment = request.toEntity(loginUser, post);
 
     commentRepository.save(comment);
@@ -33,7 +32,7 @@ public class CommentService {
 
   @Transactional
   public long updateComment(User user, Long commentId, String message) {
-    Comment comment = commentFindDao.findById(commentId);
+    Comment comment = commentFindService.findById(commentId);
 
     if (!comment.getUser().equals(user)) {
       throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);
@@ -45,7 +44,7 @@ public class CommentService {
 
   @Transactional
   public void deleteComment(User user, Long commentId) {
-    Comment comment = commentFindDao.findById(commentId);
+    Comment comment = commentFindService.findById(commentId);
 
     if (!comment.getUser().equals(user)) {
       throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);

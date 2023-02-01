@@ -61,7 +61,7 @@ class UserControllerTest extends IntegrationTest {
     void setup() {
       User user = User.builder().build();
       ReflectionTestUtils.setField(user, "id", userId);
-      doReturn(user).when(userFindDao).findById(anyLong());
+      doReturn(user).when(userFindService).findById(anyLong());
     }
 
     @Test
@@ -193,7 +193,7 @@ class UserControllerTest extends IntegrationTest {
       SignUpResponseDto responseDto = SignUpResponseDto.of(user);
       ReflectionTestUtils.setField(responseDto, "userId", userId);
 
-      doReturn(user).when(userFindDao).findById(anyLong());
+      doReturn(user).when(userFindService).findById(anyLong());
       doReturn(userId).when(updateProfileService)
           .updateProfile(any(User.class), any(UpdateProfileRequestDto.class));
     }
