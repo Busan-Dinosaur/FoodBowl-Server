@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -33,6 +34,7 @@ public class Photo extends BaseEntity {
   @JoinColumn(name = "post_id", nullable = false)
   private Post post;
 
+  @Getter
   @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
   private String path;
 
