@@ -26,9 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public abstract class PhotoFileService extends PhotoService {
+public class PhotoFileService extends PhotoService {
 
-  private static final String ROOT_PATH = "static";
+  static final String ROOT_PATH = "static";
   private static final String RESOURCE_PATH =
       new ClassPathResource(ROOT_PATH).getPath() + separator;
   private static final String DEFAULT_PHOTO_PATH = RESOURCE_PATH + "photo" + separator;
@@ -49,7 +49,7 @@ public abstract class PhotoFileService extends PhotoService {
 
     return photoRepository.save(Photo.builder()
         .post(post)
-        .path(fileFullPath)
+        .path(getPhotoURI(fileFullPath))
         .build());
   }
 
@@ -76,6 +76,14 @@ public abstract class PhotoFileService extends PhotoService {
     createDirectoryWhenIsNotExist(photoUploadPath);
 
     return photoUploadPath + UUID.randomUUID() + "_" + file.getOriginalFilename();
+  }
+
+  private String getPhotoURI(String photoFullPath) {
+    String photoURI = photoFullPath;
+    if (photoFullPath.startsWith(ROOT_PATH)) {
+      photoURI = photoFullPath.substring(ROOT_PATH.length());
+    }
+    return photoURI;
   }
 
   private static void createDirectoryWhenIsNotExist(String path) {
