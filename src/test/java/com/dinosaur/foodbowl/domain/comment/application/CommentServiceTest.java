@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.comment.dto.request.CommentWriteRequestDto;
+import com.dinosaur.foodbowl.domain.comment.dto.response.CommentResponseDto;
 import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -107,6 +108,28 @@ class CommentServiceTest extends IntegrationTest {
       assertThatThrownBy(() -> commentService.deleteComment(user, comment.getId()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(COMMENT_NOT_WRITER.getMessage());
+    }
+  }
+
+  @Nested
+  @DisplayName("제한되지 않은 댓글 시간순으로 찾기")
+  class GetComments {
+
+    @Test
+    @DisplayName("응답을 위한 댓글 목록을 반환한다.")
+    void should_returnComments_when_getComments() {
+      User user = userTestHelper.builder().build();
+      Post post = postTestHelper.builder().build();
+      Comment comment = commentTestHelper.builder().user(user).post(post).message("test").build();
+
+      List<CommentResponseDto> comments = commentService.getComments(post.getId());
+
+      assertThat(comments.size()).isEqualTo(1);
+      assertThat(comments.get(0).getNickname()).isEqualTo(user.getNickname().getNickname());
+      assertThat(comments.get(0).getUserThumbnailPath()).isEqualTo(
+          user.getThumbnailURL().orElseGet(() -> null));
+      assertThat(comments.get(0).getMessage()).isEqualTo(comment.getMessage());
+      assertThat(comments.get(0).getCreatedAt()).isEqualTo(comment.getCreatedAt());
     }
   }
 }
