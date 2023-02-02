@@ -90,3 +90,29 @@ include::{snippets}/comment-delete/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/comment-delete/http-response.adoc[]
+
+== *게시글 댓글 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-list/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-list/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/comment-list/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/comment-list/response-fields.adoc[]
