@@ -2,6 +2,7 @@ package com.dinosaur.foodbowl.domain.comment.api;
 
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
 import com.dinosaur.foodbowl.domain.comment.dto.request.CommentWriteRequestDto;
+import com.dinosaur.foodbowl.domain.comment.dto.response.CommentResponseDto;
 import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
@@ -9,11 +10,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,5 +60,12 @@ public class CommentController {
     commentService.deleteComment(user, commentId);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/posts/{id}")
+  public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable("id") Long postId) {
+    List<CommentResponseDto> comments = commentService.getComments(postId);
+
+    return ResponseEntity.ok(comments);
   }
 }
