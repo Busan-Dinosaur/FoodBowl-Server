@@ -24,8 +24,17 @@ public class PhotoTestHelper {
 
   public MockMultipartFile getFakeImageFile() {
     try {
-      return new MockMultipartFile("thumbnail", "fakeImage.png", "image/png",
+      return new MockMultipartFile("photo", "fakeImage.png", "image/png",
           new FileInputStream("src/test/resources/images/fakeImage.png"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public MockMultipartFile getTooLongNameImageFile(int length) {
+    try {
+      return new MockMultipartFile("photo", "a".repeat(length) + ".png", "image/png",
+          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

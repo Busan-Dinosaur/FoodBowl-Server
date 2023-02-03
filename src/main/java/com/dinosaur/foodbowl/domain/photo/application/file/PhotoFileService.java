@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,8 +82,9 @@ public class PhotoFileService extends PhotoService {
 
   private static void checkPhotoFullPathLength(String photoFullPath, String fileName) {
     if (photoFullPath.length() > MAX_PATH_LENGTH) {
-      throw new IllegalArgumentException("파일 이름 길이가 너무 깁니다. 가능한 파일 이름 길이: " +
-          (MAX_PATH_LENGTH - photoFullPath.length() + fileName.length()));
+      throw new BusinessException(fileName, "fileName", HttpStatus.BAD_REQUEST,
+          "파일 이름 길이가 너무 깁니다. 가능한 파일 이름 길이: " + (MAX_PATH_LENGTH - photoFullPath.length()
+              + fileName.length()));
     }
   }
 

@@ -45,6 +45,10 @@ class PhotoFileServiceTest extends IntegrationTest {
       assertThatThrownBy(() ->
           photoFileService.save(null, post))
           .isInstanceOf(BusinessException.class);
+
+      assertThatThrownBy(() ->
+          photoFileService.save(photoTestHelper.getTooLongNameImageFile(448), post))
+          .isInstanceOf(BusinessException.class);
     }
 
     private void deleteTestFile(Photo photo) {
