@@ -1,12 +1,16 @@
 package com.dinosaur.foodbowl.domain.photo.application.file;
 
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NOT_IMAGE_FILE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NULL_IMAGE_FILE;
 import static java.io.File.separator;
 
 import com.dinosaur.foodbowl.domain.photo.application.PhotoService;
 import com.dinosaur.foodbowl.domain.photo.dao.PhotoRepository;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +27,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PhotoFileService extends PhotoService {
@@ -34,18 +37,25 @@ public class PhotoFileService extends PhotoService {
   private static final String DEFAULT_PHOTO_PATH = RESOURCE_PATH + "photo" + separator;
   private final PhotoRepository photoRepository;
 
+  private final PostRepository postRepository;
+
   static {
     createDirectoryWhenIsNotExist(DEFAULT_PHOTO_PATH);
   }
 
   @Override
-  public Photo save(MultipartFile file, Post post) throws IOException {
+  public Photo save(MultipartFile file, Post post) {
     checkImageFile(file);
 
     String fileFullPath = generateFileFullPath(file);
     checkPhotoFullPathLength(fileFullPath, file.getOriginalFilename());
 
-    file.transferTo(new File(fileFullPath));
+    try {
+      file.transferTo(new File(fileFullPath));
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new RuntimeException("이미지 저장에 실패하였습니다.");
+    }
 
     return photoRepository.save(Photo.builder()
         .post(post)
@@ -53,15 +63,20 @@ public class PhotoFileService extends PhotoService {
         .build());
   }
 
-  private static void checkImageFile(MultipartFile file) throws IOException {
+  private static void checkImageFile(MultipartFile file) {
     if (isNotImageFile(file)) {
-      throw new IllegalArgumentException("파일이 이미지가 아닙니다. 파일 이름: " + file.getOriginalFilename());
+      throw new BusinessException(file, "photo", PHOTO_NOT_IMAGE_FILE);
     }
   }
 
-  private static boolean isNotImageFile(MultipartFile file) throws IOException {
-    InputStream originalInputStream = new BufferedInputStream(file.getInputStream());
-    return ImageIO.read(originalInputStream) == null;
+  private static boolean isNotImageFile(MultipartFile file) {
+    try (InputStream originalInputStream = new BufferedInputStream(file.getInputStream())) {
+      return ImageIO.read(originalInputStream) == null;
+    } catch (IOException e) {
+      throw new IllegalStateException("파일 저장 도중 문제가 발생했습니다. 파일 저장 Entity: " + file);
+    } catch (NullPointerException e) {
+      throw new BusinessException(file, "photo", PHOTO_NULL_IMAGE_FILE);
+    }
   }
 
   private static void checkPhotoFullPathLength(String photoFullPath, String fileName) {
@@ -78,19 +93,19 @@ public class PhotoFileService extends PhotoService {
     return photoUploadPath + UUID.randomUUID() + "_" + file.getOriginalFilename();
   }
 
+  private static void createDirectoryWhenIsNotExist(String path) {
+    try {
+      Files.createDirectories(Paths.get(path));
+    } catch (IOException ignore) {
+    }
+  }
+
   private String getPhotoURI(String photoFullPath) {
     String photoURI = photoFullPath;
     if (photoFullPath.startsWith(ROOT_PATH)) {
       photoURI = photoFullPath.substring(ROOT_PATH.length());
     }
     return photoURI;
-  }
-
-  private static void createDirectoryWhenIsNotExist(String path) {
-    try {
-      Files.createDirectories(Paths.get(path));
-    } catch (IOException ignore) {
-    }
   }
 
   @Override

@@ -38,7 +38,7 @@ public class Store extends BaseEntity {
   private String storeName;
 
   @Builder
-  private Store(Address address, Category category, String storeName) {
+  private Store(Address address, String storeName) {
     this.address = address;
     this.storeName = storeName;
   }

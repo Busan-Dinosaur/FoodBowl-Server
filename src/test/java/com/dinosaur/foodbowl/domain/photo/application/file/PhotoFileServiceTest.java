@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
+import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,13 +34,17 @@ class PhotoFileServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("사진 파일이 유효하지 않으면 IllegalArgumentException 이 발생한다.")
-    void should_throw_fIllegalArgumentException_when_InvalidFile() throws IOException {
+    @DisplayName("사진 파일이 유효하지 않으면 BusinessException 이 발생한다.")
+    void should_throw_BusinessException_when_InvalidFile() throws IOException {
       Post post = postTestHelper.builder().build();
 
       assertThatThrownBy(() ->
           photoFileService.save(photoTestHelper.getFakeImageFile(), post))
-          .isInstanceOf(IllegalArgumentException.class);
+          .isInstanceOf(BusinessException.class);
+
+      assertThatThrownBy(() ->
+          photoFileService.save(null, post))
+          .isInstanceOf(BusinessException.class);
     }
 
     private void deleteTestFile(Photo photo) {
