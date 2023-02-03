@@ -22,6 +22,8 @@ import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
+import com.dinosaur.foodbowl.domain.post.application.PostService;
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
@@ -76,13 +78,10 @@ public class IntegrationTest {
 
   /******* Repository *******/
   @SpyBean
-  protected RoleRepository roleRepository;
-
-  @SpyBean
   protected UserRepository userRepository;
 
   @SpyBean
-  protected ThumbnailRepository thumbnailRepository;
+  protected RoleRepository roleRepository;
 
   @SpyBean
   protected UserRoleRepository userRoleRepository;
@@ -91,15 +90,18 @@ public class IntegrationTest {
   protected FollowRepository followRepository;
 
   @SpyBean
+  protected ThumbnailRepository thumbnailRepository;
+
+  @SpyBean
+  protected PostRepository postRepository;
+
+  @SpyBean
   protected CategoryRepository categoryRepository;
 
   @SpyBean
   protected CommentRepository commentRepository;
 
   /******* Service *******/
-  @SpyBean
-  protected GetProfileService getProfileService;
-
   @SpyBean
   protected AuthService authService;
 
@@ -110,6 +112,9 @@ public class IntegrationTest {
   protected UserFindService userFindService;
 
   @SpyBean
+  protected GetProfileService getProfileService;
+
+  @SpyBean
   protected DeleteAccountService deleteAccountService;
 
   @SpyBean
@@ -117,6 +122,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected FollowService followService;
+
+  @SpyBean
+  protected PostService postService;
 
   @SpyBean
   protected PostFindService postFindService;
