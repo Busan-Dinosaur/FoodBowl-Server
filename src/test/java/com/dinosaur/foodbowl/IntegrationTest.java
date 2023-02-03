@@ -13,6 +13,8 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
+import com.dinosaur.foodbowl.domain.blame.BlameTestHelper;
+import com.dinosaur.foodbowl.domain.blame.dao.BlameRepository;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
 import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
 import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
@@ -96,6 +98,9 @@ public class IntegrationTest {
   @SpyBean
   protected CommentRepository commentRepository;
 
+  @SpyBean
+  protected BlameRepository blameRepository;
+
   /******* Service *******/
   @SpyBean
   protected GetProfileService getProfileService;
@@ -139,6 +144,9 @@ public class IntegrationTest {
 
   @Autowired
   protected CommentTestHelper commentTestHelper;
+
+  @Autowired
+  protected BlameTestHelper blameTestHelper;
 
   /******* Util *******/
   @SpyBean

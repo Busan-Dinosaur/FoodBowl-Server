@@ -4,11 +4,14 @@ import static com.dinosaur.foodbowl.global.error.ErrorCode.COMMENT_NOT_WRITER;
 
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.comment.dto.request.CommentWriteRequestDto;
+import com.dinosaur.foodbowl.domain.comment.dto.response.CommentResponseDto;
 import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +54,14 @@ public class CommentService {
     }
 
     commentRepository.delete(comment);
+  }
+
+  public List<CommentResponseDto> getComments(final long postId) {
+    Post post = postFindService.findById(postId);
+    List<Comment> comments = commentRepository.findUnrestrictedComments(post);
+
+    return comments.stream()
+        .map(CommentResponseDto::from)
+        .collect(Collectors.toList());
   }
 }
