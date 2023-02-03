@@ -120,16 +120,22 @@ class CommentServiceTest extends IntegrationTest {
     void should_returnComments_when_getComments() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
-      Comment comment = commentTestHelper.builder().user(user).post(post).message("test").build();
+      Comment comment1 = commentTestHelper.builder().user(user).post(post).message("test1").build();
+      Comment comment2 = commentTestHelper.builder().user(user).post(post).message("test2").build();
 
       List<CommentResponseDto> comments = commentService.getComments(post.getId());
 
-      assertThat(comments.size()).isEqualTo(1);
+      assertThat(comments.size()).isEqualTo(2);
       assertThat(comments.get(0).getNickname()).isEqualTo(user.getNickname().getNickname());
       assertThat(comments.get(0).getUserThumbnailPath()).isEqualTo(
           user.getThumbnailURL().orElseGet(() -> null));
-      assertThat(comments.get(0).getMessage()).isEqualTo(comment.getMessage());
-      assertThat(comments.get(0).getCreatedAt()).isEqualTo(comment.getCreatedAt());
+      assertThat(comments.get(0).getMessage()).isEqualTo(comment1.getMessage());
+      assertThat(comments.get(0).getCreatedAt()).isEqualTo(comment1.getCreatedAt());
+      assertThat(comments.get(1).getNickname()).isEqualTo(user.getNickname().getNickname());
+      assertThat(comments.get(1).getUserThumbnailPath()).isEqualTo(
+          user.getThumbnailURL().orElseGet(() -> null));
+      assertThat(comments.get(1).getMessage()).isEqualTo(comment2.getMessage());
+      assertThat(comments.get(1).getCreatedAt()).isEqualTo(comment2.getCreatedAt());
     }
   }
 }
