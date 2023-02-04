@@ -1,7 +1,7 @@
 package com.dinosaur.foodbowl.domain.post.api;
 
 import com.dinosaur.foodbowl.domain.post.application.PostService;
-import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import jakarta.validation.Valid;

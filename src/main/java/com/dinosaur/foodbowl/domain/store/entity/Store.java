@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -32,10 +33,12 @@ public class Store extends BaseEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
   @JoinColumn(name = "address_id", nullable = false)
   private Address address;
 
+  @Getter
   @Column(name = "store_name", nullable = false, unique = true, length = MAX_STORE_NAME_LENGTH)
   private String storeName;
 

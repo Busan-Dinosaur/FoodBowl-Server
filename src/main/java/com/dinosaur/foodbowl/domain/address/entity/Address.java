@@ -11,8 +11,10 @@ import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "address")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +30,6 @@ public class Address extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
-
   @Column(name = "address_name", nullable = false, unique = true, length = MAX_ADDRESS_NAME_LENGTH)
   private String addressName;
 

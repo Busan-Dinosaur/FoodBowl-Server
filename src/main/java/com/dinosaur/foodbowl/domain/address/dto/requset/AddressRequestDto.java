@@ -1,4 +1,4 @@
-package com.dinosaur.foodbowl.domain.address.dto;
+package com.dinosaur.foodbowl.domain.address.dto.requset;
 
 import static com.dinosaur.foodbowl.domain.address.entity.Address.MAX_ADDRESS_NAME_LENGTH;
 import static com.dinosaur.foodbowl.domain.address.entity.Address.MAX_BUILDING_NO_LENGTH;

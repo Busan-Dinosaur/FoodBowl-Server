@@ -1,9 +1,8 @@
-package com.dinosaur.foodbowl.domain.store.dto;
+package com.dinosaur.foodbowl.domain.store.dto.request;
 
 import static com.dinosaur.foodbowl.domain.store.entity.Store.MAX_STORE_NAME_LENGTH;
 
-import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
-import com.dinosaur.foodbowl.domain.category.entity.Category;
+import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
