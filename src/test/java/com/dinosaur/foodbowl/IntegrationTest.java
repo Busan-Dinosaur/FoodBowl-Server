@@ -22,8 +22,11 @@ import com.dinosaur.foodbowl.domain.comment.application.CommentService;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
+import com.dinosaur.foodbowl.domain.photo.PhotoTestHelper;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
+import com.dinosaur.foodbowl.domain.post.application.PostService;
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.file.ThumbnailFileUtil;
@@ -101,6 +104,9 @@ public class IntegrationTest {
   @SpyBean
   protected BlameRepository blameRepository;
 
+  @SpyBean
+  protected PostRepository postRepository;
+
   /******* Service *******/
   @SpyBean
   protected GetProfileService getProfileService;
@@ -127,6 +133,9 @@ public class IntegrationTest {
   protected PostFindService postFindService;
 
   @SpyBean
+  protected PostService postService;
+
+  @SpyBean
   protected CommentService commentService;
 
   @SpyBean
@@ -141,12 +150,13 @@ public class IntegrationTest {
 
   @Autowired
   protected PostTestHelper postTestHelper;
-
   @Autowired
   protected CommentTestHelper commentTestHelper;
 
   @Autowired
   protected BlameTestHelper blameTestHelper;
+  @SpyBean
+  protected PhotoTestHelper photoTestHelper;
 
   /******* Util *******/
   @SpyBean

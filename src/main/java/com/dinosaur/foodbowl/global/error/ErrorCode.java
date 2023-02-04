@@ -18,6 +18,7 @@ public enum ErrorCode {
 
   /******* Post *******/
   POST_NOT_FOUND("게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  POST_HAS_NOT_IMAGE("게시글 생성 시 사진은 반드시 한 장 이상이어야 합니다.", HttpStatus.BAD_REQUEST),
 
   /******* Comment *******/
   COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
