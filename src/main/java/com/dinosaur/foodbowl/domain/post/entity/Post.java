@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @Entity
 @Table(name = "post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,7 +41,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Post extends BaseEntity {
 
   @Id
-  @Getter
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", updatable = false, nullable = false)
   private Long id;
@@ -80,6 +80,14 @@ public class Post extends BaseEntity {
     this.photos = photos;
     this.postCategories = postCategories;
   }
+  public Post update(Thumbnail thumbnail, Store store, String content, List<Photo> photos) {
+    this.content = content;
+    this.store = store;
+    this.thumbnail = thumbnail;
+    this.photos = photos;
+    this.postCategories = new HashSet<>();
+    return this;
+  }
 
   public void addCategory(Category category) {
     this.postCategories.add(PostCategory.builder()
@@ -87,4 +95,5 @@ public class Post extends BaseEntity {
         .category(category)
         .build());
   }
+
 }

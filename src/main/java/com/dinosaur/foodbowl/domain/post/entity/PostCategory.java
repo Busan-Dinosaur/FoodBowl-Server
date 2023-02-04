@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -31,6 +32,7 @@ public class PostCategory extends BaseEntity {
   @JoinColumn(name = "post_id", nullable = false, updatable = false)
   private Post post;
 
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = false, updatable = false)
   private Category category;

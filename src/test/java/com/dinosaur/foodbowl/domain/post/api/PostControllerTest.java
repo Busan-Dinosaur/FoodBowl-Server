@@ -15,9 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
-import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
-import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
+import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
+import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;

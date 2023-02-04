@@ -1,12 +1,13 @@
 package com.dinosaur.foodbowl.domain.post;
 
-import com.dinosaur.foodbowl.domain.address.dto.AddressRequestDto;
+import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
-import com.dinosaur.foodbowl.domain.post.dto.PostCreateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.StoreTestHelper;
-import com.dinosaur.foodbowl.domain.store.dto.StoreRequestDto;
+import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class PostTestHelper {
@@ -83,9 +85,27 @@ public class PostTestHelper {
     }
   }
 
-  public StoreRequestDto generateStoreDto() {
-    return StoreRequestDto.builder()
-        .storeName("test")
+  public PostUpdateRequestDto getPostUpdateRequestDto(Long postId) {
+    return PostUpdateRequestDto.builder()
+        .postId(postId)
+        .store(this.generateStoreDto())
+        .address(this.generateAddressDto())
+        .content("test")
+        .categoryIds(List.of(1L))
+        .images(List.of())
+        .build();
+  }
+
+  public PostUpdateRequestDto getPostUpdateRequestDto(Long postId, String content,
+      StoreRequestDto storeRequestDto,
+      AddressRequestDto addressRequestDto, List<Long> categoryIds, List<MultipartFile> images) {
+    return PostUpdateRequestDto.builder()
+        .postId(postId)
+        .store(storeRequestDto)
+        .address(addressRequestDto)
+        .content(content)
+        .categoryIds(categoryIds)
+        .images(images)
         .build();
   }
 
@@ -96,6 +116,12 @@ public class PostTestHelper {
         .address(addressRequestDto)
         .content("test")
         .categoryIds(List.of(CategoryType.전체.getId(), CategoryType.분식.getId()))
+        .build();
+  }
+
+  public StoreRequestDto generateStoreDto() {
+    return StoreRequestDto.builder()
+        .storeName("test")
         .build();
   }
 
