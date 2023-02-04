@@ -5,6 +5,7 @@ import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class PostController {
   @GetMapping("/users/{id}/thumbnails")
   public ResponseEntity<List<PostThumbnailResponseDto>> getThumbnails(
       @PathVariable("id") Long userId,
-      @PageableDefault(size = 18, sort = "createdAt") Pageable pageable) {
+      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
     List<PostThumbnailResponseDto> response = postService.getThumbnails(userId, pageable);
 
     return ResponseEntity.ok(response);
