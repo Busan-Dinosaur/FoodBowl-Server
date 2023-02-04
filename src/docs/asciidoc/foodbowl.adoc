@@ -20,3 +20,7 @@ link:follow/follow.html[API 문서 보기]
 == *COMMENT API*
 
 link:comment/comment.html[API 문서 보기]
+
+== *CLIP API*
+
+link:clip/clip.html[API 문서 보기]

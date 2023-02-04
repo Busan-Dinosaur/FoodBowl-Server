@@ -1,0 +1,66 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= CLIP API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../foodbowl.html[API 목록으로 돌아가기]
+
+== *북마크*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/clip/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/clip/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/clip/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/clip/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/clip/response-fields.adoc[]
+
+== *북마크 해제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/unclip/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/unclip/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/unclip/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/unclip/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/unclip/response-fields.adoc[]
