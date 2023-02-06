@@ -51,11 +51,9 @@ public class PostService {
 
   @Transactional
   public Long updatePost(User user, Long postId, PostUpdateRequestDto request,
-       List<MultipartFile> images) {
+      List<MultipartFile> images) {
     Post post = postFindService.findById(postId);
-    if (!post.getUser().equals(user)) {
-      throw new BusinessException(post.getId(), "postId", POST_NOT_WRITER);
-    }
+    checkWriter(user, post);
 
     checkImages(images);
     List<Photo> photos = photoUtil.save(images);
@@ -76,5 +74,19 @@ public class PostService {
 
   public void addCategories(List<Long> categoryIds, Post post) {
     categoryIds.forEach(id -> post.addCategory(categoryRepository.getReferenceById(id)));
+  }
+
+  @Transactional
+  public void deletePost(User user, Long postId) {
+    Post post = postFindService.findById(postId);
+    checkWriter(user, post);
+
+    postRepository.delete(post);
+  }
+
+  private static void checkWriter(User user, Post post) {
+    if (!post.getUser().equals(user)) {
+      throw new BusinessException(post.getId(), "postId", POST_NOT_WRITER);
+    }
   }
 }

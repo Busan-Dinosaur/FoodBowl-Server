@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,5 +47,13 @@ public class PostController {
     return ResponseEntity.created(URI.create("/posts/" +
             postService.updatePost(me, postId, request, images)))
         .build();
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteComment(@LoginUser User user, @PathVariable("id") Long postId) {
+
+    postService.deletePost(user, postId);
+
+    return ResponseEntity.noContent().build();
   }
 }
