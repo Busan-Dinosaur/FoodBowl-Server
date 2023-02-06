@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 class PostServiceTest extends IntegrationTest {
 
-  // TODO: 게시글 테스트 후 파일이 남아있다면 제거한다.
   @Nested
   @DisplayName("성공 테스트")
   class Success {
@@ -57,11 +56,11 @@ class PostServiceTest extends IntegrationTest {
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
       List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
-      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(before.getId(),
-          "after", storeRequestDto, addressRequestDto, List.of(1L, 2L), images);
+      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
+          storeRequestDto, addressRequestDto, List.of(1L, 2L));
 
       // when
-      postService.updatePost(user, requestDto);
+      postService.updatePost(user, before.getId(), requestDto, images);
       em.flush();
       em.clear();
 
@@ -83,17 +82,18 @@ class PostServiceTest extends IntegrationTest {
   class Fail {
 
     @Test
-    @DisplayName("사진이 한장도 없으면 게시글 생성은 실패한다.")
+    @DisplayName("사진이 한장도 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_no_file() {
       // given
       User user = userTestHelper.builder().build();
-      StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
-      AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
-      PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
-          addressRequestDto);
+      Post before = postTestHelper.builder().content("before").thumbnail(null).user(user)
+          .store(null).build();
+      PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
+
 
       // then
-      Assertions.assertThatThrownBy(() -> postService.createPost(user, requestDto, Collections.emptyList()))
+      Assertions.assertThatThrownBy(
+              () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
     }
@@ -105,11 +105,12 @@ class PostServiceTest extends IntegrationTest {
       User user = userTestHelper.builder().build();
       User another = userTestHelper.builder().build();
       Post before = postTestHelper.builder().user(user).build();
-      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(before.getId());
+      PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
 
       // then
-      Assertions.assertThatThrownBy(() -> postService.updatePost(another, requestDto))
-          .isInstanceOf(BusinessException.class)
+      Assertions.assertThatThrownBy(
+              () -> postService.updatePost(another, before.getId(), requestDto,
+                  List.of(photoTestHelper.getPhotoFile()))).isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_NOT_WRITER.getMessage());
 
     }
@@ -120,10 +121,11 @@ class PostServiceTest extends IntegrationTest {
       // given
       User user = userTestHelper.builder().build();
       Post before = postTestHelper.builder().user(user).build();
-      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(before.getId());
+      PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
 
       // then
-      Assertions.assertThatThrownBy(() -> postService.updatePost(user, requestDto))
+      Assertions.assertThatThrownBy(
+              () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
     }

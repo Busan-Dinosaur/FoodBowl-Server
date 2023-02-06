@@ -85,27 +85,22 @@ public class PostTestHelper {
     }
   }
 
-  public PostUpdateRequestDto getPostUpdateRequestDto(Long postId) {
+  public PostUpdateRequestDto getValidPostUpdateRequestDto() {
     return PostUpdateRequestDto.builder()
-        .postId(postId)
         .store(this.generateStoreDto())
         .address(this.generateAddressDto())
         .content("test")
-        .categoryIds(List.of(1L))
-        .images(List.of())
+        .categoryIds(List.of(CategoryType.전체.getId(), CategoryType.분식.getId()))
         .build();
   }
 
-  public PostUpdateRequestDto getPostUpdateRequestDto(Long postId, String content,
-      StoreRequestDto storeRequestDto,
-      AddressRequestDto addressRequestDto, List<Long> categoryIds, List<MultipartFile> images) {
+  public PostUpdateRequestDto getPostUpdateRequestDto(StoreRequestDto storeRequestDto,
+      AddressRequestDto addressRequestDto, List<Long> categoryIds) {
     return PostUpdateRequestDto.builder()
-        .postId(postId)
         .store(storeRequestDto)
         .address(addressRequestDto)
-        .content(content)
+        .content("test")
         .categoryIds(categoryIds)
-        .images(images)
         .build();
   }
 

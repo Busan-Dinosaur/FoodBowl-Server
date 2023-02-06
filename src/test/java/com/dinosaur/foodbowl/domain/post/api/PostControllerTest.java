@@ -7,22 +7,28 @@ import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -76,8 +83,22 @@ public class PostControllerTest extends IntegrationTest {
             .andExpect(header().string(HttpHeaders.LOCATION, "/posts/" + createdPostId))
             .andDo(document("post-create",
                 requestParts(
-                    partWithName("images").description("게시글 사진"),
-                    partWithName("request").description("게시글 내용, 상점, 주소, 카테고리 id")
+                    partWithName("images").description("게시글 사진 리스트"),
+                    partWithName("request").description("게시글 DATA")
+                ),
+                requestPartFields("request",
+                    fieldWithPath("content").description("게시글 내용"),
+                    fieldWithPath("store.storeName").description("상점 이름"),
+                    fieldWithPath("address.addressName").description("전체 도로명 주소"),
+                    fieldWithPath("address.region1depthName").description("지역명1"),
+                    fieldWithPath("address.region2depthName").description("지역명2"),
+                    fieldWithPath("address.region3depthName").description("지역명3"),
+                    fieldWithPath("address.roadName").description("도로명"),
+                    fieldWithPath("address.mainBuildingNo").description("건물 본번"),
+                    fieldWithPath("address.subBuildingNo").description("건물 부번").optional(),
+                    fieldWithPath("address.longitude").description("경도").optional(),
+                    fieldWithPath("address.latitude").description("위도").optional(),
+                    fieldWithPath("categoryIds").description("카테고리 ID 리스트")
                 ),
                 responseHeaders(
                     headerWithName(HttpHeaders.LOCATION).description("생성된 게시글의 URI 입니다.")
@@ -97,6 +118,7 @@ public class PostControllerTest extends IntegrationTest {
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
             addressRequestDto);
+
         String requestToJason = objectMapper.writeValueAsString(requestDto);
         MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
             requestToJason.getBytes(StandardCharsets.UTF_8));
@@ -124,7 +146,7 @@ public class PostControllerTest extends IntegrationTest {
       }
 
       @Test
-      @DisplayName("가게의 주소 없으면 게시글 저장은 실패한다.")
+      @DisplayName("가게의 주소가 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_address() throws Exception {
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
@@ -162,4 +184,141 @@ public class PostControllerTest extends IntegrationTest {
     }
   }
 
+  @Nested
+  @DisplayName("게시글 수정")
+  class UpdatePost {
+
+    private final Long userId = 1L;
+    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
+
+    @BeforeEach
+    void setup() {
+      User me = User.builder().build();
+      ReflectionTestUtils.setField(me, "id", userId);
+      doReturn(me).when(userFindService).findById(anyLong());
+    }
+
+    @Nested
+    @DisplayName("성공 테스트")
+    public class Success {
+
+      @Test
+      @DisplayName("게시글 수정 성공")
+      void should_success_when_update_post() throws Exception {
+        mockingAuth();
+        Long postId = 1L;
+        PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
+        String requestToJason = objectMapper.writeValueAsString(requestDto);
+        MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
+            requestToJason.getBytes(StandardCharsets.UTF_8));
+
+        doReturn(postId).when(postService).updatePost(any(User.class), any(), any(), any());
+
+        callUpdatePostApi(postId, request)
+            .andExpect(status().isCreated())
+            .andDo(document("post-update",
+                pathParameters(
+                    parameterWithName("id").description("수정하고자 하는 게시글 ID")
+                ),
+                requestParts(
+                    partWithName("images").description("게시글 사진 리스트"),
+                    partWithName("request").description("게시글 수정 Data")
+                ),
+                requestPartFields(
+                    "request",
+                    fieldWithPath("content").description("수정하려는 게시글 내용"),
+                    fieldWithPath("store").description("수정하려는 가게 이름"),
+                    fieldWithPath("store.storeName").description("상점 이름"),
+                    fieldWithPath("address").description("수정하려는 가게 주소"),
+                    fieldWithPath("address.addressName").description("전체 도로명 주소"),
+                    fieldWithPath("address.region1depthName").description("지역명1"),
+                    fieldWithPath("address.region2depthName").description("지역명2"),
+                    fieldWithPath("address.region3depthName").description("지역명3"),
+                    fieldWithPath("address.roadName").description("도로명"),
+                    fieldWithPath("address.mainBuildingNo").description("건물 본번"),
+                    fieldWithPath("address.subBuildingNo").description("건물 부번").optional(),
+                    fieldWithPath("address.longitude").description("경도").optional(),
+                    fieldWithPath("address.latitude").description("위도").optional(),
+                    fieldWithPath("categoryIds").description("수정하려는 카테고리 ID 리스트")
+                )));
+      }
+    }
+
+    @Nested
+    @DisplayName("실패 테스트")
+    public class Fail {
+
+      @Test
+      @DisplayName("사진이 없으면 게시글 수정은 실패한다.")
+      void should_fail_when_without_image() throws Exception {
+        Long postId = 1L;
+        PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
+        String requestToJason = objectMapper.writeValueAsString(requestDto);
+        MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
+            requestToJason.getBytes(StandardCharsets.UTF_8));
+
+        doReturn(postId).when(postService).updatePost(any(User.class), any(), any(), any());
+
+        callUpdatePostApiWithOutImages(postId, request)
+            .andExpect(status().isBadRequest());
+      }
+
+      @Test
+      @DisplayName("가게가 없으면 게시글 수정은 실패한다.")
+      void should_fail_when_without_store() throws Exception {
+        Long postId = 1L;
+        AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+        PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
+            null, addressRequestDto, List.of(1L));
+        String requestToJason = objectMapper.writeValueAsString(requestDto);
+        MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
+            requestToJason.getBytes(StandardCharsets.UTF_8));
+
+        doReturn(postId).when(postService).updatePost(any(User.class), any(), any(), any());
+
+        callUpdatePostApi(postId, request)
+            .andExpect(status().isBadRequest());
+      }
+
+      @Test
+      @DisplayName("가게의 주소가 없으면 게시글 수정은 실패한다.")
+      void should_fail_when_without_address() throws Exception {
+        Long postId = 1L;
+        StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+        PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
+            storeRequestDto, null, List.of(1L));
+        String requestToJason = objectMapper.writeValueAsString(requestDto);
+        MockMultipartFile request = new MockMultipartFile("request", "", "application/json",
+            requestToJason.getBytes(StandardCharsets.UTF_8));
+
+        doReturn(postId).when(postService).updatePost(any(User.class), any(), any(), any());
+
+        callUpdatePostApi(postId, request)
+            .andExpect(status().isBadRequest());
+      }
+    }
+
+    private ResultActions callUpdatePostApiWithOutImages(Long id, MockMultipartFile request)
+        throws Exception {
+      return mockMvc.perform(
+              RestDocumentationRequestBuilders.multipart("/posts/{id}", id)
+                  .file(request)
+                  .contentType(MediaType.MULTIPART_FORM_DATA)
+                  .accept(MediaType.APPLICATION_JSON)
+                  .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+          .andDo(print());
+    }
+
+    private ResultActions callUpdatePostApi(Long id, MockMultipartFile request)
+        throws Exception {
+      return mockMvc.perform(
+              RestDocumentationRequestBuilders.multipart("/posts/{id}", id)
+                  .file(photoTestHelper.getPhotoFile())
+                  .file(request)
+                  .contentType(MediaType.MULTIPART_FORM_DATA)
+                  .accept(MediaType.APPLICATION_JSON)
+                  .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+          .andDo(print());
+    }
+  }
 }
