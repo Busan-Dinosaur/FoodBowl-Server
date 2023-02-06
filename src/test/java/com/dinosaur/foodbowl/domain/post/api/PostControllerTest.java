@@ -3,7 +3,10 @@ package com.dinosaur.foodbowl.domain.post.api;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -13,6 +16,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,13 +27,11 @@ import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
-import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class PostControllerTest extends IntegrationTest {
@@ -50,17 +51,6 @@ public class PostControllerTest extends IntegrationTest {
   @DisplayName("게시글 생성")
   class CreatePost {
 
-    private final Long userId = 1L;
-    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
-
-    @BeforeEach
-    void setup() {
-      User me = User.builder().build();
-      ReflectionTestUtils.setField(me, "id", userId);
-      doReturn(me).when(userFindService).findById(anyLong());
-    }
-
-
     @Nested
     @DisplayName("성공 테스트")
     public class Success {
@@ -68,6 +58,8 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("올바른 요청이면 게시글 생성은 성공한다.")
       void should_success_create_post() throws Exception {
+        mockingAuth();
+
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
@@ -82,6 +74,9 @@ public class PostControllerTest extends IntegrationTest {
             .andExpect(status().isCreated())
             .andExpect(header().string(HttpHeaders.LOCATION, "/posts/" + createdPostId))
             .andDo(document("post-create",
+                requestCookies(
+                    cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
+                ),
                 requestParts(
                     partWithName("images").description("게시글 사진 리스트"),
                     partWithName("request").description("게시글 DATA")
@@ -169,7 +164,7 @@ public class PostControllerTest extends IntegrationTest {
               .file(request)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .accept(MediaType.APPLICATION_JSON)
-              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
 
@@ -179,7 +174,7 @@ public class PostControllerTest extends IntegrationTest {
               .file(request)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .accept(MediaType.APPLICATION_JSON)
-              .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
   }
@@ -187,16 +182,6 @@ public class PostControllerTest extends IntegrationTest {
   @Nested
   @DisplayName("게시글 수정")
   class UpdatePost {
-
-    private final Long userId = 1L;
-    private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
-
-    @BeforeEach
-    void setup() {
-      User me = User.builder().build();
-      ReflectionTestUtils.setField(me, "id", userId);
-      doReturn(me).when(userFindService).findById(anyLong());
-    }
 
     @Nested
     @DisplayName("성공 테스트")
@@ -217,6 +202,9 @@ public class PostControllerTest extends IntegrationTest {
         callUpdatePostApi(postId, request)
             .andExpect(status().isCreated())
             .andDo(document("post-update",
+                requestCookies(
+                    cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
+                ),
                 pathParameters(
                     parameterWithName("id").description("수정하고자 하는 게시글 ID")
                 ),
@@ -251,6 +239,7 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("사진이 없으면 게시글 수정은 실패한다.")
       void should_fail_when_without_image() throws Exception {
+        mockingAuth();
         Long postId = 1L;
         PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
         String requestToJason = objectMapper.writeValueAsString(requestDto);
@@ -266,6 +255,7 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("가게가 없으면 게시글 수정은 실패한다.")
       void should_fail_when_without_store() throws Exception {
+        mockingAuth();
         Long postId = 1L;
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
         PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
@@ -283,6 +273,7 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("가게의 주소가 없으면 게시글 수정은 실패한다.")
       void should_fail_when_without_address() throws Exception {
+        mockingAuth();
         Long postId = 1L;
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
@@ -305,7 +296,7 @@ public class PostControllerTest extends IntegrationTest {
                   .file(request)
                   .contentType(MediaType.MULTIPART_FORM_DATA)
                   .accept(MediaType.APPLICATION_JSON)
-                  .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+                  .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
 
@@ -317,7 +308,37 @@ public class PostControllerTest extends IntegrationTest {
                   .file(request)
                   .contentType(MediaType.MULTIPART_FORM_DATA)
                   .accept(MediaType.APPLICATION_JSON)
-                  .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+                  .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 삭제")
+  class DeletePost {
+
+    @Test
+    @DisplayName("게시글 삭제에 성공한다.")
+    void should_success_when_delete_post() throws Exception {
+      mockingAuth();
+      Long postId = 1L;
+
+      doNothing().when(postService).deletePost((any(User.class)), anyLong());
+
+      callDeletePostApi(postId)
+          .andExpect(status().isNoContent())
+          .andDo(document("post-delete",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
+              ),
+              pathParameters(
+                  parameterWithName("id").description("삭제하고자 하는 게시글 ID")
+              )));
+    }
+
+    private ResultActions callDeletePostApi(Long postId) throws Exception {
+      return mockMvc.perform(delete("/posts/{id}", postId)
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
   }

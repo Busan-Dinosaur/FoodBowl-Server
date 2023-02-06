@@ -2,6 +2,8 @@ package com.dinosaur.foodbowl.domain.post.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_HAS_NOT_IMAGE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_WRITER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
@@ -13,6 +15,7 @@ import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,8 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 class PostServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("성공 테스트")
-  class Success {
+  @DisplayName("게시글 생성")
+  class CreatePost {
 
     @Test
     @DisplayName("올바른 요청에 대한 게시글 생성은 성공한다.")
@@ -45,7 +48,11 @@ class PostServiceTest extends IntegrationTest {
       Post post = postRepository.getReferenceById(postId);
       Assertions.assertThat(post).isNotNull();
     }
+  }
 
+  @Nested
+  @DisplayName("게시글 수정")
+  class UpdatePost {
     @Test
     @DisplayName("올바른 요청에 대한 게시글 수정은 성공한다.")
     public void should_success_when_valid_update_request() {
@@ -75,12 +82,6 @@ class PostServiceTest extends IntegrationTest {
       //  Assertions.assertThat(after.getPhotos().size()).isEqualTo(1);
       //   Assertions.assertThat(after.getThumbnail()).isNotNull();
     }
-  }
-
-  @Nested
-  @DisplayName("실패 테스트")
-  class Fail {
-
     @Test
     @DisplayName("사진이 한장도 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_no_file() {
@@ -89,7 +90,6 @@ class PostServiceTest extends IntegrationTest {
       Post before = postTestHelper.builder().content("before").thumbnail(null).user(user)
           .store(null).build();
       PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
-
 
       // then
       Assertions.assertThatThrownBy(
@@ -130,4 +130,36 @@ class PostServiceTest extends IntegrationTest {
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
     }
   }
+
+  @Nested
+  @DisplayName("게시글 삭제")
+  class DeletePost {
+
+    @Test
+    @DisplayName("게시글 삭제를 성공한다.")
+    void should_success_when_delete_post() {
+      User user = userTestHelper.builder().build();
+      Post post = postTestHelper.builder().user(user).build();
+
+      postService.deletePost(user, post.getId());
+
+      em.flush();
+      em.clear();
+
+      Optional<Post> deletedPost = postRepository.findById(post.getId());
+      assertThat(deletedPost).isEmpty();
+    }
+
+    @Test
+    @DisplayName("게시글 작성자가 아닌 경우 예외가 발생한다.")
+    void should_throwException_when_delete_post() {
+      User user = userTestHelper.builder().build();
+      Post post = postTestHelper.builder().build();
+
+      assertThatThrownBy(() -> postService.deletePost(user, post.getId()))
+          .isInstanceOf(BusinessException.class)
+          .hasMessageContaining(POST_NOT_WRITER.getMessage());
+    }
+  }
+
 }
