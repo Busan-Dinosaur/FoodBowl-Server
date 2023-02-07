@@ -43,10 +43,12 @@ class PostControllerTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
 
       PostThumbnailResponseDto response1 = PostThumbnailResponseDto.builder()
+          .postId(1L)
           .thumbnailPath("path1")
           .createdAt(now)
           .build();
       PostThumbnailResponseDto response2 = PostThumbnailResponseDto.builder()
+          .postId(2L)
           .thumbnailPath("path2")
           .createdAt(now)
           .build();
@@ -56,9 +58,11 @@ class PostControllerTest extends IntegrationTest {
 
       callGetThumbnailsApi("1")
           .andExpect(status().isOk())
+          .andExpect(jsonPath("[0].postId").value(response1.getPostId()))
           .andExpect(jsonPath("[0].thumbnailPath").value(response1.getThumbnailPath()))
           .andExpect(jsonPath("[0].createdAt")
               .value(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
+          .andExpect(jsonPath("[1].postId").value(response2.getPostId()))
           .andExpect(jsonPath("[1].thumbnailPath").value(response2.getThumbnailPath()))
           .andExpect(jsonPath("[1].createdAt")
               .value(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
@@ -76,6 +80,7 @@ class PostControllerTest extends IntegrationTest {
                       .description("불러오고 싶은 썸네일 목록 크기 +\n(default: 18)")
               ),
               responseFields(
+                  fieldWithPath("[].postId").description("게시글 ID"),
                   fieldWithPath("[].thumbnailPath").description("게시글 썸네일 URI"),
                   fieldWithPath("[].createdAt").description("게시글 생성 시간")
               )));

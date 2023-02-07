@@ -14,12 +14,14 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostThumbnailResponseDto {
 
+  private Long postId;
   private String thumbnailPath;
   @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
   private LocalDateTime createdAt;
 
   public static PostThumbnailResponseDto from(Post post) {
     return PostThumbnailResponseDto.builder()
+        .postId(post.getId())
         .thumbnailPath(post.getThumbnail().getPath())
         .createdAt(post.getCreatedAt())
         .build();
