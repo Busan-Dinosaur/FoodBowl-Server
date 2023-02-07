@@ -4,8 +4,6 @@ plugins {
     id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
-    // Generate commands related to querydsl on the Gradle tab.
-    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.dinosaur'
@@ -115,29 +113,20 @@ jacocoTestReport {
 
 /******* Start Querydsl *******/
 // Where To Create Querydsl Q Class
-def querydslDir = "$buildDir/generated/querydsl"
+def generated = 'src/main/generated'
 
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
+// Set Querydsl Q class Generated Target
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
 }
 
-// Add sourceSets when build
+// Add Q Class Target In Java Source Set
 sourceSets {
-    main.java.srcDir querydslDir
+    main.java.srcDirs += [generated]
 }
 
-// Enable querydsl to inherit the compileClassPath
-configurations {
-    querydsl.extendsFrom compileClasspath
-}
-
-// Set options to use when compiling querydsl
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
-}
-
+// When Gradle Clean, Delete Q Class Directory
 clean {
-    delete file(querydslDir)
+    delete file(generated)
 }
 /******* End Querydsl *******/
