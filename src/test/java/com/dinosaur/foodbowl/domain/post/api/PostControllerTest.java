@@ -109,6 +109,7 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("사진이 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_image() throws Exception {
+        mockingAuth();
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
@@ -127,6 +128,7 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("가게가 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_store() throws Exception {
+        mockingAuth();
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(null,
             addressRequestDto);
@@ -143,6 +145,7 @@ public class PostControllerTest extends IntegrationTest {
       @Test
       @DisplayName("가게의 주소가 없으면 게시글 저장은 실패한다.")
       void should_fail_when_without_address() throws Exception {
+        mockingAuth();
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
             null);
@@ -337,7 +340,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     private ResultActions callDeletePostApi(Long postId) throws Exception {
-      return mockMvc.perform(delete("/posts/{id}", postId)
+      return mockMvc.perform(RestDocumentationRequestBuilders.delete("/posts/{id}", postId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
