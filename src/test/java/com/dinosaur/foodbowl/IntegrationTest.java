@@ -16,6 +16,9 @@ import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.blame.BlameTestHelper;
 import com.dinosaur.foodbowl.domain.blame.dao.BlameRepository;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.clip.ClipTestHelper;
+import com.dinosaur.foodbowl.domain.clip.application.ClipService;
+import com.dinosaur.foodbowl.domain.clip.dao.ClipRepository;
 import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
 import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
@@ -106,6 +109,9 @@ public class IntegrationTest {
   @SpyBean
   protected BlameRepository blameRepository;
 
+  @SpyBean
+  protected ClipRepository clipRepository;
+
   /******* Service *******/
   @SpyBean
   protected AuthService authService;
@@ -140,6 +146,9 @@ public class IntegrationTest {
   @SpyBean
   protected CommentFindService commentFindService;
 
+  @SpyBean
+  protected ClipService clipService;
+
   /******* TestHelper *******/
   @Autowired
   protected UserTestHelper userTestHelper;
@@ -155,6 +164,9 @@ public class IntegrationTest {
 
   @Autowired
   protected BlameTestHelper blameTestHelper;
+
+  @Autowired
+  protected ClipTestHelper clipTestHelper;
 
   /******* Util *******/
   @SpyBean
