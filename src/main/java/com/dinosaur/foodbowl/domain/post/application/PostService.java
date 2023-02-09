@@ -38,9 +38,10 @@ public class PostService {
 
   @Transactional
   public Long createPost(User user, PostCreateRequestDto request, List<MultipartFile> images) {
-    checkImages(images);
+    checkImagesEmpty(images);
     List<Photo> photos = photoUtil.save(images);
-    Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0)).orElse(null);
+    Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0))
+        .orElseThrow(() -> new BusinessException(images, "images", POST_HAS_NOT_IMAGE));
     Store store = storeFindService.findStoreByName(request.getStore(), request.getAddress());
 
     Post post = request.toEntity(user, store, photos, thumbnail);
@@ -55,9 +56,10 @@ public class PostService {
     Post post = postFindService.findById(postId);
     checkWriter(user, post);
 
-    checkImages(images);
+    checkImagesEmpty(images);
     List<Photo> photos = photoUtil.save(images);
-    Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0)).orElse(null);
+    Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0))
+        .orElseThrow(() -> new BusinessException(images, "images", POST_HAS_NOT_IMAGE));
     Store store = storeFindService.findStoreByName(request.getStore(), request.getAddress());
 
     post.update(thumbnail, store, request.getContent(), photos);
@@ -66,7 +68,7 @@ public class PostService {
     return post.getId();
   }
 
-  private void checkImages(List<MultipartFile> images) {
+  private void checkImagesEmpty(List<MultipartFile> images) {
     if (images.isEmpty()) {
       throw new BusinessException(images, "images", POST_HAS_NOT_IMAGE);
     }
