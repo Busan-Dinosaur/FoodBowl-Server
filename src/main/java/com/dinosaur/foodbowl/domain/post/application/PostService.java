@@ -85,7 +85,7 @@ public class PostService {
   }
 
   private static void checkWriter(User user, Post post) {
-    if (!post.getUser().equals(user)) {
+    if (!post.isWriter(user)) {
       throw new BusinessException(post.getId(), "postId", POST_NOT_WRITER);
     }
   }

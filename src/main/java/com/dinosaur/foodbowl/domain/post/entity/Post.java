@@ -80,6 +80,7 @@ public class Post extends BaseEntity {
     this.photos = photos;
     this.postCategories = postCategories;
   }
+
   public Post update(Thumbnail thumbnail, Store store, String content, List<Photo> photos) {
     this.content = content;
     this.store = store;
@@ -94,6 +95,10 @@ public class Post extends BaseEntity {
         .post(this)
         .category(category)
         .build());
+  }
+
+  public boolean isWriter(User user) {
+    return this.user.equals(user);
   }
 
 }
