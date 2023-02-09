@@ -1,13 +1,16 @@
 package com.dinosaur.foodbowl.domain.post.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
 
 import com.dinosaur.foodbowl.domain.category.entity.Category;
+import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -49,7 +52,7 @@ public class Post extends BaseEntity {
   @JoinColumn(name = "user_id", nullable = false, updatable = false)
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = REMOVE)
   @JoinColumn(name = "thumbnail_id", nullable = false)
   private Thumbnail thumbnail;
 
@@ -65,6 +68,10 @@ public class Post extends BaseEntity {
 
   @OneToMany(mappedBy = "post")
   private Set<PostCategory> postCategories = new HashSet<>();
+
+  @OneToMany(cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "post_id")
+  private List<Comment> comments = new ArrayList<>();
 
   @LastModifiedDate
   @Column(name = "updated_at", nullable = false)

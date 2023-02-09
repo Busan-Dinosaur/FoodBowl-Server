@@ -5,6 +5,7 @@ import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_HAS_NOT_IMAGE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_WRITER;
 
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.photo.dao.PhotoRepository;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
@@ -13,6 +14,7 @@ import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dao.StoreFindService;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailUtil;
+import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
@@ -33,6 +35,8 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final CategoryRepository categoryRepository;
+  private final ThumbnailRepository thumbnailRepository;
+  //  private final PhotoRepository photoRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final PhotoUtil photoUtil;
 
@@ -61,6 +65,10 @@ public class PostService {
     Thumbnail thumbnail = thumbnailUtil.saveIfExist(images.get(0))
         .orElseThrow(() -> new BusinessException(images, "images", POST_HAS_NOT_IMAGE));
     Store store = storeFindService.findStoreByName(request.getStore(), request.getAddress());
+
+    thumbnailRepository.delete(post.getThumbnail());
+    // @ Todo: PhotoService merge 후 주석 제거
+    // photoRepository.deleteAll(post.getPhotos());
 
     post.update(thumbnail, store, request.getContent(), photos);
     addCategories(request.getCategoryIds(), post);
