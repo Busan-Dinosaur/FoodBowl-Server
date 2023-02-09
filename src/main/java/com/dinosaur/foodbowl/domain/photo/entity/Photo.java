@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class Photo extends BaseEntity {
 
   private static final int MAX_PATH_LENGTH = 512;
-
+  @Getter
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", updatable = false, nullable = false)

@@ -3,6 +3,7 @@ package com.dinosaur.foodbowl.domain.photo.application.file;
 import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.DEFAULT_PHOTO_PATH;
 import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.ROOT_PATH;
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NOT_EXISTS;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NOT_IMAGE_FILE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NULL_IMAGE_FILE;
 import static java.io.File.separator;
@@ -23,6 +24,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.UUID;
 import javax.imageio.ImageIO;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -101,12 +103,24 @@ public class PhotoFileService extends PhotoService {
   }
 
   @Override
-  public void delete(Photo photo) {
+  public void delete(@NonNull Photo photo) {
+    deletePhotoIfExists(photo);
+    deleteFileIfExists(photo);
+  }
+
+  public void deletePhotoIfExists(Photo photo) {
+    if (!photoRepository.existsById(photo.getId())) {
+      throw new BusinessException(photo.getPath(), "photo path", PHOTO_NOT_EXISTS);
+    }
     photoRepository.delete(photo);
+  }
+
+  private void deleteFileIfExists(Photo photo) {
     try {
       Files.deleteIfExists(Path.of(ROOT_PATH + photo.getPath()));
     } catch (IOException e) {
       throw new RuntimeException("파일 삭제 도중 문제가 발생했습니다. Photo path: " + photo.getPath());
     }
   }
+
 }
