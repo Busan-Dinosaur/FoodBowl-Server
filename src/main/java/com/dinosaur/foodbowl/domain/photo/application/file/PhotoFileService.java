@@ -1,5 +1,7 @@
 package com.dinosaur.foodbowl.domain.photo.application.file;
 
+import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.DEFAULT_PHOTO_PATH;
+import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.ROOT_PATH;
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NOT_IMAGE_FILE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NULL_IMAGE_FILE;
@@ -22,8 +24,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PhotoFileService extends PhotoService {
 
-  static final String ROOT_PATH = "static";
-  private static final String RESOURCE_PATH =
-      new ClassPathResource(ROOT_PATH).getPath() + separator;
-  private static final String DEFAULT_PHOTO_PATH = RESOURCE_PATH + "photo" + separator;
   private final PhotoRepository photoRepository;
 
   private final PostRepository postRepository;
@@ -55,7 +51,7 @@ public class PhotoFileService extends PhotoService {
       file.transferTo(new File(fileFullPath));
     } catch (IOException e) {
       e.printStackTrace();
-      throw new RuntimeException("이미지 저장에 실패하였습니다.");
+      throw new RuntimeException("이미지 저장에 실패하였습니다. 파일명: " + file.getOriginalFilename());
     }
 
     return photoRepository.save(Photo.builder()
@@ -65,16 +61,10 @@ public class PhotoFileService extends PhotoService {
   }
 
   private static void checkImageFile(MultipartFile file) {
-    if (isNotImageFile(file)) {
-      throw new BusinessException(file, "photo", PHOTO_NOT_IMAGE_FILE);
-    }
-  }
-
-  private static boolean isNotImageFile(MultipartFile file) {
     try (InputStream originalInputStream = new BufferedInputStream(file.getInputStream())) {
-      return ImageIO.read(originalInputStream) == null;
+      ImageIO.read(originalInputStream);
     } catch (IOException e) {
-      throw new IllegalStateException("파일 저장 도중 문제가 발생했습니다. 파일 저장 Entity: " + file);
+      throw new BusinessException(file, "photo", PHOTO_NOT_IMAGE_FILE);
     } catch (NullPointerException e) {
       throw new BusinessException(file, "photo", PHOTO_NULL_IMAGE_FILE);
     }
@@ -116,7 +106,7 @@ public class PhotoFileService extends PhotoService {
     try {
       Files.deleteIfExists(Path.of(ROOT_PATH + photo.getPath()));
     } catch (IOException e) {
-      throw new RuntimeException("파일 삭제 도중 문제가 발생했습니다. 파일 삭제 Entity: " + photo);
+      throw new RuntimeException("파일 삭제 도중 문제가 발생했습니다. Photo path: " + photo.getPath());
     }
   }
 }

@@ -1,6 +1,6 @@
 package com.dinosaur.foodbowl.domain.photo.application.file;
 
-import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileService.ROOT_PATH;
+import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.ROOT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
