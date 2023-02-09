@@ -7,10 +7,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
+import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
+import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Collections;
@@ -53,6 +55,7 @@ class PostServiceTest extends IntegrationTest {
   @Nested
   @DisplayName("게시글 수정")
   class UpdatePost {
+
     @Test
     @DisplayName("올바른 요청에 대한 게시글 수정은 성공한다.")
     public void should_success_when_valid_update_request() {
@@ -82,6 +85,33 @@ class PostServiceTest extends IntegrationTest {
       //  Assertions.assertThat(after.getPhotos().size()).isEqualTo(1);
       //   Assertions.assertThat(after.getThumbnail()).isNotNull();
     }
+
+    @Test
+    @DisplayName("게시글 수정시 기존의 썸네일과 포토 엔티티는 삭제된다.")
+    public void should_delete_related_when_update() {
+      // given
+      User user = userTestHelper.builder().build();
+      Thumbnail beforeThumbnail = thumbnailTestHelper.generateThumbnail();
+      Post before = postTestHelper.builder().content("before").thumbnail(beforeThumbnail).user(user)
+          .store(null).build();
+      StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+      AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+      List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
+      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
+          storeRequestDto, addressRequestDto, List.of(1L, 2L));
+
+      // when
+      postService.updatePost(user, before.getId(), requestDto, images);
+      em.flush();
+      em.clear();
+
+      // then
+      Optional<Thumbnail> deleted = thumbnailRepository.findById(beforeThumbnail.getId());
+      assertThat(deleted).isEmpty();
+      // @Todo: 기존 포토가 전부 삭제되었는지 확인 추가 필요
+
+    }
+
     @Test
     @DisplayName("사진이 한장도 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_no_file() {
@@ -148,6 +178,31 @@ class PostServiceTest extends IntegrationTest {
 
       Optional<Post> deletedPost = postRepository.findById(post.getId());
       assertThat(deletedPost).isEmpty();
+    }
+
+    // @Todo: PhotoService Merge 후 Photo 삭제 검증 추가
+    @Test
+    @DisplayName("게시글을 삭제하면 연관된 댓글, 썸네일, 이미지도 같이 삭제된다.")
+    void should_success_delete_related_when_delete_post() {
+      User user = userTestHelper.builder().build();
+      Thumbnail thumbnail = thumbnailTestHelper.generateThumbnail();
+      Post post = postTestHelper.builder()
+          .user(user)
+          .thumbnail(thumbnail)
+          .build();
+      Comment comment = commentTestHelper.builder().post(post).user(user).build();
+
+      em.flush();
+      em.clear();
+
+      postService.deletePost(user, post.getId());
+
+      Optional<Post> deletedPost = postRepository.findById(post.getId());
+      assertThat(deletedPost).isEmpty();
+      Optional<Thumbnail> deletedThumbnail = thumbnailRepository.findById(thumbnail.getId());
+      assertThat(deletedThumbnail).isEmpty();
+      Optional<Comment> deletedComment = commentRepository.findById(comment.getId());
+      assertThat(deletedComment).isEmpty();
     }
 
     @Test
