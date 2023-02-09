@@ -3,9 +3,11 @@ package com.dinosaur.foodbowl.domain.photo.application.file;
 import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.DEFAULT_PHOTO_PATH;
 import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.ROOT_PATH;
 import static com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail.MAX_PATH_LENGTH;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_FILE_READ_FAIL;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NOT_EXISTS;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NOT_IMAGE_FILE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_NULL_IMAGE_FILE;
+import static com.dinosaur.foodbowl.global.error.ErrorCode.PHOTO_POST_NOT_FOUND;
 import static java.io.File.separator;
 
 import com.dinosaur.foodbowl.domain.photo.application.PhotoService;
@@ -45,7 +47,7 @@ public class PhotoFileService extends PhotoService {
   @Override
   public Photo save(MultipartFile file, Post post) {
     checkImageFile(file);
-
+    checkPost(post);
     String fileFullPath = generateFileFullPath(file);
     checkPhotoFullPathLength(fileFullPath, file.getOriginalFilename());
 
@@ -62,11 +64,23 @@ public class PhotoFileService extends PhotoService {
         .build());
   }
 
+  private void checkPost(Post post) {
+    if (!postRepository.existsById(post.getId())) {
+      throw new BusinessException(post, "post", PHOTO_POST_NOT_FOUND);
+    }
+  }
+
   private static void checkImageFile(MultipartFile file) {
-    try (InputStream originalInputStream = new BufferedInputStream(file.getInputStream())) {
-      ImageIO.read(originalInputStream);
-    } catch (IOException e) {
+    if (isNotImageFile(file)) {
       throw new BusinessException(file, "photo", PHOTO_NOT_IMAGE_FILE);
+    }
+  }
+
+  private static boolean isNotImageFile(MultipartFile file) {
+    try (InputStream originalInputStream = new BufferedInputStream(file.getInputStream())) {
+      return ImageIO.read(originalInputStream) == null;
+    } catch (IOException e) {
+      throw new BusinessException(file, "photo", PHOTO_FILE_READ_FAIL);
     } catch (NullPointerException e) {
       throw new BusinessException(file, "photo", PHOTO_NULL_IMAGE_FILE);
     }

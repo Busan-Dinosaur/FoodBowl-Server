@@ -51,6 +51,19 @@ class PhotoFileServiceTest extends IntegrationTest {
           .isInstanceOf(BusinessException.class);
     }
 
+    @Test
+    @DisplayName("존재하지 않는 게시글에 사진을 추가하면 BusinessException 이 발생한다.")
+    void should_throw_BusinessException_when_post_not_found() {
+      Post deleted = postTestHelper.builder().build();
+      postRepository.delete(deleted);
+      em.flush();
+      em.clear();
+
+      assertThatThrownBy(() ->
+          photoFileService.save(photoTestHelper.getImageFile(), deleted))
+          .isInstanceOf(BusinessException.class);
+    }
+
     private void deleteTestFile(Photo photo) {
       File photoFile = new File(ROOT_PATH + photo.getPath());
       assertThat(photoFile).exists();

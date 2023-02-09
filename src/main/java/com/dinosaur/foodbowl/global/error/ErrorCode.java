@@ -19,7 +19,9 @@ public enum ErrorCode {
   /******* Photo *******/
   PHOTO_NOT_IMAGE_FILE("파일이 이미지가 아닙니다.", HttpStatus.BAD_REQUEST),
   PHOTO_NULL_IMAGE_FILE("파일이 null 입니다.", HttpStatus.BAD_REQUEST),
-  PHOTO_NOT_EXISTS("존재하지 않는 이미지입니다.", HttpStatus.NOT_FOUND);
+  PHOTO_NOT_EXISTS("존재하지 않는 이미지입니다.", HttpStatus.NOT_FOUND),
+  PHOTO_FILE_READ_FAIL("읽을 수 없는 파일입니다.", HttpStatus.BAD_REQUEST),
+  PHOTO_POST_NOT_FOUND("존재하지 않는 게시글에는 사진을 추가할 수 없습니다.", HttpStatus.BAD_REQUEST);
 
   private final String message;
   private final HttpStatus httpStatus;
