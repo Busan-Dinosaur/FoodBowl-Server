@@ -14,13 +14,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "blame")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"id"}, callSuper = false)
+@EqualsAndHashCode(of = {"user", "targetId", "targetType"}, callSuper = false)
 public class Blame extends BaseEntity {
 
   @Id
@@ -41,5 +44,12 @@ public class Blame extends BaseEntity {
 
   public enum TargetType {
     USER, POST, COMMENT;
+  }
+
+  @Builder
+  private Blame(User user, Long targetId, TargetType targetType) {
+    this.user = user;
+    this.targetId = targetId;
+    this.targetType = targetType;
   }
 }

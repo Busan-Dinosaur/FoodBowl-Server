@@ -1,6 +1,11 @@
 package com.dinosaur.foodbowl;
 
+import static com.dinosaur.foodbowl.global.config.security.jwt.JwtValidationType.VALID;
 import static java.io.File.separator;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -8,12 +13,23 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.dinosaur.foodbowl.domain.auth.application.AuthService;
 import com.dinosaur.foodbowl.domain.auth.application.TokenService;
+import com.dinosaur.foodbowl.domain.blame.BlameTestHelper;
+import com.dinosaur.foodbowl.domain.blame.dao.BlameRepository;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.clip.ClipTestHelper;
+import com.dinosaur.foodbowl.domain.clip.application.ClipService;
+import com.dinosaur.foodbowl.domain.clip.dao.ClipRepository;
+import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
+import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
+import com.dinosaur.foodbowl.domain.comment.application.CommentService;
+import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileService;
 import com.dinosaur.foodbowl.domain.photo.application.file.PhotoTestHelper;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
+import com.dinosaur.foodbowl.domain.post.application.PostFindService;
+import com.dinosaur.foodbowl.domain.post.application.PostService;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
@@ -22,18 +38,24 @@ import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.application.DeleteAccountService;
 import com.dinosaur.foodbowl.domain.user.application.GetProfileService;
 import com.dinosaur.foodbowl.domain.user.application.UpdateProfileService;
+import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.dao.RoleRepository;
-import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.dao.UserRoleRepository;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.config.security.dto.TokenValidationDto;
+import com.dinosaur.foodbowl.global.config.security.jwt.JwtToken;
 import com.dinosaur.foodbowl.global.config.security.jwt.JwtTokenProvider;
+import com.dinosaur.foodbowl.global.config.security.jwt.JwtUserEntity;
 import com.dinosaur.foodbowl.global.util.CookieUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +67,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,13 +85,10 @@ public class IntegrationTest {
 
   /******* Repository *******/
   @SpyBean
-  protected RoleRepository roleRepository;
-
-  @SpyBean
   protected UserRepository userRepository;
 
   @SpyBean
-  protected ThumbnailRepository thumbnailRepository;
+  protected RoleRepository roleRepository;
 
   @SpyBean
   protected UserRoleRepository userRoleRepository;
@@ -74,19 +97,25 @@ public class IntegrationTest {
   protected FollowRepository followRepository;
 
   @SpyBean
-  protected CategoryRepository categoryRepository;
+  protected ThumbnailRepository thumbnailRepository;
 
   @SpyBean
   protected PostRepository postRepository;
 
+  @SpyBean
+  protected CategoryRepository categoryRepository;
+
   /******* Dao *******/
   @SpyBean
-  protected UserFindDao userFindDao;
+  protected CommentRepository commentRepository;
+
+  @SpyBean
+  protected BlameRepository blameRepository;
+
+  @SpyBean
+  protected ClipRepository clipRepository;
 
   /******* Service *******/
-  @SpyBean
-  protected GetProfileService getProfileService;
-
   @SpyBean
   protected AuthService authService;
 
@@ -94,7 +123,10 @@ public class IntegrationTest {
   protected TokenService tokenService;
 
   @SpyBean
-  protected CookieUtils cookieUtils;
+  protected UserFindService userFindService;
+
+  @SpyBean
+  protected GetProfileService getProfileService;
 
   @SpyBean
   protected DeleteAccountService deleteAccountService;
@@ -108,7 +140,22 @@ public class IntegrationTest {
   @SpyBean
   protected PhotoFileService photoFileService;
 
-  /******* Helper *******/
+  @SpyBean
+  protected PostService postService;
+
+  @SpyBean
+  protected PostFindService postFindService;
+
+  @SpyBean
+  protected CommentService commentService;
+
+  @SpyBean
+  protected CommentFindService commentFindService;
+
+  @SpyBean
+  protected ClipService clipService;
+
+  /******* TestHelper *******/
   @Autowired
   protected UserTestHelper userTestHelper;
 
@@ -121,15 +168,26 @@ public class IntegrationTest {
   @Autowired
   protected PhotoTestHelper photoTestHelper;
 
+  protected CommentTestHelper commentTestHelper;
+
+  @Autowired
+  protected BlameTestHelper blameTestHelper;
+
+  @Autowired
+  protected ClipTestHelper clipTestHelper;
+
   /******* Util *******/
   @SpyBean
   protected ThumbnailFileUtil thumbnailFileUtil;
+
+  @SpyBean
+  protected CookieUtils cookieUtils;
 
   /******* Spring Bean *******/
   @Autowired
   protected WebApplicationContext webApplicationContext;
 
-  @Autowired
+  @SpyBean
   protected JwtTokenProvider jwtTokenProvider;
 
   @Autowired
@@ -179,5 +237,19 @@ public class IntegrationTest {
     } catch (IOException e) {
       throw new RuntimeException();
     }
+  }
+
+  protected void mockingAuth() {
+    User user = userTestHelper.builder().build();
+    ReflectionTestUtils.setField(user, "id", 1L);
+    UserDetails userDetails = new JwtUserEntity(String.valueOf(user.getId()), List.of("ROLE_회원"));
+    TokenValidationDto tokenDto = TokenValidationDto.of(true, VALID, "token");
+    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, "",
+        userDetails.getAuthorities());
+
+    doReturn(tokenDto).when(jwtTokenProvider)
+        .tryCheckTokenValid(any(HttpServletRequest.class), any(JwtToken.class));
+    doReturn(auth).when(jwtTokenProvider).getAuthentication(anyString());
+    doReturn(user).when(userFindService).findById(anyLong());
   }
 }

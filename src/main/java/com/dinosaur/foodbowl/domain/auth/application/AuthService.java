@@ -10,7 +10,7 @@ import com.dinosaur.foodbowl.domain.auth.dto.response.CheckResponseDto;
 import com.dinosaur.foodbowl.domain.auth.dto.response.SignUpResponseDto;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailUtil;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
+import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-  private final UserFindDao userFindDao;
+  private final UserFindService userFindService;
   private final UserRepository userRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final PasswordEncoder passwordEncoder;
@@ -55,7 +55,7 @@ public class AuthService {
   }
 
   public long login(LoginRequestDto loginRequestDto) {
-    User user = userFindDao.findByLoginId(loginRequestDto.getLoginId());
+    User user = userFindService.findByLoginId(loginRequestDto.getLoginId());
 
     if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
       throw new BusinessException(loginRequestDto.getPassword(), "password", PASSWORD_NOT_MATCH);

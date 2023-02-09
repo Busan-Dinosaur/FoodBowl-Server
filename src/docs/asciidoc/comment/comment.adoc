@@ -1,0 +1,118 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= COMMENT API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../foodbowl.html[API 목록으로 돌아가기]
+
+== *댓글 작성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-write/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-write/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/comment-write/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-write/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/comment-write/response-headers.adoc[]
+
+== *댓글 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-update/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-update/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/comment-update/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/comment-update/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-update/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/comment-update/response-headers.adoc[]
+
+== *댓글 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-delete/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-delete/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/comment-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-delete/http-response.adoc[]
+
+== *게시글 댓글 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-list/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/comment-list/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/comment-list/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/comment-list/response-fields.adoc[]

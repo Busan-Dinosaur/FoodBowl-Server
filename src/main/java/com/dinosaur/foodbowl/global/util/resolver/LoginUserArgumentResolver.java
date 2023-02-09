@@ -1,6 +1,6 @@
 package com.dinosaur.foodbowl.global.util.resolver;
 
-import com.dinosaur.foodbowl.domain.user.dao.UserFindDao;
+import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -16,7 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final UserFindDao userFindDao;
+  private final UserFindService userFindService;
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
@@ -29,6 +29,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
       NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     long loginUserId = Long.parseLong(authentication.getName());
-    return userFindDao.findById(loginUserId);
+    return userFindService.findById(loginUserId);
   }
 }

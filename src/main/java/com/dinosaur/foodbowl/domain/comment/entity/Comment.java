@@ -1,8 +1,11 @@
 package com.dinosaur.foodbowl.domain.comment.entity;
 
+import com.dinosaur.foodbowl.domain.blame.entity.Blame;
+import com.dinosaur.foodbowl.domain.blame.entity.Blame.TargetType;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -12,15 +15,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +36,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Comment extends BaseEntity {
 
-  private static final int MAX_MESSAGE_LENGTH = 255;
+  public static final int MAX_MESSAGE_LENGTH = 255;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +58,10 @@ public class Comment extends BaseEntity {
   @Column(name = "message", nullable = false, length = MAX_MESSAGE_LENGTH)
   private String message;
 
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @JoinColumn(name = "target_id", updatable = false)
+  private List<Blame> blames = new ArrayList<>();
+
   @LastModifiedDate
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
@@ -60,5 +72,21 @@ public class Comment extends BaseEntity {
     this.post = post;
     this.user = user;
     this.message = message;
+  }
+
+  public void updateMessage(String message) {
+    this.message = message;
+  }
+
+  public void report(User user) {
+    Blame blame = Blame.builder()
+        .user(user)
+        .targetId(this.id)
+        .targetType(TargetType.COMMENT)
+        .build();
+
+    if (!blames.contains(blame)) {
+      blames.add(blame);
+    }
   }
 }

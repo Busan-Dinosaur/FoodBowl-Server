@@ -1,0 +1,48 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= POST API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../foodbowl.html[API 목록으로 돌아가기]
+
+== *게시글 썸네일 목록 조회*
+
+NOTE: 모든 목록을 조회하는 것이 아닌 페이징을 통한 조회입니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-thumbnail-list/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/post-thumbnail-list/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/post-thumbnail-list/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/post-thumbnail-list/query-parameters.adoc[]
+
+NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-thumbnail-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/post-thumbnail-list/response-fields.adoc[]
