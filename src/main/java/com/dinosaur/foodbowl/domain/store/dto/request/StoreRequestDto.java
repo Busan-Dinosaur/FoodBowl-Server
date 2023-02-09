@@ -4,7 +4,6 @@ import static com.dinosaur.foodbowl.domain.store.entity.Store.MAX_STORE_NAME_LEN
 
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
-import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,6 @@ import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Builder
-@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreRequestDto {

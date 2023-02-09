@@ -20,14 +20,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCreateRequestDto{
+public class PostCreateRequestDto {
 
   @NotNull
   private String content;
+
   @NotNull
   private StoreRequestDto store;
+
   @NotNull
   private AddressRequestDto address;
+
   @Valid
   @NotNull
   private List<Long> categoryIds;

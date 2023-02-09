@@ -23,21 +23,27 @@ public class AddressRequestDto {
   @NotNull
   @Length(max = MAX_ADDRESS_NAME_LENGTH)
   private String addressName;
+
   @NotNull
   @Length(max = MAX_REGION_DEPTH_NAME_LENGTH)
   private String region1depthName;
+
   @NotNull
   @Length(max = MAX_REGION_DEPTH_NAME_LENGTH)
   private String region2depthName;
+
   @NotNull
   @Length(max = MAX_REGION_DEPTH_NAME_LENGTH)
   private String region3depthName;
+
   @NotNull
   @Length(max = MAX_ROAD_NAME_LENGTH)
   private String roadName;
+
   @NotNull
   @Length(max = MAX_BUILDING_NO_LENGTH)
   private String mainBuildingNo;
+
   @Length(max = MAX_BUILDING_NO_LENGTH)
   private String subBuildingNo;
   private BigDecimal longitude;

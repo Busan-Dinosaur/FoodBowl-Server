@@ -19,10 +19,13 @@ public class PostUpdateRequestDto {
 
   @NotNull
   private String content;
+
   @NotNull
   private StoreRequestDto store;
+
   @NotNull
   private AddressRequestDto address;
+
   @Valid
   @NotNull
   private List<Long> categoryIds;
