@@ -23,7 +23,7 @@ class FollowServiceTest extends IntegrationTest {
       User other = userBuilder.build();
 
       // when
-      followService.follow(me, other.getId());
+      followService.follow(me, other);
       em.flush();
       em.clear();
 
@@ -39,14 +39,16 @@ class FollowServiceTest extends IntegrationTest {
       UserBuilder userBuilder = userTestHelper.builder();
       User me = userBuilder.build();
       User other = userBuilder.build();
-      followService.follow(me, other.getId());
+      followService.follow(me, other);
+
       em.flush();
       em.clear();
+
       me = userFindService.findById(me.getId());
       other = userFindService.findById(other.getId());
 
       // when
-      followService.unfollow(me, other.getId());
+      followService.unfollow(me, other);
       em.flush();
       em.clear();
 

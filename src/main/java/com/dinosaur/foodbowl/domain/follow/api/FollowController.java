@@ -1,6 +1,7 @@
 package com.dinosaur.foodbowl.domain.follow.api;
 
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
+import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import com.dinosaur.foodbowl.global.util.validator.follow.NotMe;
@@ -21,19 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class FollowController {
 
   private final FollowService followService;
+  private final UserFindService userFindService;
 
   @PostMapping("/{userId}")
-  public ResponseEntity<Void> follow(@PathVariable("userId") @NotMe Long userId,
+  public ResponseEntity<Void> follow(@PathVariable("userId") @NotMe Long otherId,
       @LoginUser User me) {
-    followService.follow(me, userId);
+    User other = userFindService.findById(otherId);
+
+    followService.follow(me, other);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   @DeleteMapping("/{userId}")
-  public ResponseEntity<Void> unFollow(@PathVariable("userId") @NotMe Long userId,
+  public ResponseEntity<Void> unFollow(@PathVariable("userId") @NotMe Long otherId,
       @LoginUser User me) {
-    followService.unfollow(me, userId);
+    User other = userFindService.findById(otherId);
+
+    followService.unfollow(me, other);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
