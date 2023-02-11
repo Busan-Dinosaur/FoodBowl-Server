@@ -3,6 +3,7 @@ package com.dinosaur.foodbowl.domain.follow.api;
 import static com.dinosaur.foodbowl.global.config.security.jwt.JwtToken.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -56,6 +57,8 @@ public class FollowControllerTest extends IntegrationTest {
     @Test
     @DisplayName("팔로우 요청을 성공하면 204 NO Content 를 반환한다.")
     void shouldSucceedFollowWhenValidatedUsers() throws Exception {
+      doNothing().when(followService).follow(any(User.class),any(User.class));
+
       callFollowApi(otherId).andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("follow",
@@ -72,6 +75,8 @@ public class FollowControllerTest extends IntegrationTest {
     @Test
     @DisplayName("팔로우 취소 요청을 성공하면 204 NO Content 를 반환한다.")
     void shouldSucceedUnfollowWhenValidatedUsers() throws Exception {
+      doNothing().when(followService).unfollow(any(User.class),any(User.class));
+
       callUnfollowApi(otherId).andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("unfollow",
