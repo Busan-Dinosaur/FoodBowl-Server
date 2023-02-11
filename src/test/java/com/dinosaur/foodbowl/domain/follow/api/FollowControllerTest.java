@@ -166,7 +166,7 @@ public class FollowControllerTest extends IntegrationTest {
           .andExpect(jsonPath("[1].userId").value(response2.getUserId()))
           .andExpect(jsonPath("[1].nickName").value(response2.getNickName()))
           .andExpect(jsonPath("[1].thumbnailURL").value(response2.getThumbnailURL()))
-          .andDo(document("follow-get-followers",
+          .andDo(document("follow-get-followings",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
               ),
