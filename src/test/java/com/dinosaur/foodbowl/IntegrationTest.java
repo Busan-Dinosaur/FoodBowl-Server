@@ -24,6 +24,7 @@ import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
+import com.dinosaur.foodbowl.domain.follow.application.GetFollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
@@ -133,6 +134,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected FollowService followService;
+
+  @SpyBean
+  protected GetFollowService getFollowService;
 
   @SpyBean
   protected PostService postService;
