@@ -168,6 +168,7 @@ public class IntegrationTest {
   @Autowired
   protected PhotoTestHelper photoTestHelper;
 
+  @Autowired
   protected CommentTestHelper commentTestHelper;
 
   @Autowired

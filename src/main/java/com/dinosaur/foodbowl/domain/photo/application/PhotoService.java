@@ -7,7 +7,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 public abstract class PhotoService {
 
   public abstract Photo save(MultipartFile photoFile, Post post) throws IOException;

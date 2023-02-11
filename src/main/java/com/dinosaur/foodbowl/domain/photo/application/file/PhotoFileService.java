@@ -37,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PhotoFileService extends PhotoService {
 
   private final PhotoRepository photoRepository;
-
   private final PostRepository postRepository;
 
   static {
