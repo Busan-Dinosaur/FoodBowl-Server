@@ -3,7 +3,6 @@ package com.dinosaur.foodbowl.domain.store.entity;
 import static jakarta.persistence.CascadeType.*;
 
 import com.dinosaur.foodbowl.domain.address.entity.Address;
-import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

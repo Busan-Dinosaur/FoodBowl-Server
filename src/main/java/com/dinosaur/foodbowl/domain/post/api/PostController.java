@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +33,7 @@ public class PostController {
   @PostMapping
   public ResponseEntity<Void> createPost(
       @LoginUser User me,
-      @RequestPart(required = true) List<MultipartFile> images,
+      @RequestPart(name = "images", required = true) List<MultipartFile> images,
       @Valid @RequestPart("request") PostCreateRequestDto request) {
 
     Long postId = postService.createPost(me, request, images);
@@ -41,8 +46,8 @@ public class PostController {
   public ResponseEntity<Void> updatePost(
       @LoginUser User me,
       @PathVariable("id") Long postId,
-      @RequestPart(required = true) List<MultipartFile> images,
-      @Valid @RequestPart PostUpdateRequestDto request) {
+      @RequestPart(name = "images", required = true) List<MultipartFile> images,
+      @Valid @RequestPart("request") PostUpdateRequestDto request) {
 
     return ResponseEntity.created(URI.create("/posts/" +
             postService.updatePost(me, postId, request, images)))
@@ -50,10 +55,19 @@ public class PostController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteComment(@LoginUser User user, @PathVariable("id") Long postId) {
+  public ResponseEntity<Void> deletePost(@LoginUser User user, @PathVariable("id") Long postId) {
 
     postService.deletePost(user, postId);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/users/{id}/thumbnails")
+  public ResponseEntity<List<PostThumbnailResponseDto>> getThumbnails(
+      @PathVariable("id") Long userId,
+      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+    List<PostThumbnailResponseDto> response = postService.getThumbnails(userId, pageable);
+
+    return ResponseEntity.ok(response);
   }
 }
