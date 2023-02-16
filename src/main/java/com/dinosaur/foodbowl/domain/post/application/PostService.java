@@ -30,7 +30,6 @@ public class PostService {
 
   private final StoreFindService storeFindService;
   private final PostFindService postFindService;
-
   private final PostRepository postRepository;
   private final CategoryRepository categoryRepository;
   private final ThumbnailUtil thumbnailUtil;
@@ -85,7 +84,7 @@ public class PostService {
   }
 
   private static void checkWriter(User user, Post post) {
-    if (!post.getUser().equals(user)) {
+    if (!post.isWriter(user)) {
       throw new BusinessException(post.getId(), "postId", POST_NOT_WRITER);
     }
   }
