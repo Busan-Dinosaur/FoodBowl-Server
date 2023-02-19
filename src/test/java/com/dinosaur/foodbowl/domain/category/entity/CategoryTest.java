@@ -30,5 +30,4 @@ class CategoryTest extends IntegrationTest {
       }
     }
   }
-
 }
