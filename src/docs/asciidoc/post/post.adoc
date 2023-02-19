@@ -46,3 +46,33 @@ include::{snippets}/post-thumbnail-list/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/post-thumbnail-list/response-fields.adoc[]
+
+== *게시글 피드 목록 조회*
+
+NOTE: 모든 목록을 조회하는 것이 아닌 페이징을 통한 조회입니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-feed/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/post-feed/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/post-feed/query-parameters.adoc[]
+
+NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-feed/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/post-feed/response-fields.adoc[]
