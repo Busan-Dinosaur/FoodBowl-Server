@@ -1,5 +1,12 @@
 package com.dinosaur.foodbowl.domain.post.entity;
 
+import static jakarta.persistence.CascadeType.REMOVE;
+
+import com.dinosaur.foodbowl.domain.category.entity.Category;
+import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
+import com.dinosaur.foodbowl.domain.clip.entity.Clip;
+import com.dinosaur.foodbowl.domain.comment.entity.Comment;
+import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -13,8 +20,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -56,11 +67,52 @@ public class Post extends BaseEntity {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
+  private final List<Photo> photos = new ArrayList<>();
+
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
+  private final List<PostCategory> categories = new ArrayList<>();
+
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
+  private final List<Clip> clips = new ArrayList<>();
+
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
+  private final List<Comment> comments = new ArrayList<>();
+
   @Builder
   private Post(User user, Thumbnail thumbnail, Store store, String content) {
     this.user = user;
     this.thumbnail = thumbnail;
     this.store = store;
     this.content = content;
+  }
+
+  public List<String> getPhotoPaths() {
+    return photos.stream()
+        .map(Photo::getPath)
+        .collect(Collectors.toList());
+  }
+
+  public List<String> getCategoryNames() {
+    return categories.stream()
+        .map(PostCategory::getCategory)
+        .map(Category::getCategoryType)
+        .map(CategoryType::toString)
+        .collect(Collectors.toList());
+  }
+
+  public int getClipSize() {
+    return clips.size();
+  }
+
+  public int getCommentSize() {
+    return comments.size();
+  }
+
+  public boolean isCliped(final User user) {
+    return clips.stream()
+        .filter(clip -> clip.getUser().equals(user))
+        .findAny()
+        .isPresent();
   }
 }

@@ -1,6 +1,7 @@
 package com.dinosaur.foodbowl.domain.post.application;
 
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
 import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.application.UserFindService;
@@ -27,6 +28,14 @@ public class PostService {
 
     return posts.stream()
         .map(PostThumbnailResponseDto::from)
+        .collect(Collectors.toList());
+  }
+
+  public List<PostFeedResponseDto> getFeed(User user, Pageable pageable) {
+    List<Post> posts = postRepository.findFeed(user, pageable);
+
+    return posts.stream()
+        .map(post -> PostFeedResponseDto.of(post, user))
         .collect(Collectors.toList());
   }
 }

@@ -23,7 +23,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Photo extends BaseEntity {
 
-  private static final int MAX_PATH_LENGTH = 512;
+  public static final int MAX_PATH_LENGTH = 512;
+
   @Getter
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
