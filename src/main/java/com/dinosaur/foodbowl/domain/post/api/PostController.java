@@ -43,15 +43,15 @@ public class PostController {
   }
 
   @PostMapping("/{id}")
-  public ResponseEntity<Void> updatePost(
+  public ResponseEntity<Long> updatePost(
       @LoginUser User me,
       @PathVariable("id") Long postId,
       @RequestPart(name = "images", required = true) List<MultipartFile> images,
       @Valid @RequestPart("request") PostUpdateRequestDto request) {
 
-    return ResponseEntity.created(URI.create("/posts/" +
-            postService.updatePost(me, postId, request, images)))
-        .build();
+    Long updatedPostId = postService.updatePost(me, postId, request, images);
+
+    return ResponseEntity.ok(updatedPostId);
   }
 
   @DeleteMapping("/{id}")

@@ -210,7 +210,7 @@ public class PostControllerTest extends IntegrationTest {
         doReturn(postId).when(postService).updatePost(any(User.class), any(), any(), any());
 
         callUpdatePostApi(postId, request)
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andDo(document("post-update",
                 requestCookies(
                     cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
