@@ -1,6 +1,5 @@
 package com.dinosaur.foodbowl.domain.post.application;
 
-
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_HAS_NOT_IMAGE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_WRITER;
 
@@ -10,17 +9,21 @@ import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dao.StoreFindService;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailUtil;
 import com.dinosaur.foodbowl.domain.thumbnail.dao.ThumbnailRepository;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import com.dinosaur.foodbowl.global.util.photo.PhotoUtil;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,9 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostService {
 
+  private final UserFindService userFindService;
   private final StoreFindService storeFindService;
   private final PostFindService postFindService;
-
   private final PostRepository postRepository;
   private final CategoryRepository categoryRepository;
   private final ThumbnailRepository thumbnailRepository;
@@ -98,5 +101,15 @@ public class PostService {
     if (!post.isWriter(user)) {
       throw new BusinessException(post.getId(), "postId", POST_NOT_WRITER);
     }
+  }
+
+  public List<PostThumbnailResponseDto> getThumbnails(Long userId, Pageable pageable) {
+    User user = userFindService.findById(userId);
+
+    List<Post> posts = postRepository.findThumbnailsByUser(user, pageable);
+
+    return posts.stream()
+        .map(PostThumbnailResponseDto::from)
+        .collect(Collectors.toList());
   }
 }

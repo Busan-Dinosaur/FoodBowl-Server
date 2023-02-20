@@ -16,13 +16,17 @@ import com.dinosaur.foodbowl.domain.auth.application.TokenService;
 import com.dinosaur.foodbowl.domain.blame.BlameTestHelper;
 import com.dinosaur.foodbowl.domain.blame.dao.BlameRepository;
 import com.dinosaur.foodbowl.domain.category.dao.CategoryRepository;
+import com.dinosaur.foodbowl.domain.clip.ClipTestHelper;
+import com.dinosaur.foodbowl.domain.clip.application.ClipService;
+import com.dinosaur.foodbowl.domain.clip.dao.ClipRepository;
 import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
 import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
-import com.dinosaur.foodbowl.domain.photo.PhotoTestHelper;
+import com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileService;
+import com.dinosaur.foodbowl.domain.photo.application.file.PhotoTestHelper;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
@@ -79,21 +83,24 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @SpringBootTest
 public class IntegrationTest {
 
-  /******* Repository *******/
-  @SpyBean
-  protected RoleRepository roleRepository;
-
+  /******* Dao *******/
   @SpyBean
   protected UserRepository userRepository;
 
   @SpyBean
-  protected ThumbnailRepository thumbnailRepository;
+  protected RoleRepository roleRepository;
 
   @SpyBean
   protected UserRoleRepository userRoleRepository;
 
   @SpyBean
   protected FollowRepository followRepository;
+
+  @SpyBean
+  protected ThumbnailRepository thumbnailRepository;
+
+  @SpyBean
+  protected PostRepository postRepository;
 
   @SpyBean
   protected CategoryRepository categoryRepository;
@@ -105,12 +112,9 @@ public class IntegrationTest {
   protected BlameRepository blameRepository;
 
   @SpyBean
-  protected PostRepository postRepository;
+  protected ClipRepository clipRepository;
 
   /******* Service *******/
-  @SpyBean
-  protected GetProfileService getProfileService;
-
   @SpyBean
   protected AuthService authService;
 
@@ -119,6 +123,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected UserFindService userFindService;
+
+  @SpyBean
+  protected GetProfileService getProfileService;
 
   @SpyBean
   protected DeleteAccountService deleteAccountService;
@@ -130,16 +137,22 @@ public class IntegrationTest {
   protected FollowService followService;
 
   @SpyBean
-  protected PostFindService postFindService;
+  protected PhotoFileService photoFileService;
 
   @SpyBean
   protected PostService postService;
+
+  @SpyBean
+  protected PostFindService postFindService;
 
   @SpyBean
   protected CommentService commentService;
 
   @SpyBean
   protected CommentFindService commentFindService;
+
+  @SpyBean
+  protected ClipService clipService;
 
   /******* TestHelper *******/
   @Autowired
@@ -150,13 +163,18 @@ public class IntegrationTest {
 
   @Autowired
   protected PostTestHelper postTestHelper;
+
+  @Autowired
+  protected PhotoTestHelper photoTestHelper;
+
   @Autowired
   protected CommentTestHelper commentTestHelper;
 
   @Autowired
   protected BlameTestHelper blameTestHelper;
-  @SpyBean
-  protected PhotoTestHelper photoTestHelper;
+
+  @Autowired
+  protected ClipTestHelper clipTestHelper;
 
   /******* Util *******/
   @SpyBean

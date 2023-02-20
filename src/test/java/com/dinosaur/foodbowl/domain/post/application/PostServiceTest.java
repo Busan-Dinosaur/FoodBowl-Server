@@ -23,6 +23,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 class PostServiceTest extends IntegrationTest {
 
@@ -37,7 +41,7 @@ class PostServiceTest extends IntegrationTest {
       User user = userTestHelper.builder().build();
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
-      List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
+      List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
       PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
           addressRequestDto);
 
@@ -65,7 +69,7 @@ class PostServiceTest extends IntegrationTest {
           .store(null).build();
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
-      List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
+      List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
       PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
           storeRequestDto, addressRequestDto, List.of(1L, 2L));
 
@@ -96,7 +100,7 @@ class PostServiceTest extends IntegrationTest {
           .store(null).build();
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
-      List<MultipartFile> images = List.of(photoTestHelper.getPhotoFile());
+      List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
       PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
           storeRequestDto, addressRequestDto, List.of(1L, 2L));
 
@@ -140,7 +144,7 @@ class PostServiceTest extends IntegrationTest {
       // then
       Assertions.assertThatThrownBy(
               () -> postService.updatePost(another, before.getId(), requestDto,
-                  List.of(photoTestHelper.getPhotoFile()))).isInstanceOf(BusinessException.class)
+                  List.of(photoTestHelper.getImageFile()))).isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_NOT_WRITER.getMessage());
 
     }
@@ -217,4 +221,22 @@ class PostServiceTest extends IntegrationTest {
     }
   }
 
+  @DisplayName("게시글 썸네일 불러오기")
+  class GetThumbnails {
+
+    @Test
+    @DisplayName("지정한 페이지 설정으로 게시글 썸네일 목록을 불러온다.")
+    void should_loadThumbnails_with_pageable_when_getThumbnails() {
+      User user = userTestHelper.builder().build();
+
+      for (int i = 0; i < 5; i++) {
+        postTestHelper.builder().user(user).content("test" + i).build();
+      }
+
+      Pageable pageable = PageRequest.of(1, 2, Sort.by("id").descending());
+      List<PostThumbnailResponseDto> response = postService.getThumbnails(user.getId(), pageable);
+
+      assertThat(response.size()).isEqualTo(2);
+    }
+  }
 }

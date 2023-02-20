@@ -98,14 +98,10 @@ public class Post extends BaseEntity {
   }
 
   public void addCategory(Category category) {
-    this.postCategories.add(PostCategory.builder()
-        .post(this)
-        .category(category)
-        .build());
+    this.postCategories.add(PostCategory.builder().post(this).category(category).build());
   }
 
   public boolean isWriter(User user) {
     return this.user.equals(user);
   }
-
 }
