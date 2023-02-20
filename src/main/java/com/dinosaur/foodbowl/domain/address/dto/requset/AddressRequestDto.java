@@ -8,6 +8,7 @@ import static com.dinosaur.foodbowl.domain.address.entity.Address.MAX_ROAD_NAME_
 import com.dinosaur.foodbowl.domain.address.entity.Address;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +17,8 @@ import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressRequestDto {
 
   @NotNull
