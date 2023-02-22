@@ -2,19 +2,18 @@ package com.dinosaur.foodbowl.domain.post.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_HAS_NOT_IMAGE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_WRITER;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
-import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
-import com.dinosaur.foodbowl.domain.post.entity.PostCategory;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -22,7 +21,6 @@ import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -56,12 +54,12 @@ class PostServiceTest extends IntegrationTest {
 
       // then
       Post post = postRepository.getReferenceById(postId);
-      Assertions.assertThat(post).isNotNull();
-      Assertions.assertThat(post.getStore().getStoreName())
+      assertThat(post).isNotNull();
+      assertThat(post.getStore().getStoreName())
           .isEqualTo(storeRequestDto.getStoreName());
-      Assertions.assertThat(post.getStore().getAddress().getAddressName())
+      assertThat(post.getStore().getAddress().getAddressName())
           .isEqualTo(addressRequestDto.getAddressName());
-      Assertions.assertThat(post.getPhotos()).isNotEmpty();
+      assertThat(post.getPhotos()).isNotEmpty();
 
       post.getPhotos().forEach(photoTestHelper::deleteTestFile);
     }
@@ -99,17 +97,17 @@ class PostServiceTest extends IntegrationTest {
       Post after = postRepository.getReferenceById(before.getId());
 
       // then
-      Assertions.assertThat(after.getContent()).isEqualTo(requestDto.getContent());
-      Assertions.assertThat(after.getStore().getStoreName())
+      assertThat(after.getContent()).isEqualTo(requestDto.getContent());
+      assertThat(after.getStore().getStoreName())
           .isEqualTo(requestDto.getStore().getStoreName());
-      Assertions.assertThat(after.getStore().getAddress().getAddressName())
+      assertThat(after.getStore().getAddress().getAddressName())
           .isEqualTo(requestDto.getAddress().getAddressName());
-      Assertions.assertThat(after.getPhotos().size()).isEqualTo(1);
-      Assertions.assertThat(after.getThumbnail()).isNotNull();
+      assertThat(after.getPhotos().size()).isEqualTo(1);
+      assertThat(after.getThumbnail()).isNotNull();
       List<Long> afterCategoryIds = after.getPostCategories().stream()
           .map(postCategory -> postCategory.getCategory().getId()).toList();
-      Assertions.assertThat(afterCategoryIds.size()).isEqualTo(2);
-      Assertions.assertThat(afterCategoryIds).containsAll(categoryIds);
+      assertThat(afterCategoryIds.size()).isEqualTo(2);
+      assertThat(afterCategoryIds).containsAll(categoryIds);
 
       photoTestHelper.deleteTestFile(beforePhoto);
       after.getPhotos().forEach(photoTestHelper::deleteTestFile);
@@ -167,7 +165,7 @@ class PostServiceTest extends IntegrationTest {
       PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
 
       // then
-      Assertions.assertThatThrownBy(
+      assertThatThrownBy(
               () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
@@ -183,7 +181,7 @@ class PostServiceTest extends IntegrationTest {
       PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
 
       // then
-      Assertions.assertThatThrownBy(
+      assertThatThrownBy(
               () -> postService.updatePost(another, before.getId(), requestDto,
                   List.of(photoTestHelper.getImageFile()))).isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_NOT_WRITER.getMessage());
@@ -198,7 +196,7 @@ class PostServiceTest extends IntegrationTest {
       PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
 
       // then
-      Assertions.assertThatThrownBy(
+      assertThatThrownBy(
               () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
