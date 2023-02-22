@@ -42,4 +42,11 @@ public class Follow extends BaseEntity {
     this.following = following;
     this.follower = follower;
   }
+
+  public static Follow of(User follower, User following) {
+    return Follow.builder()
+        .follower(follower)
+        .following(following)
+        .build();
+  }
 }

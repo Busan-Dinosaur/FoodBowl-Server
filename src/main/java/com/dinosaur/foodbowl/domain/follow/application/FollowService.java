@@ -21,7 +21,7 @@ public class FollowService {
       return;
     }
 
-    Follow follow = Follow.builder().follower(me).following(other).build();
+    Follow follow = Follow.of(me, other);
     followRepository.save(follow);
   }
 
