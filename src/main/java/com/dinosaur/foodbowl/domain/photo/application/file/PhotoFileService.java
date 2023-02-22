@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import lombok.NonNull;
@@ -41,6 +42,13 @@ public class PhotoFileService extends PhotoService {
 
   static {
     createDirectoryWhenIsNotExist(DEFAULT_PHOTO_PATH);
+  }
+
+  @Override
+  public List<Photo> saveAll(List<MultipartFile> photoFiles, Post post) {
+    return photoFiles.stream()
+        .map(file -> this.save(file, post))
+        .toList();
   }
 
   @Override

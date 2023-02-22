@@ -1,6 +1,14 @@
 package com.dinosaur.foodbowl.domain.photo.application.file;
 
+import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.ROOT_PATH;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.dinosaur.foodbowl.domain.photo.application.PhotoService;
 import com.dinosaur.foodbowl.domain.photo.dao.PhotoRepository;
+import com.dinosaur.foodbowl.domain.photo.entity.Photo;
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
+import com.dinosaur.foodbowl.domain.post.entity.Post;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +20,8 @@ public class PhotoTestHelper {
 
   @Autowired
   PhotoRepository photoRepository;
+  @Autowired
+  PostRepository postRepository;
 
   public MockMultipartFile getImageFile() {
     try {
@@ -38,5 +48,16 @@ public class PhotoTestHelper {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public Photo generatePhoto(Post post) {
+    final PhotoService photoService = new PhotoFileService(photoRepository, postRepository);
+    return photoService.save(getImageFile(), post);
+  }
+
+  public void deleteTestFile(Photo photo) {
+    File photoFile = new File(ROOT_PATH + photo.getPath());
+    assertThat(photoFile).exists();
+    assertThat(photoFile.delete()).isTrue();
   }
 }

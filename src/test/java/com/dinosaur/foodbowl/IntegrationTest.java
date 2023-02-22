@@ -27,6 +27,7 @@ import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileService;
 import com.dinosaur.foodbowl.domain.photo.application.file.PhotoTestHelper;
+import com.dinosaur.foodbowl.domain.photo.dao.PhotoRepository;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
@@ -113,6 +114,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected ClipRepository clipRepository;
+
+  @SpyBean
+  protected PhotoRepository photoRepository;
 
   /******* Service *******/
   @SpyBean

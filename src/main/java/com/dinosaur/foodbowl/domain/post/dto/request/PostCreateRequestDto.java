@@ -9,6 +9,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import lombok.AccessLevel;
@@ -37,14 +38,13 @@ public class PostCreateRequestDto {
   private List<Long> categoryIds;
 
 
-  public Post toEntity(User user, Store store, List<Photo> photos, Thumbnail thumbnail) {
+  public Post toEntity(User user, Store store, Thumbnail thumbnail) {
     return Post.builder()
         .user(user)
         .thumbnail(thumbnail)
         .store(store)
-        .photos(photos)
         .content(content)
-        .postCategories(new HashSet<>())
+        .postCategories(new ArrayList<>())
         .build();
   }
 }

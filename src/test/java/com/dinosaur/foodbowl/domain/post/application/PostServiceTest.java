@@ -7,10 +7,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
+import com.dinosaur.foodbowl.domain.category.entity.Category;
+import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.comment.entity.Comment;
+import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
+import com.dinosaur.foodbowl.domain.post.entity.PostCategory;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -53,6 +57,13 @@ class PostServiceTest extends IntegrationTest {
       // then
       Post post = postRepository.getReferenceById(postId);
       Assertions.assertThat(post).isNotNull();
+      Assertions.assertThat(post.getStore().getStoreName())
+          .isEqualTo(storeRequestDto.getStoreName());
+      Assertions.assertThat(post.getStore().getAddress().getAddressName())
+          .isEqualTo(addressRequestDto.getAddressName());
+      Assertions.assertThat(post.getPhotos()).isNotEmpty();
+
+      post.getPhotos().forEach(photoTestHelper::deleteTestFile);
     }
   }
 
@@ -65,29 +76,43 @@ class PostServiceTest extends IntegrationTest {
     public void should_success_when_valid_update_request() {
       // given
       User user = userTestHelper.builder().build();
-      Post before = postTestHelper.builder().content("before").thumbnail(null).user(user)
-          .store(null).build();
-      StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
-      AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
-      List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
-      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
-          storeRequestDto, addressRequestDto, List.of(1L, 2L));
+      Post before = postTestHelper.builder()
+          .content("before")
+          .thumbnail(thumbnailTestHelper.generateThumbnail())
+          .user(user)
+          .store(null)
+          .build();
+      Photo beforePhoto = photoTestHelper.generatePhoto(before);
 
-      // when
-      postService.updatePost(user, before.getId(), requestDto, images);
       em.flush();
       em.clear();
 
-      // then
+      StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
+      AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
+      List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
+      List<Long> categoryIds = List.of(CategoryType.샐러드.getId(), CategoryType.양식.getId());
+      PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
+          storeRequestDto, addressRequestDto, categoryIds);
+
+      // when
+      postService.updatePost(user, before.getId(), requestDto, images);
       Post after = postRepository.getReferenceById(before.getId());
+
+      // then
       Assertions.assertThat(after.getContent()).isEqualTo(requestDto.getContent());
       Assertions.assertThat(after.getStore().getStoreName())
           .isEqualTo(requestDto.getStore().getStoreName());
       Assertions.assertThat(after.getStore().getAddress().getAddressName())
           .isEqualTo(requestDto.getAddress().getAddressName());
-      // TODO: Photo Service Merge 후 주석 제거
-      //  Assertions.assertThat(after.getPhotos().size()).isEqualTo(1);
-      //   Assertions.assertThat(after.getThumbnail()).isNotNull();
+      Assertions.assertThat(after.getPhotos().size()).isEqualTo(1);
+      Assertions.assertThat(after.getThumbnail()).isNotNull();
+      List<Long> afterCategoryIds = after.getPostCategories().stream()
+          .map(postCategory -> postCategory.getCategory().getId()).toList();
+      Assertions.assertThat(afterCategoryIds.size()).isEqualTo(2);
+      Assertions.assertThat(afterCategoryIds).containsAll(categoryIds);
+
+      photoTestHelper.deleteTestFile(beforePhoto);
+      after.getPhotos().forEach(photoTestHelper::deleteTestFile);
     }
 
     @Test
@@ -96,8 +121,17 @@ class PostServiceTest extends IntegrationTest {
       // given
       User user = userTestHelper.builder().build();
       Thumbnail beforeThumbnail = thumbnailTestHelper.generateThumbnail();
-      Post before = postTestHelper.builder().content("before").thumbnail(beforeThumbnail).user(user)
-          .store(null).build();
+      Post before = postTestHelper.builder()
+          .content("before")
+          .thumbnail(beforeThumbnail)
+          .user(user)
+          .store(null)
+          .build();
+      Photo beforePhoto1 = photoTestHelper.generatePhoto(before);
+      Photo beforePhoto2 = photoTestHelper.generatePhoto(before);
+      em.flush();
+      em.clear();
+
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
       AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
       List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
@@ -106,14 +140,21 @@ class PostServiceTest extends IntegrationTest {
 
       // when
       postService.updatePost(user, before.getId(), requestDto, images);
+      Post after = postRepository.getReferenceById(before.getId());
       em.flush();
       em.clear();
 
       // then
-      Optional<Thumbnail> deleted = thumbnailRepository.findById(beforeThumbnail.getId());
-      assertThat(deleted).isEmpty();
-      // @Todo: 기존 포토가 전부 삭제되었는지 확인 추가 필요
+      Optional<Thumbnail> deletedThumbnail = thumbnailRepository.findById(beforeThumbnail.getId());
+      assertThat(deletedThumbnail).isEmpty();
+      Optional<Photo> deletedPhoto1 = photoRepository.findById(beforePhoto1.getId());
+      assertThat(deletedPhoto1).isEmpty();
+      Optional<Photo> deletedPhoto2 = photoRepository.findById(beforePhoto2.getId());
+      assertThat(deletedPhoto2).isEmpty();
 
+      photoTestHelper.deleteTestFile(beforePhoto1);
+      photoTestHelper.deleteTestFile(beforePhoto2);
+      after.getPhotos().forEach(photoTestHelper::deleteTestFile);
     }
 
     @Test
@@ -146,7 +187,6 @@ class PostServiceTest extends IntegrationTest {
               () -> postService.updatePost(another, before.getId(), requestDto,
                   List.of(photoTestHelper.getImageFile()))).isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_NOT_WRITER.getMessage());
-
     }
 
     @Test
@@ -170,23 +210,7 @@ class PostServiceTest extends IntegrationTest {
   class DeletePost {
 
     @Test
-    @DisplayName("게시글 삭제를 성공한다.")
-    void should_success_when_delete_post() {
-      User user = userTestHelper.builder().build();
-      Post post = postTestHelper.builder().user(user).build();
-
-      postService.deletePost(user, post.getId());
-
-      em.flush();
-      em.clear();
-
-      Optional<Post> deletedPost = postRepository.findById(post.getId());
-      assertThat(deletedPost).isEmpty();
-    }
-
-    // @Todo: PhotoService Merge 후 Photo 삭제 검증 추가
-    @Test
-    @DisplayName("게시글을 삭제하면 연관된 댓글, 썸네일, 이미지도 같이 삭제된다.")
+    @DisplayName("게시글 삭제를 성공한다, 연관된 댓글, 썸네일, 이미지도 함께 삭제된다.")
     void should_success_delete_related_when_delete_post() {
       User user = userTestHelper.builder().build();
       Thumbnail thumbnail = thumbnailTestHelper.generateThumbnail();
@@ -195,6 +219,8 @@ class PostServiceTest extends IntegrationTest {
           .thumbnail(thumbnail)
           .build();
       Comment comment = commentTestHelper.builder().post(post).user(user).build();
+      Photo photo1 = photoTestHelper.generatePhoto(post);
+      Photo photo2 = photoTestHelper.generatePhoto(post);
 
       em.flush();
       em.clear();
@@ -207,6 +233,14 @@ class PostServiceTest extends IntegrationTest {
       assertThat(deletedThumbnail).isEmpty();
       Optional<Comment> deletedComment = commentRepository.findById(comment.getId());
       assertThat(deletedComment).isEmpty();
+      Optional<Photo> deletedPhoto1 = photoRepository.findById(photo1.getId());
+      assertThat(deletedPhoto1).isEmpty();
+      Optional<Photo> deletedPhoto2 = photoRepository.findById(photo2.getId());
+      assertThat(deletedPhoto2).isEmpty();
+
+      photoTestHelper.deleteTestFile(photo1);
+      photoTestHelper.deleteTestFile(photo2);
+
     }
 
     @Test

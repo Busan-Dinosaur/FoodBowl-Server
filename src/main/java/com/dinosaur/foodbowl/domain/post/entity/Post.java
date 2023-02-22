@@ -24,9 +24,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -63,11 +61,11 @@ public class Post extends BaseEntity {
   @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
   private String content;
 
-  @OneToMany(mappedBy = "post", cascade = ALL)
+  @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
   private List<Photo> photos = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post")
-  private Set<PostCategory> postCategories = new HashSet<>();
+  @OneToMany(mappedBy = "post", orphanRemoval = true)
+  private List<PostCategory> postCategories = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "post_id")
@@ -79,7 +77,7 @@ public class Post extends BaseEntity {
 
   @Builder
   private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos,
-      Set<PostCategory> postCategories) {
+      List<PostCategory> postCategories) {
     this.user = user;
     this.thumbnail = thumbnail;
     this.store = store;
@@ -88,17 +86,38 @@ public class Post extends BaseEntity {
     this.postCategories = postCategories;
   }
 
-  public Post update(Thumbnail thumbnail, Store store, String content, List<Photo> photos) {
+  public Post update(Thumbnail thumbnail, List<Photo> photos, List<Category> categories,
+      Store store, String content) {
     this.content = content;
     this.store = store;
     this.thumbnail = thumbnail;
-    this.photos = photos;
-    this.postCategories = new HashSet<>();
+    this.postCategories.clear();
+    this.updatePhotos(photos);
+    this.updateCategories(categories);
     return this;
   }
 
+  private void updatePhotos(List<Photo> photos) {
+    this.photos.clear();
+    this.photos.addAll(photos);
+  }
+
   public void addCategory(Category category) {
-    this.postCategories.add(PostCategory.builder().post(this).category(category).build());
+    this.postCategories.add(PostCategory.builder()
+        .post(this)
+        .category(category)
+        .build());
+  }
+
+  public void updateCategories(List<Category> categories) {
+    List<PostCategory> postCategories = categories.stream()
+        .map(category -> PostCategory.builder()
+            .post(this)
+            .category(category)
+            .build())
+        .toList();
+    this.postCategories.clear();
+    this.postCategories.addAll(postCategories);
   }
 
   public boolean isWriter(User user) {
