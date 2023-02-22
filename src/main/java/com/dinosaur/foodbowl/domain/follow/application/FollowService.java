@@ -3,6 +3,7 @@ package com.dinosaur.foodbowl.domain.follow.application;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +28,8 @@ public class FollowService {
 
   @Transactional
   public void unfollow(User me, User other) {
-    Follow follow = followRepository.findByFollowerAndFollowing(me, other)
-        .orElse(null);
+    Optional<Follow> follow = followRepository.findByFollowerAndFollowing(me, other);
 
-    if (follow == null) {
-      return;
-    }
-
-    followRepository.delete(follow);
+    follow.ifPresent(followRepository::delete);
   }
 }
