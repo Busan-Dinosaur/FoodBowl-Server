@@ -56,5 +56,39 @@ class FollowServiceTest extends IntegrationTest {
       boolean isFollowed = followRepository.existsByFollowerAndFollowing(me, other);
       Assertions.assertThat(isFollowed).isFalse();
     }
+
+    @Test
+    @DisplayName("이미 팔로우한 사람을 팔로우하는 경우 팔로우 상태는 유지된다.")
+    void shouldNothingWhenFollowAlreadyFollowing() {
+      // given
+      UserBuilder userBuilder = userTestHelper.builder();
+      User me = userBuilder.build();
+      User other = userBuilder.build();
+
+      // when
+      followService.follow(me, other);
+      em.flush();
+      em.clear();
+
+      followService.follow(me, other);
+
+      // then
+      boolean isFollowed = followRepository.existsByFollowerAndFollowing(me, other);
+      Assertions.assertThat(isFollowed).isTrue();
+    }
+
+    @Test
+    @DisplayName("팔로우 하지 않은 사람을 언팔로우하는 경우 아무일도 일어나지 않는다.")
+    void shouldNothingWhenUnfollowNotFollowing() {
+      // given
+      UserBuilder userBuilder = userTestHelper.builder();
+      User me = userBuilder.build();
+      User other = userBuilder.build();
+
+      // when
+      followService.unfollow(me, other);
+      em.flush();
+      em.clear();
+    }
   }
 }
