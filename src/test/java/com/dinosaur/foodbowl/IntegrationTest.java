@@ -23,11 +23,13 @@ import com.dinosaur.foodbowl.domain.comment.CommentTestHelper;
 import com.dinosaur.foodbowl.domain.comment.application.CommentFindService;
 import com.dinosaur.foodbowl.domain.comment.application.CommentService;
 import com.dinosaur.foodbowl.domain.comment.dao.CommentRepository;
+import com.dinosaur.foodbowl.domain.follow.FollowTestHelper;
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
 import com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileService;
 import com.dinosaur.foodbowl.domain.photo.application.file.PhotoTestHelper;
 import com.dinosaur.foodbowl.domain.photo.dao.PhotoRepository;
+import com.dinosaur.foodbowl.domain.post.PostCategoryTestHelper;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.application.PostFindService;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
@@ -179,6 +181,12 @@ public class IntegrationTest {
 
   @Autowired
   protected ClipTestHelper clipTestHelper;
+
+  @Autowired
+  protected FollowTestHelper followTestHelper;
+
+  @Autowired
+  protected PostCategoryTestHelper postCategoryTestHelper;
 
   /******* Util *******/
   @SpyBean

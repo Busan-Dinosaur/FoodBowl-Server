@@ -30,11 +30,15 @@ import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
-import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import jakarta.servlet.http.Cookie;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -422,6 +426,82 @@ public class PostControllerTest extends IntegrationTest {
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .param("page", "0")
               .param("size", "2"))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("유저 게시글 피드 목록 불러오기")
+  class GetFeed {
+
+    @Test
+    @DisplayName("게시글 피드 목록 불러오기 성공")
+    void should_success_when_getFeed() throws Exception {
+      mockingAuth();
+
+      PostFeedResponseDto mockResponse = PostFeedResponseDto.builder()
+          .nickname("홍길동")
+          .thumbnailPath("ThumbnailPath")
+          .followerCount(100)
+          .photoPaths(List.of("PhotoPath1", "PhotoPath2"))
+          .storeName("틈새라면 홍대점")
+          .categories(List.of("일식"))
+          .latitude(new BigDecimal(17.561))
+          .longitude(new BigDecimal(18.9078))
+          .content("학교 앞에 생겼는데 너무 맛있어요!")
+          .clipCount(4)
+          .clipStatus(false)
+          .commentCount(51)
+          .createdAt(LocalDateTime.now())
+          .build();
+
+      doReturn(List.of(mockResponse)).when(postService)
+          .getFeed(any(User.class), any(Pageable.class));
+
+      callGetFeedApi()
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("[0].nickname").value("홍길동"))
+          .andExpect(jsonPath("[0].thumbnailPath").value("ThumbnailPath"))
+          .andExpect(jsonPath("[0].followerCount").value(100))
+          .andExpect(jsonPath("[0].storeName").value("틈새라면 홍대점"))
+          .andExpect(jsonPath("[0].latitude").value(new BigDecimal(17.561)))
+          .andExpect(jsonPath("[0].longitude").value(new BigDecimal(18.9078)))
+          .andExpect(jsonPath("[0].content").value("학교 앞에 생겼는데 너무 맛있어요!"))
+          .andExpect(jsonPath("[0].clipCount").value(4))
+          .andExpect(jsonPath("[0].clipStatus").value(false))
+          .andExpect(jsonPath("[0].commentCount").value(51))
+          .andDo(document("post-feed",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
+              ),
+              queryParameters(
+                  parameterWithName("page").optional()
+                      .description("불러오고 싶은 피드 목록 페이지 +\n(default: 0)"),
+                  parameterWithName("size").optional()
+                      .description("불러오고 싶은 피드 목록 크기 +\n(default: 4)")
+              ),
+              responseFields(
+                  fieldWithPath("[].nickname").description("게시글 작성자 닉네임"),
+                  fieldWithPath("[].thumbnailPath").description("게시글 작성자 썸네일 URI"),
+                  fieldWithPath("[].followerCount").description("게시글 작성자 팔로워 수"),
+                  fieldWithPath("[].photoPaths").description("게시글 사진 URI 목록"),
+                  fieldWithPath("[].storeName").description("가게 이름"),
+                  fieldWithPath("[].categories").description("카테고리 이름 목록"),
+                  fieldWithPath("[].latitude").description("가게 위도"),
+                  fieldWithPath("[].longitude").description("가게 경도"),
+                  fieldWithPath("[].content").description("게시글 내용"),
+                  fieldWithPath("[].clipCount").description("게시글 스크랩 수"),
+                  fieldWithPath("[].clipStatus").description("게시글 스크랩 여부"),
+                  fieldWithPath("[].commentCount").description("게시글 댓글 수"),
+                  fieldWithPath("[].createdAt").description("게시글 작성 날짜")
+              )));
+    }
+
+    private ResultActions callGetFeedApi() throws Exception {
+      return mockMvc.perform(get("/posts/feed")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
+              .param("page", "0")
+              .param("size", "4"))
           .andDo(print());
     }
   }

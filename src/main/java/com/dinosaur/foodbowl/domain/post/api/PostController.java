@@ -3,10 +3,12 @@ package com.dinosaur.foodbowl.domain.post.api;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
-import com.dinosaur.foodbowl.domain.user.entity.User;
-import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import jakarta.validation.Valid;
 import java.net.URI;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import com.dinosaur.foodbowl.domain.user.entity.User;
+import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -65,8 +67,19 @@ public class PostController {
   @GetMapping("/users/{id}/thumbnails")
   public ResponseEntity<List<PostThumbnailResponseDto>> getThumbnails(
       @PathVariable("id") Long userId,
-      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+  ) {
     List<PostThumbnailResponseDto> response = postService.getThumbnails(userId, pageable);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/feed")
+  public ResponseEntity<List<PostFeedResponseDto>> getFeed(
+      @LoginUser User user,
+      @PageableDefault(size = 4, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+  ) {
+    List<PostFeedResponseDto> response = postService.getFeed(user, pageable);
 
     return ResponseEntity.ok(response);
   }

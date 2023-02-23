@@ -13,14 +13,17 @@ import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
-import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -269,6 +272,55 @@ class PostServiceTest extends IntegrationTest {
       List<PostThumbnailResponseDto> response = postService.getThumbnails(user.getId(), pageable);
 
       assertThat(response.size()).isEqualTo(2);
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 피드 불러오기")
+  class GetFeed {
+
+    private User user;
+    private Post post;
+
+    @BeforeEach
+    void setUp() {
+      user = userTestHelper.builder().build();
+      User user2 = userTestHelper.builder().build();
+
+      followTestHelper.builder().following(user2).follower(user).build();
+
+      post = postTestHelper.builder().user(user2).content("테스트 게시글").build();
+
+      photoTestHelper.builder().post(post).build();
+      photoTestHelper.builder().post(post).build();
+
+      postCategoryTestHelper.builder().post(post).build();
+      postCategoryTestHelper.builder().post(post).build();
+
+      clipTestHelper.builder().post(post).build();
+      clipTestHelper.builder().post(post).build();
+
+      commentTestHelper.builder().post(post).build();
+      commentTestHelper.builder().post(post).build();
+    }
+
+    @Test
+    @DisplayName("나와 내가 팔로우하고 있는 유저의 게시글만 불러온다.")
+    void should_find_onlyPostsMeAndFollowingUser() {
+      em.flush();
+      em.clear();
+
+      Pageable pageable = PageRequest.of(0, 3, Sort.by("id").descending());
+
+      List<PostFeedResponseDto> response = postService.getFeed(user, pageable);
+
+      assertThat(response).hasSize(1);
+      assertThat(response.get(0).getContent()).isEqualTo("테스트 게시글");
+      assertThat(response.get(0).getFollowerCount()).isEqualTo(1);
+      assertThat(response.get(0).getPhotoPaths()).hasSize(2);
+      assertThat(response.get(0).getCategories()).hasSize(2);
+      assertThat(response.get(0).getClipCount()).isEqualTo(2);
+      assertThat(response.get(0).getCommentCount()).isEqualTo(2);
     }
   }
 }
