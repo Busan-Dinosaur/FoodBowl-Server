@@ -22,7 +22,7 @@ public class PhotoTestHelper {
 
   @Autowired
   PhotoRepository photoRepository;
-  
+
   @Autowired
   PostRepository postRepository;
 
@@ -55,7 +55,7 @@ public class PhotoTestHelper {
       throw new RuntimeException(e);
     }
   }
-  
+
   public Photo generatePhoto(Post post) {
     final PhotoService photoService = new PhotoFileService(photoRepository, postRepository);
     return photoService.save(getImageFile(), post);
@@ -67,6 +67,17 @@ public class PhotoTestHelper {
     assertThat(photoFile.delete()).isTrue();
   }
 
+  public PhotoBuilder builder() {
+    return new PhotoBuilder();
+  }
+
+  private String getRandomUUIDLengthWith(int length) {
+    String randomString = UUID.randomUUID()
+        .toString();
+    length = Math.min(length, randomString.length());
+    return randomString.substring(0, length);
+  }
+
   public final class PhotoBuilder {
 
     private Post post;
@@ -74,18 +85,7 @@ public class PhotoTestHelper {
 
     private PhotoBuilder() {
     }
-    
-    public PhotoBuilder builder() {
-      return new PhotoBuilder();
-    }
 
-    private String getRandomUUIDLengthWith(int length) {
-      String randomString = UUID.randomUUID()
-          .toString();
-      length = Math.min(length, randomString.length());
-      return randomString.substring(0, length);
-    }
-    
     public PhotoBuilder post(Post post) {
       this.post = post;
       return this;

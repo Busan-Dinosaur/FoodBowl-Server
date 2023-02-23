@@ -2,6 +2,7 @@ package com.dinosaur.foodbowl.domain.post.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
+
 import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.clip.entity.Clip;
@@ -78,16 +79,10 @@ public class Post extends BaseEntity {
   private LocalDateTime updatedAt;
 
   @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final List<Photo> photos = new ArrayList<>();
-
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<PostCategory> categories = new ArrayList<>();
 
   @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<Clip> clips = new ArrayList<>();
-
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final List<Comment> comments = new ArrayList<>();
 
   @Builder
   private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos,
