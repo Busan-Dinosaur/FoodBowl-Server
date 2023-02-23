@@ -33,6 +33,7 @@ public class PostCategory extends BaseEntity {
   @JoinColumn(name = "post_id", nullable = false, updatable = false)
   private Post post;
 
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = false, updatable = false)
   private Category category;

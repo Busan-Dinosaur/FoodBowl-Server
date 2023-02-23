@@ -1,7 +1,13 @@
 package com.dinosaur.foodbowl.domain.photo.application.file;
 
+import static com.dinosaur.foodbowl.domain.photo.application.file.PhotoFileConstants.ROOT_PATH;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.dinosaur.foodbowl.domain.photo.application.PhotoService;
 import com.dinosaur.foodbowl.domain.photo.dao.PhotoRepository;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
+import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
+import java.io.File;
 import com.dinosaur.foodbowl.domain.post.PostTestHelper;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import java.io.FileInputStream;
@@ -15,14 +21,17 @@ import org.springframework.stereotype.Component;
 public class PhotoTestHelper {
 
   @Autowired
-  private PhotoRepository photoRepository;
+  PhotoRepository photoRepository;
+  
+  @Autowired
+  PostRepository postRepository;
 
   @Autowired
   private PostTestHelper postTestHelper;
 
   public MockMultipartFile getImageFile() {
     try {
-      return new MockMultipartFile("photo", "testImage_210x210.png", "image/png",
+      return new MockMultipartFile("images", "testImage_210x210.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_1x1.png"));
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -31,7 +40,7 @@ public class PhotoTestHelper {
 
   public MockMultipartFile getFakeImageFile() {
     try {
-      return new MockMultipartFile("photo", "fakeImage.png", "image/png",
+      return new MockMultipartFile("images", "fakeImage.png", "image/png",
           new FileInputStream("src/test/resources/images/fakeImage.png"));
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -40,22 +49,22 @@ public class PhotoTestHelper {
 
   public MockMultipartFile getTooLongNameImageFile(int length) {
     try {
-      return new MockMultipartFile("photo", "a".repeat(length) + ".png", "image/png",
+      return new MockMultipartFile("images", "a".repeat(length) + ".png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_1x1.png"));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-
-  public PhotoBuilder builder() {
-    return new PhotoBuilder();
+  
+  public Photo generatePhoto(Post post) {
+    final PhotoService photoService = new PhotoFileService(photoRepository, postRepository);
+    return photoService.save(getImageFile(), post);
   }
 
-  private String getRandomUUIDLengthWith(int length) {
-    String randomString = UUID.randomUUID()
-        .toString();
-    length = Math.min(length, randomString.length());
-    return randomString.substring(0, length);
+  public void deleteTestFile(Photo photo) {
+    File photoFile = new File(ROOT_PATH + photo.getPath());
+    assertThat(photoFile).exists();
+    assertThat(photoFile.delete()).isTrue();
   }
 
   public final class PhotoBuilder {
@@ -65,7 +74,18 @@ public class PhotoTestHelper {
 
     private PhotoBuilder() {
     }
+    
+    public PhotoBuilder builder() {
+      return new PhotoBuilder();
+    }
 
+    private String getRandomUUIDLengthWith(int length) {
+      String randomString = UUID.randomUUID()
+          .toString();
+      length = Math.min(length, randomString.length());
+      return randomString.substring(0, length);
+    }
+    
     public PhotoBuilder post(Post post) {
       this.post = post;
       return this;

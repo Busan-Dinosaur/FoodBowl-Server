@@ -1,16 +1,23 @@
 package com.dinosaur.foodbowl.domain.post;
 
+import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
+import com.dinosaur.foodbowl.domain.category.entity.Category.CategoryType;
 import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.StoreTestHelper;
+import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.thumbnail.ThumbnailTestHelper;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class PostTestHelper {
@@ -76,5 +83,51 @@ public class PostTestHelper {
           .content(content != null ? content : getRandomUUIDLengthWith(100))
           .build());
     }
+  }
+
+  public PostUpdateRequestDto getValidPostUpdateRequestDto() {
+    return PostUpdateRequestDto.builder()
+        .store(this.generateStoreDto())
+        .address(this.generateAddressDto())
+        .content("test")
+        .categoryIds(List.of(CategoryType.전체.getId(), CategoryType.분식.getId()))
+        .build();
+  }
+
+  public PostUpdateRequestDto getPostUpdateRequestDto(StoreRequestDto storeRequestDto,
+      AddressRequestDto addressRequestDto, List<Long> categoryIds) {
+    return PostUpdateRequestDto.builder()
+        .store(storeRequestDto)
+        .address(addressRequestDto)
+        .content("test")
+        .categoryIds(categoryIds)
+        .build();
+  }
+
+  public PostCreateRequestDto getPostCreateRequestDto(StoreRequestDto storeRequestDto,
+      AddressRequestDto addressRequestDto) {
+    return PostCreateRequestDto.builder()
+        .store(storeRequestDto)
+        .address(addressRequestDto)
+        .content("test")
+        .categoryIds(List.of(CategoryType.전체.getId(), CategoryType.분식.getId()))
+        .build();
+  }
+
+  public StoreRequestDto generateStoreDto() {
+    return StoreRequestDto.builder()
+        .storeName("test")
+        .build();
+  }
+
+  public AddressRequestDto generateAddressDto() {
+    return AddressRequestDto.builder()
+        .addressName("부산광역시 부산대학로 1")
+        .region1depthName("부산광역시")
+        .region2depthName("금정구")
+        .region3depthName("장전동")
+        .roadName("부산대학로")
+        .mainBuildingNo("1")
+        .build();
   }
 }
