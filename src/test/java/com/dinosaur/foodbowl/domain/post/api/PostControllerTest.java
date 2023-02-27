@@ -10,35 +10,34 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.address.dto.requset.AddressRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponse;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
+import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import java.nio.charset.StandardCharsets;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
-import com.dinosaur.foodbowl.domain.user.entity.User;
-import jakarta.servlet.http.Cookie;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -368,31 +367,24 @@ public class PostControllerTest extends IntegrationTest {
 
       LocalDateTime now = LocalDateTime.now();
 
-      PostThumbnailResponseDto response1 = PostThumbnailResponseDto.builder()
-          .postId(1L)
-          .thumbnailPath("path1")
-          .createdAt(now)
-          .build();
-      PostThumbnailResponseDto response2 = PostThumbnailResponseDto.builder()
-          .postId(2L)
-          .thumbnailPath("path2")
-          .createdAt(now)
-          .build();
+      List<PostThumbnailResponse> response = List.of(
+          new PostThumbnailResponse(1L, "path1", now),
+          new PostThumbnailResponse(2L, "path2", now)
+      );
 
-      doReturn(List.of(response1, response2)).when(postService)
-          .getThumbnails(anyLong(), any(Pageable.class));
+      doReturn(response).when(postService).getWrittenPostThumbnails(anyLong(), any(Pageable.class));
 
       callGetThumbnailsApi("1")
           .andExpect(status().isOk())
-          .andExpect(jsonPath("[0].postId").value(response1.getPostId()))
-          .andExpect(jsonPath("[0].thumbnailPath").value(response1.getThumbnailPath()))
+          .andExpect(jsonPath("[0].postId").value(1L))
+          .andExpect(jsonPath("[0].thumbnailPath").value("path1"))
           .andExpect(jsonPath("[0].createdAt")
               .value(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
-          .andExpect(jsonPath("[1].postId").value(response2.getPostId()))
-          .andExpect(jsonPath("[1].thumbnailPath").value(response2.getThumbnailPath()))
+          .andExpect(jsonPath("[1].postId").value(2L))
+          .andExpect(jsonPath("[1].thumbnailPath").value("path2"))
           .andExpect(jsonPath("[1].createdAt")
               .value(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
-          .andDo(document("post-thumbnail-list",
+          .andDo(document("post-thumbnail-list-by-written",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
               ),
@@ -408,7 +400,7 @@ public class PostControllerTest extends IntegrationTest {
               responseFields(
                   fieldWithPath("[].postId").description("게시글 ID"),
                   fieldWithPath("[].thumbnailPath").description("게시글 썸네일 URI"),
-                  fieldWithPath("[].createdAt").description("게시글 생성 시간")
+                  fieldWithPath("[].createdAt").description("게시글 작성 시간")
               )));
     }
 
@@ -502,6 +494,58 @@ public class PostControllerTest extends IntegrationTest {
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .param("page", "0")
               .param("size", "4"))
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("본인 게시글을 제외한 모든 게시글 썸네일 조회 기능")
+  class GetPostThumbnails {
+
+    @Test
+    @DisplayName("본인 게시글을 제외한 모든 게시글 썸네일 조회를 성공한다.")
+    void successApi() throws Exception {
+      mockingAuth();
+
+      LocalDateTime now = LocalDateTime.now();
+
+      List<PostThumbnailResponse> response = List.of(
+          new PostThumbnailResponse(1L, "path1", now),
+          new PostThumbnailResponse(2L, "path2", now)
+      );
+
+      doReturn(response).when(postService).getPostThumbnails(any(User.class), any(Pageable.class));
+
+      callGetPostThumbnailsApi()
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$[0].postId").value(1L))
+          .andExpect(jsonPath("$[0].thumbnailPath").value("path1"))
+          .andExpect(jsonPath("$[0].createdAt")
+              .value(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
+          .andExpect(jsonPath("$[1].postId").value(2L))
+          .andExpect(jsonPath("$[1].thumbnailPath").value("path2"))
+          .andExpect(jsonPath("$[1].createdAt")
+              .value(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
+          .andDo(document("post-thumbnail-list",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
+              ),
+              queryParameters(
+                  parameterWithName("page").optional()
+                      .description("게시글 썸네일 목록 페이지 +\n(default: 0)"),
+                  parameterWithName("size").optional()
+                      .description("게시글 썸네일 목록 크기 +\n(default: 18)")
+              ),
+              responseFields(
+                  fieldWithPath("[].postId").description("게시글 ID"),
+                  fieldWithPath("[].thumbnailPath").description("게시글 썸네일 경로"),
+                  fieldWithPath("[].createdAt").description("게시글 작성 시간")
+              )));
+    }
+
+    private ResultActions callGetPostThumbnailsApi() throws Exception {
+      return mockMvc.perform(get("/posts/thumbnails")
+              .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
   }

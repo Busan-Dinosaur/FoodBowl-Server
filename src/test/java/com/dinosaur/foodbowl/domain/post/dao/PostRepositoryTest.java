@@ -95,4 +95,51 @@ class PostRepositoryTest extends IntegrationTest {
       assertThat(feed.get(2).getContent()).isEqualTo("유저2 포스트2");
     }
   }
+
+  @Nested
+  @DisplayName("특정 유저를 제외한 모든 유저가 작성한 게시글을 조회한다.")
+  class FindAllByUserNot {
+
+    @Test
+    @DisplayName("특정 유저가 작성한 게시글을 불러오지 않는다.")
+    void getPostsExcludeUser() {
+      //given
+      User user1 = userTestHelper.builder().build();
+      User user2 = userTestHelper.builder().build();
+
+      postTestHelper.builder().user(user1).build();
+      Post post2 = postTestHelper.builder().user(user2).build();
+      Post post3 = postTestHelper.builder().user(user2).build();
+
+      Pageable pageable = PageRequest.of(0, 2, Sort.by("id").descending());
+
+      //when
+      List<Post> posts = postRepository.findAllByUserNot(user1, pageable);
+
+      //then
+      assertThat(posts).hasSize(2);
+      assertThat(posts).containsExactly(post3, post2);
+    }
+
+    @Test
+    @DisplayName("페이징 적용 후 게시글을 불러온다.")
+    void getPostsWithPaging() {
+      //given
+      User user1 = userTestHelper.builder().build();
+      User user2 = userTestHelper.builder().build();
+
+      postTestHelper.builder().user(user1).build();
+      Post post2 = postTestHelper.builder().user(user2).build();
+      Post post3 = postTestHelper.builder().user(user2).build();
+
+      Pageable pageable = PageRequest.of(1, 1, Sort.by("id").descending());
+
+      //when
+      List<Post> posts = postRepository.findAllByUserNot(user1, pageable);
+
+      //then
+      assertThat(posts).hasSize(1);
+      assertThat(posts).containsExactly(post2);
+    }
+  }
 }
