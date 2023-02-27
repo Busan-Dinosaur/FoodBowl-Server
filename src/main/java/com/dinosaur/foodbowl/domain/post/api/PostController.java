@@ -3,27 +3,26 @@ package com.dinosaur.foodbowl.domain.post.api;
 import com.dinosaur.foodbowl.domain.post.application.PostService;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
-import jakarta.validation.Valid;
-import java.net.URI;
 import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponse;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
+import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,11 +64,11 @@ public class PostController {
   }
 
   @GetMapping("/users/{id}/thumbnails")
-  public ResponseEntity<List<PostThumbnailResponseDto>> getThumbnails(
+  public ResponseEntity<List<PostThumbnailResponse>> getThumbnails(
       @PathVariable("id") Long userId,
       @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
-    List<PostThumbnailResponseDto> response = postService.getThumbnails(userId, pageable);
+    List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(userId, pageable);
 
     return ResponseEntity.ok(response);
   }
@@ -80,6 +79,16 @@ public class PostController {
       @PageableDefault(size = 4, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
     List<PostFeedResponseDto> response = postService.getFeed(user, pageable);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/thumbnails")
+  public ResponseEntity<List<PostThumbnailResponse>> getPostThumbnails(
+      @LoginUser User user,
+      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+  ) {
+    List<PostThumbnailResponse> response = postService.getPostThumbnails(user, pageable);
 
     return ResponseEntity.ok(response);
   }

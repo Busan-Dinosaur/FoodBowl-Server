@@ -2,7 +2,6 @@ package com.dinosaur.foodbowl.domain.post.application;
 
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_HAS_NOT_IMAGE;
 import static com.dinosaur.foodbowl.global.error.ErrorCode.POST_NOT_WRITER;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -13,11 +12,11 @@ import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.photo.entity.Photo;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponse;
+import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dto.request.StoreRequestDto;
 import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
-import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Collections;
@@ -27,11 +26,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.multipart.MultipartFile;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.multipart.MultipartFile;
 
 class PostServiceTest extends IntegrationTest {
 
@@ -169,7 +167,7 @@ class PostServiceTest extends IntegrationTest {
 
       // then
       assertThatThrownBy(
-              () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
+          () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
     }
@@ -185,8 +183,8 @@ class PostServiceTest extends IntegrationTest {
 
       // then
       assertThatThrownBy(
-              () -> postService.updatePost(another, before.getId(), requestDto,
-                  List.of(photoTestHelper.getImageFile()))).isInstanceOf(BusinessException.class)
+          () -> postService.updatePost(another, before.getId(), requestDto,
+              List.of(photoTestHelper.getImageFile()))).isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_NOT_WRITER.getMessage());
     }
 
@@ -200,7 +198,7 @@ class PostServiceTest extends IntegrationTest {
 
       // then
       assertThatThrownBy(
-              () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
+          () -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
     }
@@ -269,7 +267,8 @@ class PostServiceTest extends IntegrationTest {
       }
 
       Pageable pageable = PageRequest.of(1, 2, Sort.by("id").descending());
-      List<PostThumbnailResponseDto> response = postService.getThumbnails(user.getId(), pageable);
+      List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(
+          user.getId(), pageable);
 
       assertThat(response.size()).isEqualTo(2);
     }
@@ -321,6 +320,36 @@ class PostServiceTest extends IntegrationTest {
       assertThat(response.get(0).getCategories()).hasSize(2);
       assertThat(response.get(0).getClipCount()).isEqualTo(2);
       assertThat(response.get(0).getCommentCount()).isEqualTo(2);
+    }
+  }
+
+  @Nested
+  @DisplayName("특정 사용자 게시글을 제외한 모든 게시글 썸네일 조회 기능")
+  class GetPostThumbnails {
+
+    @Test
+    @DisplayName("게시글 ID, 썸네일 경로 목록을 조회한다.")
+    void getPostIdAndThumbnailPath() {
+      //given
+      User user1 = userTestHelper.builder().build();
+      User user2 = userTestHelper.builder().build();
+      User user3 = userTestHelper.builder().build();
+
+      postTestHelper.builder().user(user1).build();
+      Post post1 = postTestHelper.builder().user(user2).build();
+      Post post2 = postTestHelper.builder().user(user3).build();
+
+      Pageable pageable = PageRequest.of(0, 2, Sort.by("id").descending());
+
+      //when
+      List<PostThumbnailResponse> result = postService.getPostThumbnails(user1, pageable);
+
+      //then
+      assertThat(result).hasSize(2);
+      assertThat(result).extracting(PostThumbnailResponse::postId)
+          .containsExactly(post2.getId(), post1.getId());
+      assertThat(result).extracting(PostThumbnailResponse::thumbnailPath)
+          .containsExactly(post2.getThumbnail().getPath(), post1.getThumbnail().getPath());
     }
   }
 }

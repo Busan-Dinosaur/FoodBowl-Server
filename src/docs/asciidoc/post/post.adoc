@@ -13,7 +13,33 @@ endif::[]
 
 link:../foodbowl.html[API 목록으로 돌아가기]
 
-== *게시글 썸네일 목록 조회*
+== *게시글 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-create/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/post-create/request-cookies.adoc[]
+
+==== Request Parts
+
+include::{snippets}/post-create/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-create/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/post-create/response-headers.adoc[]
+
+== *작성한 게시글 썸네일 목록 조회*
 
 NOTE: 모든 목록을 조회하는 것이 아닌 페이징을 통한 조회입니다.
 
@@ -21,19 +47,19 @@ NOTE: 모든 목록을 조회하는 것이 아닌 페이징을 통한 조회입�
 
 ==== Request
 
-include::{snippets}/post-thumbnail-list/http-request.adoc[]
+include::{snippets}/post-thumbnail-list-by-written/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/post-thumbnail-list/request-cookies.adoc[]
+include::{snippets}/post-thumbnail-list-by-written/request-cookies.adoc[]
 
 ==== Path Parameters
 
-include::{snippets}/post-thumbnail-list/path-parameters.adoc[]
+include::{snippets}/post-thumbnail-list-by-written/path-parameters.adoc[]
 
 ==== Query Parameters
 
-include::{snippets}/post-thumbnail-list/query-parameters.adoc[]
+include::{snippets}/post-thumbnail-list-by-written/query-parameters.adoc[]
 
 NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
 
@@ -41,11 +67,11 @@ NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
 
 ==== Response
 
-include::{snippets}/post-thumbnail-list/http-response.adoc[]
+include::{snippets}/post-thumbnail-list-by-written/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/post-thumbnail-list/response-fields.adoc[]
+include::{snippets}/post-thumbnail-list-by-written/response-fields.adoc[]
 
 == *게시글 피드 목록 조회*
 
@@ -76,3 +102,33 @@ include::{snippets}/post-feed/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/post-feed/response-fields.adoc[]
+
+== *모든 게시글 썸네일 목록 조회 - 본인 게시글 제외*
+
+NOTE: 모든 목록을 조회하는 것이 아닌 페이징을 통한 조회입니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-thumbnail-list/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/post-thumbnail-list/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/post-thumbnail-list/query-parameters.adoc[]
+
+NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-thumbnail-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/post-thumbnail-list/response-fields.adoc[]

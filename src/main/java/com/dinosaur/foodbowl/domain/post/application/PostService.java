@@ -12,7 +12,7 @@ import com.dinosaur.foodbowl.domain.post.dao.PostRepository;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostCreateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.request.PostUpdateRequestDto;
 import com.dinosaur.foodbowl.domain.post.dto.response.PostFeedResponseDto;
-import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponseDto;
+import com.dinosaur.foodbowl.domain.post.dto.response.PostThumbnailResponse;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.store.dao.StoreFindService;
 import com.dinosaur.foodbowl.domain.store.entity.Store;
@@ -22,6 +22,7 @@ import com.dinosaur.foodbowl.domain.thumbnail.entity.Thumbnail;
 import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,14 +111,28 @@ public class PostService {
     }
   }
 
-  public List<PostThumbnailResponseDto> getThumbnails(Long userId, Pageable pageable) {
-    User user = userFindService.findById(userId);
+  public List<PostThumbnailResponse> getWrittenPostThumbnails(
+      final Long userId, final Pageable pageable
+  ) {
+    final User user = userFindService.findById(userId);
+    final List<Post> posts = postRepository.findThumbnailsByUser(user, pageable);
+    final List<PostThumbnailResponse> results = getPostThumbnailResponses(posts);
+    return results;
+  }
 
-    List<Post> posts = postRepository.findThumbnailsByUser(user, pageable);
+  private List<PostThumbnailResponse> getPostThumbnailResponses(final List<Post> posts) {
+    final List<PostThumbnailResponse> results = new ArrayList<>();
 
-    return posts.stream()
-        .map(PostThumbnailResponseDto::from)
-        .collect(Collectors.toList());
+    for (final Post post : posts) {
+      final var result = new PostThumbnailResponse(
+          post.getId(),
+          post.getThumbnail().getPath(),
+          post.getCreatedAt()
+      );
+      results.add(result);
+    }
+
+    return results;
   }
 
   public List<PostFeedResponseDto> getFeed(User user, Pageable pageable) {
@@ -126,5 +141,11 @@ public class PostService {
     return posts.stream()
         .map(post -> PostFeedResponseDto.of(post, user))
         .collect(Collectors.toList());
+  }
+
+  public List<PostThumbnailResponse> getPostThumbnails(final User user, final Pageable pageable) {
+    final List<Post> posts = postRepository.findAllByUserNot(user, pageable);
+    final List<PostThumbnailResponse> results = getPostThumbnailResponses(posts);
+    return results;
   }
 }
