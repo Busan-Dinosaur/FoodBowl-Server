@@ -12,19 +12,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class PhotoFileServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("사진 저장 테스트")
-  class SaveTest {
+  class 사진_저장 {
 
     @Test
-    @DisplayName("사진 파일이 유효한 경우 저장은 성공해야 한다.")
-    void should_saveSuccessfully_when_validMultipartFile() throws IOException {
+    void 사진_파일이_유효하면_저장에_성공한다() throws IOException {
       Post post = postTestHelper.builder().build();
       Photo result = photoFileService.save(photoTestHelper.getImageFile(), post);
 
@@ -33,8 +30,7 @@ class PhotoFileServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("사진 파일이 유효하지 않으면 BusinessException 이 발생한다.")
-    void should_throw_BusinessException_when_InvalidFile() throws IOException {
+    void 사진_파일이_유효하지_않으면_예외가_발생한다() throws IOException {
       Post post = postTestHelper.builder().build();
 
       assertThatThrownBy(() ->
@@ -51,8 +47,7 @@ class PhotoFileServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 게시글에 사진을 추가하면 BusinessException 이 발생한다.")
-    void should_throw_BusinessException_when_post_not_found() {
+    void 존재하지_않는_게시글에_사진을_추가하면_예외가_발생한다() {
       Post deleted = postTestHelper.builder().build();
       postRepository.delete(deleted);
       em.flush();
@@ -71,12 +66,10 @@ class PhotoFileServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("사진 삭제 테스트")
-  class DeleteTest {
+  class 사진_삭제 {
 
     @Test
-    @DisplayName("사진 파일이 존재할 경우 삭제는 성공해야 한다.")
-    void should_deleteSuccessfully_when_existFile() throws IOException {
+    void 사진_파일이_존재하면_삭제에_성공한다() throws IOException {
       Photo saved = photoFileService.save(photoTestHelper.getImageFile(),
           postTestHelper.builder().build());
 

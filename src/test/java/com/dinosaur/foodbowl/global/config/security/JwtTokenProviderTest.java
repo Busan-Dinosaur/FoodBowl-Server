@@ -9,6 +9,8 @@ import io.jsonwebtoken.Jwts;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,18 +19,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ContextConfiguration
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class JwtTokenProviderTest {
 
   private static final String TEST_SECRET_KEY = "2B4B6250655368566D597133743677397A244326452948404D635166546A576E";
   private static final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
   @BeforeAll
-  static void setupSecretKey() {
+  static void setUp() {
     ReflectionTestUtils.setField(jwtTokenProvider, "secretKey", TEST_SECRET_KEY);
   }
 
   @Test
-  void createAccessToken() {
+  void 엑세스_토큰을_생성한다() {
     long userPk = 1;
     RoleType[] roleType = new RoleType[]{RoleType.ROLE_회원, RoleType.ROLE_관리자};
 
@@ -44,7 +47,7 @@ class JwtTokenProviderTest {
   }
 
   @Test
-  void getAuthentication() {
+  void 인증_정보를_확인한다() {
     /**
      * PK: 1
      * ROLE: 회원, 관리자
@@ -62,3 +65,4 @@ class JwtTokenProviderTest {
     assertThat(authorities).containsAll(List.of("ROLE_회원", "ROLE_관리자"));
   }
 }
+

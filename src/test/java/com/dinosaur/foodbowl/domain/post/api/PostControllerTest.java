@@ -41,7 +41,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,16 +57,13 @@ public class PostControllerTest extends IntegrationTest {
   ObjectMapper objectMapper;
 
   @Nested
-  @DisplayName("게시글 생성")
-  class CreatePost {
+  class 게시글_생성 {
 
     @Nested
-    @DisplayName("성공 테스트")
-    public class Success {
+    public class 게시글_생성_성공 {
 
       @Test
-      @DisplayName("올바른 요청이면 게시글 생성은 성공한다.")
-      void should_success_create_post() throws Exception {
+      void 요청이_올바르면_게시글_생성에_성공한다() throws Exception {
         mockingAuth();
 
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
@@ -113,12 +109,10 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Nested
-    @DisplayName("실패 테스트")
-    public class Fail {
+    public class 게시글_생성_실패 {
 
       @Test
-      @DisplayName("사진이 없으면 게시글 저장은 실패한다.")
-      void should_fail_when_without_image() throws Exception {
+      void 사진이_없으면_게시글_생성에_실패한다() throws Exception {
         mockingAuth();
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
@@ -136,8 +130,7 @@ public class PostControllerTest extends IntegrationTest {
       }
 
       @Test
-      @DisplayName("가게가 없으면 게시글 저장은 실패한다.")
-      void should_fail_when_without_store() throws Exception {
+      void 가게가_없으면_게시글_생성에_실패한다() throws Exception {
         mockingAuth();
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(null,
@@ -153,8 +146,7 @@ public class PostControllerTest extends IntegrationTest {
       }
 
       @Test
-      @DisplayName("가게의 주소가 없으면 게시글 저장은 실패한다.")
-      void should_fail_when_without_address() throws Exception {
+      void 가게_주소가_없으면_게시글_생성에_실패한다() throws Exception {
         mockingAuth();
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
         PostCreateRequestDto requestDto = postTestHelper.getPostCreateRequestDto(storeRequestDto,
@@ -193,16 +185,13 @@ public class PostControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("게시글 수정")
-  class UpdatePost {
+  class 게시글_수정 {
 
     @Nested
-    @DisplayName("성공 테스트")
-    public class Success {
+    public class 게시글_수정_성공 {
 
       @Test
-      @DisplayName("게시글 수정 성공")
-      void should_success_when_update_post() throws Exception {
+      void 게시글_수정에_성공한다() throws Exception {
         mockingAuth();
         Long postId = 1L;
         PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
@@ -246,12 +235,10 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Nested
-    @DisplayName("실패 테스트")
-    public class Fail {
+    public class 게시글_수정_실패 {
 
       @Test
-      @DisplayName("사진이 없으면 게시글 수정은 실패한다.")
-      void should_fail_when_without_image() throws Exception {
+      void 사진이_없으면_게시글_수정에_실패한다() throws Exception {
         mockingAuth();
         Long postId = 1L;
         PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
@@ -266,8 +253,7 @@ public class PostControllerTest extends IntegrationTest {
       }
 
       @Test
-      @DisplayName("가게가 없으면 게시글 수정은 실패한다.")
-      void should_fail_when_without_store() throws Exception {
+      void 가게가_없으면_게시글_수정에_실패한다() throws Exception {
         mockingAuth();
         Long postId = 1L;
         AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
@@ -284,8 +270,7 @@ public class PostControllerTest extends IntegrationTest {
       }
 
       @Test
-      @DisplayName("가게의 주소가 없으면 게시글 수정은 실패한다.")
-      void should_fail_when_without_address() throws Exception {
+      void 가게_주소가_없으면_게시글_수정에_실패한다() throws Exception {
         mockingAuth();
         Long postId = 1L;
         StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
@@ -327,12 +312,10 @@ public class PostControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("게시글 삭제")
-  class DeletePost {
+  class 게시글_삭제 {
 
     @Test
-    @DisplayName("게시글 삭제에 성공한다.")
-    void should_success_when_delete_post() throws Exception {
+    void 게시글_삭제에_성공한다() throws Exception {
       mockingAuth();
       Long postId = 1L;
 
@@ -357,12 +340,10 @@ public class PostControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유저 게시글 썸네일 목록 불러오기")
-  class GetThumbnails {
+  class 유저_게시글_썸네일_목록_조회 {
 
     @Test
-    @DisplayName("썸네일 목록 불러오기 성공")
-    void should_success_when_getThumbnails() throws Exception {
+    void 게시글_썸네일_목록_조회에_성공한다() throws Exception {
       mockingAuth();
 
       LocalDateTime now = LocalDateTime.now();
@@ -405,8 +386,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("ID로 변환할 수 없으면 예외가 발생한다.")
-    void should_throwException_when_IdNotConvert() throws Exception {
+    void ID로_변환할_수_없으면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       callGetThumbnailsApi("hello")
@@ -423,12 +403,10 @@ public class PostControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유저 게시글 피드 목록 불러오기")
-  class GetFeed {
+  class 유저_게시글_피드_목록_조회 {
 
     @Test
-    @DisplayName("게시글 피드 목록 불러오기 성공")
-    void should_success_when_getFeed() throws Exception {
+    void 게시글_피드_목록_조회에_성공한다() throws Exception {
       mockingAuth();
 
       PostFeedResponseDto mockResponse = PostFeedResponseDto.builder()
@@ -499,12 +477,10 @@ public class PostControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("본인 게시글을 제외한 모든 게시글 썸네일 조회 기능")
-  class GetPostThumbnails {
+  class 본인_게시글_제외_모든_게시글_썸네일_조회 {
 
     @Test
-    @DisplayName("본인 게시글을 제외한 모든 게시글 썸네일 조회를 성공한다.")
-    void successApi() throws Exception {
+    void 본인_게시글_제외한_모든_게시글_썸네일_조회에_성공한다() throws Exception {
       mockingAuth();
 
       LocalDateTime now = LocalDateTime.now();

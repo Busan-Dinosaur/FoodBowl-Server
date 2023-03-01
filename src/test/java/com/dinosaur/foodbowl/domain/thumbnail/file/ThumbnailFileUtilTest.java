@@ -21,12 +21,10 @@ import org.springframework.mock.web.MockMultipartFile;
 class ThumbnailFileUtilTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("썸네일 삭제 테스트")
-  class deleteTest {
+  class 썸네일_싹제 {
 
     @Test
-    @DisplayName("썸네일 파일이 존재할 경우 삭제는 성공해야 한다.")
-    void should_deleteSuccessfully_when_existFile() throws IOException {
+    void 썸네일이_존재하면_삭제에_성공한다() throws IOException {
       MockMultipartFile validMultipartFile = new MockMultipartFile("image",
           "testImage_210x210.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_210x210.png"));
@@ -41,27 +39,24 @@ class ThumbnailFileUtilTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("썸네일 저장 테스트")
-  class SaveTest {
+  class 썸네일_저장 {
 
     private final MockMultipartFile validMultipartFile = new MockMultipartFile("image",
         "testImage_210x210.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_210x210.png"));
 
-    SaveTest() throws IOException {
+    썸네일_저장() throws IOException {
     }
 
     @Test
-    @DisplayName("썸네일 파일이 유효한 경우 저장은 성공해야 한다.")
-    void should_saveSuccessfully_when_validMultipartFile() {
+    void 썸네일_파일이_유효하면_저장에_성공한다() {
       Thumbnail result = thumbnailFileUtil.saveIfExist(validMultipartFile).orElseThrow();
       assertThat(result).isNotNull();
       deleteTestFile(result);
     }
 
     @Test
-    @DisplayName("썸네일 파일이 유효한 경우 원하는 사이즈로 사이즈 변환에 성공해야 한다.")
-    void should_resizingWell_when_validMultipartFile() throws IOException {
+    void 썸네일_파일이_유효하면_사이즈_변환에_성공한다() throws IOException {
       Thumbnail savedThumbnailEntity = thumbnailFileUtil.saveIfExist(validMultipartFile)
           .orElseThrow();
       File result = new File(ROOT_PATH + savedThumbnailEntity.getPath());
@@ -76,8 +71,7 @@ class ThumbnailFileUtilTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("썸네일 저장 시 type이 null이면 NullPointerException을 발생시킨다.")
-    void should_throwNullPointerException_when_parameterIsNull() {
+    void 썸네일_저장_시_타입이_null_이면_예외가_발생한다() {
       assertThatThrownBy(() -> thumbnailFileUtil.saveIfExist(null, null))
           .isInstanceOf(NullPointerException.class);
       assertThatThrownBy(() -> thumbnailFileUtil.saveIfExist(validMultipartFile, null))

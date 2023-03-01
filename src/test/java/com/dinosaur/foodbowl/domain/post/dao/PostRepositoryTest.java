@@ -7,7 +7,6 @@ import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
@@ -17,12 +16,10 @@ import org.springframework.data.domain.Sort;
 class PostRepositoryTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("유저 게시글 페이징 검색")
-  class FindAllByUserWithPageable {
+  class 게시글_조회 {
 
     @Test
-    @DisplayName("해당 유저에 대한 게시글만 가져온다.")
-    void should_getOnlyUser_when_findPosts() {
+    void 특정_유저의_게시글만_조회한다() {
       User user1 = userTestHelper.builder().build();
       User user2 = userTestHelper.builder().build();
       Post post1 = postTestHelper.builder().user(user1).content("post1").build();
@@ -37,8 +34,7 @@ class PostRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("설정한 페이지와 크기만큼 가져온다.")
-    void should_pageAndSize_when_pageAndSizeSet() {
+    void 설정한_페이지와_크기만큼_조회한다() {
       User user = userTestHelper.builder().build();
 
       for (int i = 0; i < 10; i++) {
@@ -56,8 +52,7 @@ class PostRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유저 피드 페이징 검색")
-  class FindFeed {
+  class 피드_조회 {
 
     private User user;
 
@@ -83,8 +78,7 @@ class PostRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("나와 내가 팔로우하고 있는 유저의 게시글만 불러온다.")
-    void should_find_onlyPostsMeAndFollowingUser() {
+    void 팔로우하고_있는_유저의_게시글만_조회한다() {
       Pageable pageable = PageRequest.of(0, 3, Sort.by("id").descending());
 
       List<Post> feed = postRepository.findFeed(user, pageable);
@@ -97,12 +91,10 @@ class PostRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("특정 유저를 제외한 모든 유저가 작성한 게시글을 조회한다.")
-  class FindAllByUserNot {
+  class 특정_유저_제외_모든_유저_게시글_조회 {
 
     @Test
-    @DisplayName("특정 유저가 작성한 게시글을 불러오지 않는다.")
-    void getPostsExcludeUser() {
+    void 특정_유저가_작성한_게시글을_불러오지_않는다() {
       //given
       User user1 = userTestHelper.builder().build();
       User user2 = userTestHelper.builder().build();
@@ -122,8 +114,7 @@ class PostRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("페이징 적용 후 게시글을 불러온다.")
-    void getPostsWithPaging() {
+    void 게시글을_조회한다() {
       //given
       User user1 = userTestHelper.builder().build();
       User user2 = userTestHelper.builder().build();

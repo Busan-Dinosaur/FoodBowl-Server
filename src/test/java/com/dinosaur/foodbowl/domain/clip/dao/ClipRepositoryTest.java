@@ -8,7 +8,6 @@ import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
@@ -18,12 +17,10 @@ import org.springframework.data.domain.Sort;
 class ClipRepositoryTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("유저, 게시글에 대한 클립이 존재하는지 확인한다.")
-  class ExistsClipByUserAndPost {
+  class 유저_게시글에_대한_클립_존재_확인 {
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하면 true 반환한다.")
-    void should_returnTrue_when_clipExistForUserAndPost() {
+    void 유저_게시글에_대한_클립이_존재하면_true_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().user(user).post(post).build();
@@ -34,8 +31,7 @@ class ClipRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("유저만 일치하면 false 반환한다.")
-    void should_returnFalse_when_clipExistForUser() {
+    void 유저만_일치하면_false_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().user(user).build();
@@ -46,8 +42,7 @@ class ClipRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글만 일치하면 false 반환한다.")
-    void should_returnFalse_when_clipExistForPost() {
+    void 게시글만_일치하면_false_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().post(post).build();
@@ -58,8 +53,7 @@ class ClipRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("일치하는 것이 존재하지 않으면 false 반환한다.")
-    void should_returnFalse_when_clipNotExist() {
+    void 일치하는_것이_존재하지_않으면_false_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().build();
@@ -71,12 +65,10 @@ class ClipRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유저, 게시글에 대한 클립을 가져온다.")
-  class FindClipByUserAndPost {
+  class 유저_게시글_클립_조회 {
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하면 가져온다.")
-    void should_clipImport_when_findForUserAndPost() {
+    void 유저_게시글에_대한_클립이_존재하면_조회한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().user(user).post(post).build();
@@ -89,8 +81,7 @@ class ClipRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하지 않으면 가져오지 않는다.")
-    void should_clipNotImport_when_findForUserAndPost() {
+    void 유저_게시글에_대한_클립이_존재하지_않으면_조회하지_않는다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().build();
@@ -102,12 +93,10 @@ class ClipRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("특정 사용자의 클립 목록 조회(paging, fetch join)")
-  class FindClipByUser {
+  class 특정_사용자_클립_목록_조회 {
 
     @Test
-    @DisplayName("특정 사용자의 클립 목록만 조회한다.")
-    void should_get_clips_for_user() {
+    void 특정_사용자_클립_목록만_조회한다() {
       //given
       User user1 = userTestHelper.builder().build();
       Post post1 = postTestHelper.builder().build();

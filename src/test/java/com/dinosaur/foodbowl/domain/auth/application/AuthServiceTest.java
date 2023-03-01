@@ -15,7 +15,6 @@ import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.util.Optional;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,12 +23,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 class AuthServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("회원가입 테스트")
-  class SignUp {
+  class 회원가입 {
 
     @Test
-    @DisplayName("회원가입을 정상적으로 수행한다.")
-    void should_success_when_signUp() {
+    void 회원가입을_정상적으로_수행한다() {
 
       SignUpRequestDto request = SignUpRequestDto.builder()
           .loginId("TestLoginId")
@@ -48,8 +45,7 @@ class AuthServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("중복되는 아이디가 존재하면 예외가 발생한다.")
-    void should_throwException_when_existDuplicateLoginId() {
+    void 중복되는_아이디가_존재하면_예외가_발생한다() {
       User existUser = userTestHelper.builder().loginId("TestLoginId").build();
       SignUpRequestDto request = SignUpRequestDto.builder()
           .loginId(existUser.getLoginId())
@@ -60,8 +56,7 @@ class AuthServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("중복되는 닉네임이 존재하면 예외가 발생한다.")
-    void should_throwException_when_existDuplicateNickname() {
+    void 중복되는_닉네임이_존재하면_예외가_발생한다() {
       User existUser = userTestHelper.builder().loginId("TestNickname").build();
       SignUpRequestDto request = SignUpRequestDto.builder()
           .nickname(existUser.getNickname())
@@ -73,12 +68,10 @@ class AuthServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("로그인 테스트")
-  class Login {
+  class 로그인 {
 
     @Test
-    @DisplayName("로그인을 성공적으로 수행한다.")
-    void should_success_when_login() {
+    void 로그인을_성공적으로_수행한다() {
       String loginId = "testLoginId";
       String password = "testPassword";
       String encodePassword = passwordEncoder.encode(password);
@@ -95,8 +88,7 @@ class AuthServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("로그인 아이디 유저가 존재하지 않으면 예외가 발생한다.")
-    void should_throwException_when_loginIdNotExist() {
+    void 로그인_아이디가_존재하지_않으면_예외가_발생한다() {
       String loginId = "testLoginId";
       String password = "testPassword";
 
@@ -111,8 +103,7 @@ class AuthServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다.")
-    void should_throwException_when_passwordNotMatch() {
+    void 비밀번호가_일치하지_않으면_예외가_발생한다() {
       String loginId = "testLoginId";
       String password = "testPassword";
       String encodePassword = passwordEncoder.encode(password);
@@ -130,12 +121,10 @@ class AuthServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("닉네임 유효성 및 중복 검사")
-  class CheckNickname {
+  class 닉네임_유효성_및_중복_검사 {
 
     @Test
-    @DisplayName("닉네임 유효성 및 중복 검사에 통과한다.")
-    void should_success_when_checkNickname() {
+    void 닉네임_유효성_및_중복_검사를_통과한다() {
       String nickname = "hello";
 
       CheckResponseDto checkResponseDto = authService.checkNickname(nickname);
@@ -147,8 +136,7 @@ class AuthServiceTest extends IntegrationTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
         "01234567890123456", "         ", "012345678901234567890"})
-    @DisplayName("닉네임 유효성 검사에 실패한다.")
-    void should_fail_when_nicknameIsNotValid(String nickname) {
+    void 유효하지_않은_닉네임이라면_유효성_검사에_실패한다(String nickname) {
       CheckResponseDto checkResponseDto = authService.checkNickname(nickname);
 
       assertThat(checkResponseDto.isAvailable()).isFalse();
@@ -156,8 +144,7 @@ class AuthServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("닉네임 중복 검사에 실패한다.")
-    void should_fail_when_nicknameIsDuplicate() {
+    void 중복된_닉네임은_중복_검사에_실패한다() {
       String nickname = "hello";
       userTestHelper.builder()
           .nickname(nickname)

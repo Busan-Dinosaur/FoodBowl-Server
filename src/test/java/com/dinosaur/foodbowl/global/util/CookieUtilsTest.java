@@ -4,19 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dinosaur.foodbowl.IntegrationTest;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class CookieUtilsTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("쿠키 생성")
-  class GenerateCookie {
+  class 쿠키_생성 {
 
     @Test
-    @DisplayName("쿠키를 생성한다.")
-    void should_success_when_generateCookie() {
+    void 쿠키를_생성한다() {
       String name = "cookieName";
       String value = "cookieValue";
       int expire = 1;

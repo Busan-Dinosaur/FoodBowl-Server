@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 class RoleRepositoryTest extends IntegrationTest {
 
   @Nested
-  class RoleTypeEnumTest {
+  class 유저_역할 {
 
     @Test
-    void should_allTypeExist_when_givenRoleTypeEnum() {
+    void 유저_역할_DB_일치한다() {
       List<Role> allRoles = roleRepository.findAll();
       List<Role> allRoleTypes = Arrays.stream(RoleType.values())
           .map(Role::getRoleBy)

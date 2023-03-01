@@ -35,9 +35,7 @@ import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.error.BusinessException;
 import jakarta.servlet.http.Cookie;
-import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
@@ -51,8 +49,7 @@ import org.springframework.util.MultiValueMap;
 class UserControllerTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("회원 탈퇴")
-  class deleteAccount {
+  class 회원_탈퇴 {
 
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
@@ -65,8 +62,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("본인의 JWT로 회원 탈퇴는 성공한다.")
-    void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
+    void 엑세스_토큰으로_회원탈퇴에_성공한다() throws Exception {
       doNothing().when(deleteAccountService).deleteMySelf(any());
       mockMvc.perform(delete("/api/v1/users")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
@@ -81,16 +77,14 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("토큰이 없을 경우 회원 탈퇴는 실패한다.")
-    void should_deleteFailed_when_noToken() throws Exception {
+    void 토큰이_없으면_회원탈퇴에_실패한다() throws Exception {
       mockMvc.perform(delete("/api/v1/users"))
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
 
     @Test
-    @DisplayName("잘못된 토큰으로 회원 탈퇴는 실패한다.")
-    void should_deleteFailed_when_invalidToken() throws Exception {
+    void 유효하지_않은_토큰이라면_회원탈퇴에_실패한다() throws Exception {
       mockMvc.perform(delete("/api/v1/users")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken + "haha")))
           .andExpect(status().isUnauthorized())
@@ -99,8 +93,7 @@ class UserControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("프로필 수정")
-  class UpdateProfile {
+  class 프로필_수정 {
 
     private final Long userId = 1L;
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
@@ -110,15 +103,14 @@ class UserControllerTest extends IntegrationTest {
     private MultiValueMap<String, String> params;
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() {
       thumbnail = thumbnailTestHelper.getThumbnailFile();
       params = new LinkedMultiValueMap<>();
       params.add("introduce", validIntroduce);
     }
 
     @Test
-    @DisplayName("썸네일과 소개글 모두 포함되어 있어도 프로필 수정은 성공한다.")
-    void should_successfully_when_validRequest() throws Exception {
+    void 프로필_수정에_성공한다() throws Exception {
       mockUpdateProfileService();
       callUpdateProfileApi(thumbnail)
           .andExpect(status().isNoContent())
@@ -141,8 +133,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("수정할 썸네일이 없어도 프로필 수정은 성공한다.")
-    void should_successfully_when_nullThumbnail() throws Exception {
+    void 썸네일이_없으면_프로필_수정에_성공한다() throws Exception {
       mockUpdateProfileService();
       callUpdateProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
@@ -150,8 +141,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("수정할 소개글이 없어도 프로필 수정은 성공한다.")
-    void should_successfully_when_nullIntroduce() throws Exception {
+    void 소개글이_없으면_프로필_수정에_성공한다() throws Exception {
       mockUpdateProfileService();
       callUpdateProfileApi(thumbnail)
           .andExpect(status().isNoContent())
@@ -159,8 +149,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("소개글이나 썸네일이 없어도 프로필 수정은 성공한다.")
-    void should_successfully_when_nullEverything() throws Exception {
+    void 썸네일_소개글이_없으면_프로필_수정에_성공한다() throws Exception {
       params.set("introduce", null);
       mockUpdateProfileService();
       callUpdateProfileApiWithoutThumbnail()
@@ -169,8 +158,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("소개글이 너무 길 경우 프로필 수정은 실패한다.")
-    void should_400BadRequest_when_tooLongIntroduce() throws Exception {
+    void 소개글이_너무_길면_프로필_수정에_실패한다() throws Exception {
       params.set("introduce", "a".repeat(MAX_INTRODUCE_LENGTH + 1));
       mockUpdateProfileService();
       callUpdateProfileApi(thumbnail)
@@ -178,8 +166,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("썸네일이 이미지가 아닐 경우 프로필 수정은 실패한다.")
-    void should_400BadRequest_when_thumbnailIsNotImage() throws Exception {
+    void 썸네일이_이미지가_아니라면_프로필_수정에_실패한다() throws Exception {
       mockUpdateProfileService();
       callUpdateProfileApi(thumbnailTestHelper.getFakeImageFile())
           .andExpect(status().isBadRequest());
@@ -215,8 +202,7 @@ class UserControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("프로필 가져오기")
-  class GetProfile {
+  class 프로필_조회 {
 
     private final Long userId = 1L;
     private final String validNickname = "바보gusah009";
@@ -228,8 +214,7 @@ class UserControllerTest extends IntegrationTest {
     private final String userToken = jwtTokenProvider.createAccessToken(userId, RoleType.ROLE_회원);
 
     @Test
-    @DisplayName("유효한 유저 아이디의 프로필 가져오기는 성공한다.")
-    void should_successfully_when_validUserId() throws Exception {
+    void 유저_ID가_존재하면_프로필_조회에_성공한다() throws Exception {
       mockingDto();
       mockMvc.perform(get("/api/v1/users/{userId}", userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
@@ -264,8 +249,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("썸네일이 없어도 유저 아이디의 프로필 가져오기는 성공한다.")
-    void should_successfully_when_thumbnailIsNull() throws Exception {
+    void 썸네일이_없으면_프로필_조회에_성공한다() throws Exception {
       mockingDtoWithoutThumbnail();
       mockMvc.perform(get("/api/v1/users/" + userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
@@ -281,8 +265,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 유저의 ID일 경우 404 NOT FOUND를 반환한다. ")
-    void should_fail_when_notExistUser() throws Exception {
+    void 존재하지_않는_ID_라면_404_반환한다() throws Exception {
       String notExistUserId = "-1";
       String field = "userId";
       doThrow(new BusinessException(notExistUserId, field, USER_NOT_FOUND))

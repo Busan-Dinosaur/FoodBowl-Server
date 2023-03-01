@@ -8,19 +8,16 @@ import com.dinosaur.foodbowl.domain.comment.entity.Comment;
 import com.dinosaur.foodbowl.domain.post.entity.Post;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class CommentRepositoryTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("제한되지 않은 댓글 시간순으로 찾기")
-  class FindUnrestrictedComments {
+  class 제한되지_않은_댓글_시간순_조회 {
 
     @Test
-    @DisplayName("게시글 댓글을 순차적으로 가져온다.")
-    void should_success_when_findUnrestrictedComments() {
+    void 댓글을_시간순으로_조회한다() {
       Post oldPost = postTestHelper.builder().build();
       Post newPost = postTestHelper.builder().build();
       Comment oldPostComment = commentTestHelper.builder().post(oldPost).message("test1")
@@ -36,8 +33,7 @@ class CommentRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("신고가 5회 이상 존재하는 댓글은 가져오지 않는다.")
-    void should_notBring_when_commentsMoreThanFiveReports() {
+    void 신고가_5회_이상_존재하는_댓글은_조회하지_않는다() {
       Post post = postTestHelper.builder().build();
       User user = userTestHelper.builder().build();
       Comment unrestrictedComment = commentTestHelper.builder().post(post).message("test1").build();
@@ -61,12 +57,10 @@ class CommentRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 삭제")
-  class DeleteComment {
+  class 댓글_삭제 {
 
     @Test
-    @DisplayName("댓글을 삭제하면 연관된 신고도 함께 삭제된다.")
-    void should_deleteBlames_when_deleteComment() {
+    void 댓글을_삭제하면_연관된_신고도_함께_삭제된다() {
       User user = userTestHelper.builder().build();
       Comment comment = commentTestHelper.builder().build();
 

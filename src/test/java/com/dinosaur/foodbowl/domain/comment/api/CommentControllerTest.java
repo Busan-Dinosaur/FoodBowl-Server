@@ -35,7 +35,6 @@ import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -44,12 +43,10 @@ import org.springframework.test.web.servlet.ResultActions;
 class CommentControllerTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("댓글 작성")
-  class WriteComment {
+  class 댓글_작성 {
 
     @Test
-    @DisplayName("댓글 작성 성공")
-    void should_success_when_writeComment() throws Exception {
+    void 댓글_작성에_성공한다() throws Exception {
       mockingAuth();
       doNothing().when(commentService)
           .writeComment(any(User.class), any(CommentWriteRequestDto.class));
@@ -76,8 +73,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("인증 토큰이 존재하지 않으면 예외가 발생한다.")
-    void should_throwException_when_tokenNotExist() throws Exception {
+    void 엑세스_토큰이_존재하지_않으면_예외가_발생한다() throws Exception {
       CommentWriteRequestDto request = CommentWriteRequestDto.builder()
           .postId(1L)
           .message("테스트 댓글")
@@ -91,8 +87,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("최대 메시지 글자 수를 초과하면 예외가 발생한다.")
-    void should_throwException_when_messageOverLength() throws Exception {
+    void 최대_메시지_글자_수를_초과하면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       CommentWriteRequestDto request = CommentWriteRequestDto.builder()
@@ -117,12 +112,10 @@ class CommentControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 수정")
-  class UpdateComment {
+  class 댓글_수정 {
 
     @Test
-    @DisplayName("댓글 수정에 성공한다.")
-    void should_success_when_updateComment() throws Exception {
+    void 댓글_수정에_성공한다() throws Exception {
       mockingAuth();
 
       long postId = 1l;
@@ -147,8 +140,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("ID로 변환할 수 없으면 예외가 발생한다.")
-    void should_throwException_when_IdNotConvert() throws Exception {
+    void ID로_변환할_수_없으면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       callUpdateCommentApi("hello", "update Message")
@@ -156,8 +148,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("댓글이 빈칸이면 예외가 발생한다.")
-    void should_throwException_when_messageBlank() throws Exception {
+    void 댓글이_빈칸이면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       callUpdateCommentApi("1", "  ")
@@ -165,8 +156,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("댓글이 최대 글자 수를 초과하면 예외가 발생한다.")
-    void should_throwException_when_messageOverLength() throws Exception {
+    void 댓글이_최대_글자_수를_초과하면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       callUpdateCommentApi("1", "a".repeat(MAX_MESSAGE_LENGTH + 1))
@@ -182,12 +172,10 @@ class CommentControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 삭제")
-  class DeleteComment {
+  class 댓글_삭제 {
 
     @Test
-    @DisplayName("댓글 삭제에 성공한다.")
-    void should_success_when_deleteComment() throws Exception {
+    void 댓글_삭제에_성공한다() throws Exception {
       mockingAuth();
 
       doNothing().when(commentService).deleteComment(any(User.class), anyLong());
@@ -204,8 +192,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("ID로 변환할 수 없으면 예외가 발생한다.")
-    void should_throwException_when_IdNotConvert() throws Exception {
+    void ID로_변환할_수_없으면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       callDeleteCommentApi("hello")
@@ -220,12 +207,10 @@ class CommentControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("제한되지 않은 댓글 시간순으로 찾기")
-  class GetComments {
+  class 제한되지_않은_댓글_시간순_조회 {
 
     @Test
-    @DisplayName("댓글 목록 가져오기 성공")
-    void should_success_when_getComments() throws Exception {
+    void 댓글_목록_조회에_성공한다() throws Exception {
       mockingAuth();
 
       LocalDateTime now = LocalDateTime.now();
@@ -273,8 +258,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("ID로 변환할 수 없으면 예외가 발생한다.")
-    void should_throwException_when_IdNotConvert() throws Exception {
+    void ID로_변환할_수_없으면_예외가_발생한다() throws Exception {
       mockingAuth();
 
       callGetCommentsApi("hello")

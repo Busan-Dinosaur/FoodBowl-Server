@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +16,10 @@ class TokenServiceTest extends IntegrationTest {
   private final String testToken = "testToken";
 
   @Nested
-  @DisplayName("AccessToken 생성")
-  class CreateAccessToken {
+  class 엑세스_토큰_생성 {
 
     @Test
-    @DisplayName("AccessToken 생성에 성공한다.")
-    void should_success_when_createAccessToken() {
+    void 엑세스_토큰_생성에_성공한다() {
       String accessToken = tokenService.createAccessToken(userId, RoleType.ROLE_회원);
 
       Long result = Long.parseLong(
@@ -33,12 +30,10 @@ class TokenServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("RefreshToken 생성")
-  class CreateRefreshToken {
+  class 리프레쉬_토큰_생성 {
 
     @Test
-    @DisplayName("RefreshToken 생성에 성공한다.")
-    void should_success_when_createRefreshToken() {
+    void 리프레쉬_토큰_생성에_성공한다() {
       String refreshToken = tokenService.createRefreshToken(userId);
 
       String savedToken = (String) redisTemplate.opsForValue().get(String.valueOf(userId));
@@ -48,12 +43,10 @@ class TokenServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("Token 삭제")
-  class DeleteToken {
+  class 토큰_삭제 {
 
     @Test
-    @DisplayName("Token 존재할 때 토큰 삭제에 성공한다.")
-    void should_success_when_tokenExist() {
+    void 토큰이_존재한다면_토큰_삭제에_성공한다() {
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), testToken, TEST_TOKEN_VALID_MILLISECOND,
               TimeUnit.MILLISECONDS);
@@ -66,8 +59,7 @@ class TokenServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("Token 존재하지 않을 때 토큰 삭제에 성공한다.")
-    void should_success_when_tokenNotExist() {
+    void 토큰이_존재하지_않으면_토큰_삭제에_성공한다() {
       tokenService.deleteToken(userId);
 
       String result = (String) redisTemplate.opsForValue().get(String.valueOf(userId));
@@ -77,12 +69,10 @@ class TokenServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("Token 검증")
-  class ExistsByKey {
+  class 토큰_검증 {
 
     @Test
-    @DisplayName("Token 검증에 성공하면 true 반환한다.")
-    void should_returnTrue_when_validateSuccess() {
+    void 토큰_검증에_성공하면_true_반환한다() {
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), testToken, TEST_TOKEN_VALID_MILLISECOND,
               TimeUnit.MILLISECONDS);
@@ -93,16 +83,14 @@ class TokenServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("Key 대한 Token 존재하지 않을 때 false 반환한다.")
-    void should_returnFalse_when_keyNotExist() {
+    void 토큰이_존재하지_않으면_false_반환한다() {
       boolean result = tokenService.isValid(2L, testToken);
 
       assertThat(result).isFalse();
     }
 
     @Test
-    @DisplayName("Token 일치하지 않을 때 false 반환한다.")
-    void should_returnFalse_when_tokenNotMatch() {
+    void 토큰이_일치하지_않으면_false_반환한다() {
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), "invalid-token", TEST_TOKEN_VALID_MILLISECOND,
               TimeUnit.MILLISECONDS);

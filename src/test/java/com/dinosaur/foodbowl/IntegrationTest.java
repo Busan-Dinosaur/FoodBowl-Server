@@ -62,6 +62,8 @@ import java.util.List;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -81,9 +83,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-@ExtendWith({RestDocumentationExtension.class})
 @Transactional
 @SpringBootTest
+@ExtendWith({RestDocumentationExtension.class})
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class IntegrationTest {
 
   /******* Dao *******/

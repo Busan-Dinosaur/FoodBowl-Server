@@ -12,7 +12,6 @@ import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.domain.user.entity.embedded.Nickname;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -28,31 +27,26 @@ class UserRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유니크 컬럼 테스트")
-  class UniqueColumnTest {
+  class 유니크_컬럼 {
 
     @Test
-    @DisplayName("유니크 컬럼에 중복이 발생하면 예외가 발생한다.")
-    void should_throwException_when_uniqueColumnIsDuplicate() {
+    void 중복이_발생하면_예외가_발생한다() {
       assertThatThrownBy(() -> userBuilder.loginId(user.getLoginId()).build());
       assertThatThrownBy(() -> userBuilder.nickname((user.getNickname()).getNickname()).build());
     }
 
     @Test
-    @DisplayName("유니크 하지 않은 컬럼에 중복이 발생하면 예외가 발생하지 않는다.")
-    void should_createSuccessfully_when_nonUniqueColumnIsDuplicate() {
+    void 중복이_허용되어_있으면_예외가_발생하지_않는다() {
       assertThatNoException().isThrownBy(() -> userBuilder.password(user.getPassword()).build());
       assertThatNoException().isThrownBy(() -> userBuilder.introduce(user.getIntroduce()).build());
     }
   }
 
   @Nested
-  @DisplayName("존재하는 컬럼 테스트")
-  class ExistTest {
+  class 존재 {
 
     @Test
-    @DisplayName("로그인 아이디가 존재하면 true 반환한다.")
-    void should_returnTrue_when_loginIdExist() {
+    void 로그인_아이디가_존재하면_true_반환한다() {
       String loginId = user.getLoginId();
 
       boolean result = userRepository.existsByLoginId(loginId);
@@ -61,8 +55,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("로그인 아이디가 존재하지 않으면 false 반환한다.")
-    void should_returnFalse_when_loginIdNotExist() {
+    void 로그인_아이디가_존재하지_않으면_false_반환한다() {
       String loginId = "not-exist-loginId";
 
       boolean result = userRepository.existsByLoginId(loginId);
@@ -71,8 +64,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("닉네임이 존재하면 true 반환한다.")
-    void should_returnTrue_when_nicknameExist() {
+    void 닉네임이_존재하면_true_반환한다() {
       Nickname nickname = Nickname.from(user.getNickname().getNickname());
 
       boolean result = userRepository.existsByNickname(nickname);
@@ -81,8 +73,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("닉네임이 존재하지 않으면 false 반환한다.")
-    void should_returnFalse_when_nicknameNotExist() {
+    void 닉네임이_존재하지_않으면_false_반환한다() {
       Nickname nickname = Nickname.from("not-exist-nickname");
 
       boolean result = userRepository.existsByNickname(nickname);
@@ -92,12 +83,10 @@ class UserRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("회원 권한 테스트")
-  class UserRoleTest {
+  class 권한 {
 
     @Test
-    @DisplayName("회원을 저장할 때 권한을 올바르게 가지고 있는다.")
-    void should_assignUserRoleCorrectly_when_saveUser() {
+    void 회원_저장_시_권한을_가지고_있는다() {
       em.flush();
       em.clear();
 
@@ -107,8 +96,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("회원은 중복되는 권한을 가지지 않는다.")
-    void should_nothingHappens_when_duplicateRoles() {
+    void 중복되는_권한을_가지지_않는다() {
       em.flush();
       em.clear();
 
@@ -122,12 +110,10 @@ class UserRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("회원 삭제 테스트")
-  class UserDeleteTest {
+  class 회원_삭제 {
 
     @Test
-    @DisplayName("회원 본인이 삭제 요청을 하면 회원과 관련된 모든 정보가 삭제된다.")
-    void should_deleteAllUserInfo_when_deleteMySelf() {
+    void 회원을_삭제하면_회원과_관련된_모든_정보가_삭제된다() {
       User userWithThumbnail = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail())
           .build();
 
@@ -151,12 +137,10 @@ class UserRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유저 프로필 업데이트")
-  class UserUpdateProfileTest {
+  class 프로필_업데이트 {
 
     @Test
-    @DisplayName("썸네일이 null일 경우 썸네일은 바뀌어선 안된다.")
-    void should_notChangeThumbnail_when_nullThumbnail() {
+    void 썸네일이_null_이라면_썸네일은_바뀌지_않는다() {
       User beforeUser = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       String newIntroduce = "newIntroduce";
 
@@ -167,8 +151,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("소개가 null일 경우 소개는 바뀌어선 안된다.")
-    void should_notChangeThumbnail_when_nullIntroduce() {
+    void 소개가_null_이라면_소개는_바뀌지_않는다() {
       User beforeUser = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       Thumbnail newThumbnail = thumbnailTestHelper.generateThumbnail();
 
@@ -179,8 +162,7 @@ class UserRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("썸네일과 소개가 null일 경우 둘 다 바뀌어선 안된다.")
-    void should_notChangeThumbnail_when_nullEverything() {
+    void 썸네일_소개_null_이라면_바뀌지_않는다() {
       User beforeUser = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
       whenUpdateUser(beforeUser, null, null);
@@ -220,12 +202,10 @@ class UserRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("유저 팔로잉")
-  class UserFollowTest {
+  class 팔로잉 {
 
     @Test
-    @DisplayName("팔로우를 여러번 해도 같은 사람이면 한 번만 들어가야한다.")
-    void should_once_when_duplicateFollow() {
+    void 팔로우는_한번만_가능하다() {
       User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       User other1 = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       User other2 = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();

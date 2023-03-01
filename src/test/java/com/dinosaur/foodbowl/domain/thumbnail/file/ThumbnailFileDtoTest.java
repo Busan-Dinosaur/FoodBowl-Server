@@ -12,10 +12,10 @@ import org.springframework.mock.web.MockMultipartFile;
 class ThumbnailFileDtoTest {
 
   @Nested
-  class from {
+  class 썸네일 {
 
     @Test
-    void should_throwException_when_tooLongFileNameLength() throws IOException {
+    void 파일이름이_너무_길면_예외가_발생한다() throws IOException {
       final MockMultipartFile tooLongFileNameMultipartFile = new MockMultipartFile("image",
           "a".repeat(MAX_PATH_LENGTH) + ".png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_210x210.png"));
@@ -24,7 +24,7 @@ class ThumbnailFileDtoTest {
     }
 
     @Test
-    void should_throwException_when_notImageMultipartFile() throws IOException {
+    void 이미지가_아니라면_예외가_발생한다() throws IOException {
       final MockMultipartFile fakeImageFile = new MockMultipartFile("image",
           "fakeImage.png", "image/png",
           new FileInputStream("src/test/resources/images/fakeImage.png"));

@@ -18,7 +18,6 @@ import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -28,8 +27,7 @@ import org.springframework.test.web.servlet.ResultActions;
 public class FollowControllerTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("팔로우 & 언팔로우")
-  class FollowAndUnfollow {
+  class 팔로우_언팔로우 {
 
     private final Long myId = 1L;
     private final Long otherId = 2L;
@@ -45,8 +43,7 @@ public class FollowControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("팔로우 요청을 성공하면 204 NO Content 를 반환한다.")
-    void shouldSucceedFollowWhenValidatedUsers() throws Exception {
+    void 팔로우에_성공하면_204_반환한다() throws Exception {
       callFollowApi(otherId).andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("follow",
@@ -61,8 +58,7 @@ public class FollowControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("팔로우 취소 요청을 성공하면 204 NO Content 를 반환한다.")
-    void shouldSucceedUnfollowWhenValidatedUsers() throws Exception {
+    void 팔로우_취소에_성공하면_204_반환한다() throws Exception {
       callUnfollowApi(otherId).andExpect(status().isNoContent())
           .andDo(print())
           .andDo(document("unfollow",
@@ -77,15 +73,13 @@ public class FollowControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("자신에 대한 팔로우 요청은 400 Bad Request 를 반환한다.")
-    void shouldClientErrorWhenFollowOneself() throws Exception {
+    void 본인_팔로우는_400_반환한다() throws Exception {
       callFollowApi(myId).andExpect(status().isBadRequest())
           .andDo(print());
     }
 
     @Test
-    @DisplayName("자신에 대한 팔로우 취소 요청은 400 Bad Request 를 반환한다.")
-    void shouldClientErrorWhenUnfollowOneself() throws Exception {
+    void 본인_팔로우_취소는_400_반환한다() throws Exception {
       callUnfollowApi(myId).andExpect(status().isBadRequest())
           .andDo(print());
 
@@ -93,15 +87,13 @@ public class FollowControllerTest extends IntegrationTest {
 
 
     @Test
-    @DisplayName("토큰이 없을 경우 팔로우는 실패한다.")
-    void shouldFailFollowWhenNoToken() throws Exception {
+    void 토큰이_없으면_팔로우는_실패한다() throws Exception {
       mockMvc.perform(post("/api/v1/follows/{userId}", otherId))
           .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("토큰이 없을 경우 언팔로우는 실패한다.")
-    void shouldFailUnfollowWhenNoToken() throws Exception {
+    void 토큰이_없으면_팔로우_취소는_실패한다() throws Exception {
       mockMvc.perform(delete("/api/v1/follows/{userId}", otherId))
           .andExpect(status().isUnauthorized());
     }

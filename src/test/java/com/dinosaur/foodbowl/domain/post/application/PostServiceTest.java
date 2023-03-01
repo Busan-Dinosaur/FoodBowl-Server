@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
@@ -34,12 +33,10 @@ import org.springframework.web.multipart.MultipartFile;
 class PostServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("게시글 생성")
-  class CreatePost {
+  class 게시글_생성 {
 
     @Test
-    @DisplayName("올바른 요청에 대한 게시글 생성은 성공한다.")
-    public void should_success_when_valid_request() {
+    public void 게시글_생성에_성공한다() {
       // given
       User user = userTestHelper.builder().build();
       StoreRequestDto storeRequestDto = postTestHelper.generateStoreDto();
@@ -67,12 +64,10 @@ class PostServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("게시글 수정")
-  class UpdatePost {
+  class 게시글_수정 {
 
     @Test
-    @DisplayName("올바른 요청에 대한 게시글 수정은 성공한다.")
-    public void should_success_when_valid_update_request() {
+    public void 게시글_수정에_성공한다() {
       // given
       User user = userTestHelper.builder().build();
       Post before = postTestHelper.builder()
@@ -115,8 +110,7 @@ class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 수정시 기존의 썸네일과 포토 엔티티는 삭제된다.")
-    public void should_delete_related_when_update() {
+    public void 게시글을_수정하면_썸네일과_사진은_삭제된다() {
       // given
       User user = userTestHelper.builder().build();
       Thumbnail beforeThumbnail = thumbnailTestHelper.generateThumbnail();
@@ -157,8 +151,7 @@ class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("사진이 한장도 없으면 게시글 수정은 실패한다.")
-    public void should_fail_when_no_file() {
+    public void 사진이_없으면_게시글_수정은_실패한다() {
       // given
       User user = userTestHelper.builder().build();
       Post before = postTestHelper.builder().content("before").thumbnail(null).user(user)
@@ -173,8 +166,7 @@ class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 수정시 게시글 작성자가 아닌 경우 예외가 발생한다.")
-    public void should_throw_BusinessException_when_postNotWriter() {
+    public void 게시글_작성자가_아니라면_예외가_발생한다() {
       // given
       User user = userTestHelper.builder().build();
       User another = userTestHelper.builder().build();
@@ -189,8 +181,7 @@ class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("사진이 한장도 없으면 게시글 수정은 실패한다.")
-    public void should_fail_when_update_without_file() {
+    public void 사진이_없으면_게시글_수정에_실패한다() {
       // given
       User user = userTestHelper.builder().build();
       Post before = postTestHelper.builder().user(user).build();
@@ -205,12 +196,10 @@ class PostServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("게시글 삭제")
-  class DeletePost {
+  class 게시글_삭제 {
 
     @Test
-    @DisplayName("게시글 삭제를 성공한다, 연관된 댓글, 썸네일, 이미지도 함께 삭제된다.")
-    void should_success_delete_related_when_delete_post() {
+    void 게시글을_삭제하면_댓글_썸네일_사진도_함께_삭제된다() {
       User user = userTestHelper.builder().build();
       Thumbnail thumbnail = thumbnailTestHelper.generateThumbnail();
       Post post = postTestHelper.builder()
@@ -243,8 +232,7 @@ class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 작성자가 아닌 경우 예외가 발생한다.")
-    void should_throwException_when_delete_post() {
+    void 게시글_작성자가_아니라면_예외가_발생한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
 
@@ -254,12 +242,10 @@ class PostServiceTest extends IntegrationTest {
     }
   }
 
-  @DisplayName("게시글 썸네일 불러오기")
-  class GetThumbnails {
+  class 게시글_썸네일_조회 {
 
     @Test
-    @DisplayName("지정한 페이지 설정으로 게시글 썸네일 목록을 불러온다.")
-    void should_loadThumbnails_with_pageable_when_getThumbnails() {
+    void 게시글_썸네일_목록을_조회한다() {
       User user = userTestHelper.builder().build();
 
       for (int i = 0; i < 5; i++) {
@@ -275,8 +261,7 @@ class PostServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("게시글 피드 불러오기")
-  class GetFeed {
+  class 게시글_피드_조회 {
 
     private User user;
     private Post post;
@@ -304,8 +289,7 @@ class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("나와 내가 팔로우하고 있는 유저의 게시글만 불러온다.")
-    void should_find_onlyPostsMeAndFollowingUser() {
+    void 팔로우_하고있는_유저의_게시글만_조회한다() {
       em.flush();
       em.clear();
 
@@ -324,12 +308,10 @@ class PostServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("특정 사용자 게시글을 제외한 모든 게시글 썸네일 조회 기능")
-  class GetPostThumbnails {
+  class 특정_사용자_게시글_제외_모든_게시글_썸네일_조회 {
 
     @Test
-    @DisplayName("게시글 ID, 썸네일 경로 목록을 조회한다.")
-    void getPostIdAndThumbnailPath() {
+    void 게시글_썸네일_목록을_조회한다() {
       //given
       User user1 = userTestHelper.builder().build();
       User user2 = userTestHelper.builder().build();

@@ -20,12 +20,10 @@ import org.springframework.data.domain.Sort;
 class ClipServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("클립")
-  class ClipTest {
+  class 클립 {
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하지 않으면 ok 반환한다.")
-    void should_returnOk_when_clipForUserAndPostNotExist() {
+    void 유저_게시글에_대한_클립이_존재하지_않으면_ok_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
 
@@ -37,8 +35,7 @@ class ClipServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하면 ok 반환한다.")
-    void should_returnOk_when_chipForUserAndPostExist() {
+    void 유저_게시글에_대한_클립이_존재하면_ok_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().user(user).post(post).build();
@@ -52,12 +49,10 @@ class ClipServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("언클립")
-  class UnclipTest {
+  class 클립_취소 {
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하면 ok 반환한다.")
-    void should_returnOk_when_clipForUserAndPostExist() {
+    void 유저_게시글에_대한_클립이_존재하면_ok_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Clip clip = clipTestHelper.builder().user(user).post(post).build();
@@ -70,8 +65,7 @@ class ClipServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("유저, 게시글에 대한 클립이 존재하지 않으면 ok 반환한다.")
-    void should_returnOk_when_clipForUserAndPostNotExist() {
+    void 유저_게시글에_대한_클립이_존재하지_않으면_ok_반환한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
 
@@ -84,12 +78,10 @@ class ClipServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("특정 사용자의 북마크한 게시글 썸네일 목록 조회 기능")
-  class GetClipPostThumbnails {
+  class 특정_사용자_클립_게시글_썸네일_목록_조회 {
 
     @Test
-    @DisplayName("특정 사용자의 클립 ID, 썸네일 경로 목록을 조회한다.")
-    void should_get_clip_ID_and_thumbnail_path_for_user() {
+    void 특정_사용자_클립_썸네일_경로_목록을_조회한다() {
       //given
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();

@@ -33,12 +33,10 @@ import org.springframework.test.web.servlet.ResultActions;
 class ClipControllerTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("클립")
-  class ClipTest {
+  class 클립 {
 
     @Test
-    @DisplayName("클립 성공")
-    void should_success_when_clip() throws Exception {
+    void 클립을_성공한다() throws Exception {
       mockingAuth();
 
       ClipStatusResponseDto response = ClipStatusResponseDto.from("ok");
@@ -68,12 +66,10 @@ class ClipControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("언클립")
-  class UnclipTest {
+  class 클립_취소 {
 
     @Test
-    @DisplayName("언클립 성공")
-    void should_success_when_unclip() throws Exception {
+    void 클립_취소에_성공한다() throws Exception {
       mockingAuth();
 
       ClipStatusResponseDto response = ClipStatusResponseDto.from("ok");
@@ -103,12 +99,10 @@ class ClipControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("특정 사용자의 북마크한 게시글 썸네일 목록 조회 기능")
-  class GetClipPostThumbnails {
+  class 특정_사용자_클립_게시글_썸네일_목록_조회 {
 
     @Test
-    @DisplayName("특정 사용자의 북마크한 게시글 썸네일 목록을 성공적으로 조회한다.")
-    void success_api() throws Exception {
+    void 특정_사용자_클립_게시글_썸네일_목록_조회에_성공한다() throws Exception {
       mockingAuth();
 
       List<ClipPostThumbnailResponse> response = List.of(

@@ -4,19 +4,16 @@ import com.dinosaur.foodbowl.IntegrationTest;
 import com.dinosaur.foodbowl.domain.user.UserTestHelper.UserBuilder;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class FollowServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("성공 테스트")
-  class Success {
+  class 팔로우_성공 {
 
     @Test
-    @DisplayName("로그인한 유저와 팔로우 할 유저가 존재하면 팔로잉을 성공한다.")
-    void shouldSucceedToFollowWhenValidatedUsers() {
+    void 팔로잉을_성공한다() {
       // given
       UserBuilder userBuilder = userTestHelper.builder();
       User me = userBuilder.build();
@@ -33,8 +30,7 @@ class FollowServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("팔로잉한 유저이면 팔로잉 취소는 성공한다.")
-    void shouldSucceedToUnfollowWhenFollowing() {
+    void 팔로잉_되어있다면_팔로우_취소에_성공한다() {
       // given
       UserBuilder userBuilder = userTestHelper.builder();
       User me = userBuilder.build();

@@ -14,19 +14,16 @@ import com.dinosaur.foodbowl.global.error.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class CommentServiceTest extends IntegrationTest {
 
   @Nested
-  @DisplayName("댓글 작성")
-  class WriteComment {
+  class 댓글_작성 {
 
     @Test
-    @DisplayName("댓글을 성공적으로 작성한다.")
-    void should_success_when_writeComment() {
+    void 댓글을_성공적으로_작성한다() {
       User user = userTestHelper.builder().build();
       Post savedPost = postTestHelper.builder().build();
       CommentWriteRequestDto request = CommentWriteRequestDto.builder()
@@ -45,12 +42,10 @@ class CommentServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 수정")
-  class UpdateComment {
+  class 댓글_수정 {
 
     @Test
-    @DisplayName("댓글 작성자가 아닌 경우 예외가 발생한다.")
-    void should_throwException_when_commentNotWriter() {
+    void 댓글_작성자가_아니라면_예외가_발생한다() {
       User user = userTestHelper.builder().build();
       Comment comment = commentTestHelper.builder().build();
       String message = "수정된 댓글";
@@ -61,8 +56,7 @@ class CommentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("댓글 수정에 성공한다.")
-    void should_success_when_updateComment() {
+    void 댓글_수정에_성공한다() {
       User user = userTestHelper.builder().build();
       Comment comment = commentTestHelper.builder().user(user).build();
       String message = "수정된 댓글";
@@ -81,12 +75,10 @@ class CommentServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 삭제")
-  class DeleteComment {
+  class 댓글_삭제 {
 
     @Test
-    @DisplayName("댓글 삭제를 성공한다.")
-    void should_success_when_deleteComment() {
+    void 댓글_삭제에_성공한다() {
       User user = userTestHelper.builder().build();
       Comment comment = commentTestHelper.builder().user(user).build();
 
@@ -100,8 +92,7 @@ class CommentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("댓글 작성자가 아닌 경우 예외가 발생한다.")
-    void should_throwException_when_commentNotWriter() {
+    void 댓글_작성자가_아니라면_예외가_발생한다() {
       User user = userTestHelper.builder().build();
       Comment comment = commentTestHelper.builder().build();
 
@@ -112,12 +103,10 @@ class CommentServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("제한되지 않은 댓글 시간순으로 찾기")
-  class GetComments {
+  class 제한되지_않은_댓글_시간순_조회 {
 
     @Test
-    @DisplayName("응답을 위한 댓글 목록을 반환한다.")
-    void should_returnComments_when_getComments() {
+    void 댓글_조회에_성공한다() {
       User user = userTestHelper.builder().build();
       Post post = postTestHelper.builder().build();
       Comment comment1 = commentTestHelper.builder().user(user).post(post).message("test1").build();
