@@ -95,26 +95,26 @@ public class FollowControllerTest extends IntegrationTest {
     @Test
     @DisplayName("토큰이 없을 경우 팔로우는 실패한다.")
     void shouldFailFollowWhenNoToken() throws Exception {
-      mockMvc.perform(post("/follows/{userId}", otherId))
+      mockMvc.perform(post("/api/v1/follows/{userId}", otherId))
           .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("토큰이 없을 경우 언팔로우는 실패한다.")
     void shouldFailUnfollowWhenNoToken() throws Exception {
-      mockMvc.perform(delete("/follows/{userId}", otherId))
+      mockMvc.perform(delete("/api/v1/follows/{userId}", otherId))
           .andExpect(status().isUnauthorized());
     }
 
 
     private ResultActions callFollowApi(Long userId) throws Exception {
-      return mockMvc.perform(post("/follows/{userId}", userId)
+      return mockMvc.perform(post("/api/v1/follows/{userId}", userId)
           .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .contentType(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions callUnfollowApi(Long userId) throws Exception {
-      return mockMvc.perform(delete("/follows/{userId}", userId)
+      return mockMvc.perform(delete("/api/v1/follows/{userId}", userId)
           .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .contentType(MediaType.APPLICATION_JSON));
     }

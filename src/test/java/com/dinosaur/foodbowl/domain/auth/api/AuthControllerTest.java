@@ -79,7 +79,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("AT 존재하지 않으면 401 예외가 발생한다.")
     void should_throwException_when_accessTokenNotExist() throws Exception {
-      mockMvc.perform(get("/health-check"))
+      mockMvc.perform(get("/api/v1/health-check"))
           .andDo(print())
           .andExpect(status().isUnauthorized());
     }
@@ -87,7 +87,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("AT 유효하면 값을 반환한다.")
     void should_returnValue_when_accessTokenValid() throws Exception {
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), validAccessToken)))
           .andDo(print())
           .andExpect(status().isOk());
@@ -96,7 +96,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("AT 유효하지 않으면 401 예외가 발생한다.")
     void should_throwException_when_accessTokenNotValid() throws Exception {
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "invalid-token")))
           .andDo(print())
           .andExpect(status().isUnauthorized());
@@ -108,7 +108,7 @@ class AuthControllerTest extends IntegrationTest {
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), validRefreshToken, 60 * 1000L, TimeUnit.MILLISECONDS);
 
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
                   new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
           .andDo(print())
@@ -118,7 +118,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("AT 만료되고 RT 존재하지 않으면 401 예외가 발생한다.")
     void should_throwException_when_accessTokenExpired_refreshTokenNotExist() throws Exception {
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken)))
           .andDo(print())
           .andExpect(status().isUnauthorized());
@@ -127,7 +127,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("AT 만료되고 RT 유효하지 않으면 401 예외가 발생한다.")
     void should_throwException_when_accessTokenExpired_refreshTokenNotValid() throws Exception {
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
                   new Cookie(REFRESH_TOKEN.getName(), "invalid-token")))
           .andDo(print())
@@ -137,7 +137,7 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("AT 만료되고 RT 만료되면 401 예외가 발생한다.")
     void should_throwException_when_accessTokenExpired_refreshTokenExpired() throws Exception {
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
                   new Cookie(REFRESH_TOKEN.getName(), expiredRefreshToken)))
           .andDo(print())
@@ -150,7 +150,7 @@ class AuthControllerTest extends IntegrationTest {
       redisTemplate.opsForValue()
           .set(String.valueOf(userId), "other-token", 60 * 1000L, TimeUnit.MILLISECONDS);
 
-      mockMvc.perform(get("/health-check")
+      mockMvc.perform(get("/api/v1/health-check")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
                   new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
           .andDo(print())
@@ -182,14 +182,14 @@ class AuthControllerTest extends IntegrationTest {
     }
 
     private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
-      return mockMvc.perform(multipart(HttpMethod.POST, "/sign-up")
+      return mockMvc.perform(multipart(HttpMethod.POST, "/api/v1/sign-up")
               .queryParams(params)
               .contentType(MediaType.MULTIPART_FORM_DATA))
           .andDo(print());
     }
 
     private ResultActions callSignUpApi(MockMultipartFile thumbnail) throws Exception {
-      return mockMvc.perform(multipart(HttpMethod.POST, "/sign-up")
+      return mockMvc.perform(multipart(HttpMethod.POST, "/api/v1/sign-up")
               .file(thumbnail)
               .queryParams(params)
               .contentType(MediaType.MULTIPART_FORM_DATA))
@@ -473,7 +473,7 @@ class AuthControllerTest extends IntegrationTest {
     }
 
     private ResultActions callLoginApi(LoginRequestDto loginRequestDto) throws Exception {
-      return mockMvc.perform(post("/log-in")
+      return mockMvc.perform(post("/api/v1/log-in")
               .contentType(MediaType.APPLICATION_JSON_VALUE)
               .content(asJsonString(loginRequestDto)))
           .andDo(print());
@@ -504,13 +504,13 @@ class AuthControllerTest extends IntegrationTest {
     @Test
     @DisplayName("로그인을 하지 않은(토큰이 존재하지 않는) 유저는 로그아웃이 실패한다.")
     void should_failToLogout_when_tokenNotExist() throws Exception {
-      mockMvc.perform(post("/log-out"))
+      mockMvc.perform(post("/api/v1/log-out"))
           .andDo(print())
           .andExpect(status().isUnauthorized());
     }
 
     private ResultActions callLogoutApi() throws Exception {
-      return mockMvc.perform(post("/log-out")
+      return mockMvc.perform(post("/api/v1/log-out")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andDo(print());
     }
@@ -542,7 +542,7 @@ class AuthControllerTest extends IntegrationTest {
     }
 
     private ResultActions callCheckNicknameApi(String nickname) throws Exception {
-      return mockMvc.perform(get("/sign-up/check/nickname")
+      return mockMvc.perform(get("/api/v1/sign-up/check/nickname")
               .queryParam("nickname", nickname))
           .andDo(print());
     }

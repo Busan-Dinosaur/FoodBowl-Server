@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
   private final DeleteAccountService deleteAccountService;
@@ -41,7 +41,7 @@ public class UserController {
       @ModelAttribute @Valid UpdateProfileRequestDto requestDto, @LoginUser User me) {
     long userId = updateProfileService.updateProfile(me, requestDto);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .location(URI.create("/users/" + userId))
+        .location(URI.create("/api/v1/users/" + userId))
         .build();
   }
 

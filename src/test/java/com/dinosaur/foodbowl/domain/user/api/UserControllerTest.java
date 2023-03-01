@@ -68,7 +68,7 @@ class UserControllerTest extends IntegrationTest {
     @DisplayName("본인의 JWT로 회원 탈퇴는 성공한다.")
     void should_deleteSuccessfully_when_deleteMySelf() throws Exception {
       doNothing().when(deleteAccountService).deleteMySelf(any());
-      mockMvc.perform(delete("/users")
+      mockMvc.perform(delete("/api/v1/users")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isNoContent())
           .andDo(print())
@@ -83,7 +83,7 @@ class UserControllerTest extends IntegrationTest {
     @Test
     @DisplayName("토큰이 없을 경우 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_noToken() throws Exception {
-      mockMvc.perform(delete("/users"))
+      mockMvc.perform(delete("/api/v1/users"))
           .andExpect(status().isUnauthorized())
           .andDo(print());
     }
@@ -91,7 +91,7 @@ class UserControllerTest extends IntegrationTest {
     @Test
     @DisplayName("잘못된 토큰으로 회원 탈퇴는 실패한다.")
     void should_deleteFailed_when_invalidToken() throws Exception {
-      mockMvc.perform(delete("/users")
+      mockMvc.perform(delete("/api/v1/users")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken + "haha")))
           .andExpect(status().isUnauthorized())
           .andDo(print());
@@ -122,7 +122,7 @@ class UserControllerTest extends IntegrationTest {
       mockUpdateProfileService();
       callUpdateProfileApi(thumbnail)
           .andExpect(status().isNoContent())
-          .andExpect(header().string("location", "/users/" + userId))
+          .andExpect(header().string("location", "/api/v1/users/" + userId))
           .andDo(document("update-profile",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description(
@@ -146,7 +146,7 @@ class UserControllerTest extends IntegrationTest {
       mockUpdateProfileService();
       callUpdateProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
-          .andExpect(header().string("location", "/users/" + userId));
+          .andExpect(header().string("location", "/api/v1/users/" + userId));
     }
 
     @Test
@@ -155,7 +155,7 @@ class UserControllerTest extends IntegrationTest {
       mockUpdateProfileService();
       callUpdateProfileApi(thumbnail)
           .andExpect(status().isNoContent())
-          .andExpect(header().string("location", "/users/" + userId));
+          .andExpect(header().string("location", "/api/v1/users/" + userId));
     }
 
     @Test
@@ -165,7 +165,7 @@ class UserControllerTest extends IntegrationTest {
       mockUpdateProfileService();
       callUpdateProfileApiWithoutThumbnail()
           .andExpect(status().isNoContent())
-          .andExpect(header().string("location", "/users/" + userId));
+          .andExpect(header().string("location", "/api/v1/users/" + userId));
     }
 
     @Test
@@ -199,7 +199,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callUpdateProfileApi(MockMultipartFile thumbnail) throws Exception {
-      return mockMvc.perform(multipart(HttpMethod.PATCH, "/users")
+      return mockMvc.perform(multipart(HttpMethod.PATCH, "/api/v1/users")
           .file(thumbnail)
           .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .queryParams(params)
@@ -207,7 +207,7 @@ class UserControllerTest extends IntegrationTest {
     }
 
     private ResultActions callUpdateProfileApiWithoutThumbnail() throws Exception {
-      return mockMvc.perform(multipart(HttpMethod.PATCH, "/users")
+      return mockMvc.perform(multipart(HttpMethod.PATCH, "/api/v1/users")
           .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken))
           .queryParams(params)
           .contentType(MediaType.MULTIPART_FORM_DATA));
@@ -231,7 +231,7 @@ class UserControllerTest extends IntegrationTest {
     @DisplayName("유효한 유저 아이디의 프로필 가져오기는 성공한다.")
     void should_successfully_when_validUserId() throws Exception {
       mockingDto();
-      mockMvc.perform(get("/users/{userId}", userId)
+      mockMvc.perform(get("/api/v1/users/{userId}", userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
@@ -267,7 +267,7 @@ class UserControllerTest extends IntegrationTest {
     @DisplayName("썸네일이 없어도 유저 아이디의 프로필 가져오기는 성공한다.")
     void should_successfully_when_thumbnailIsNull() throws Exception {
       mockingDtoWithoutThumbnail();
-      mockMvc.perform(get("/users/" + userId)
+      mockMvc.perform(get("/api/v1/users/" + userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.userId").value(userId))
@@ -288,7 +288,7 @@ class UserControllerTest extends IntegrationTest {
       doThrow(new BusinessException(notExistUserId, field, USER_NOT_FOUND))
           .when(getProfileService)
           .getProfile(Long.parseLong(notExistUserId));
-      mockMvc.perform(get("/users/" + notExistUserId)
+      mockMvc.perform(get("/api/v1/users/" + notExistUserId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")

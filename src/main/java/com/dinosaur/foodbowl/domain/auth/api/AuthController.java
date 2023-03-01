@@ -24,11 +24,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class AuthController {
 
   private final AuthService authService;
@@ -56,7 +58,7 @@ public class AuthController {
     response.addCookie(accessCookie);
     response.addCookie(refreshCookie);
 
-    return ResponseEntity.created(URI.create("/users/" + signUpResponseDto.getUserId()))
+    return ResponseEntity.created(URI.create("/api/v1/users/" + signUpResponseDto.getUserId()))
         .body(signUpResponseDto);
   }
 

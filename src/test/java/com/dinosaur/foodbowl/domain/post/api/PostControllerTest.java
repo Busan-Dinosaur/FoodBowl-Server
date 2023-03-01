@@ -82,7 +82,7 @@ public class PostControllerTest extends IntegrationTest {
 
         callCreatePostApi(request)
             .andExpect(status().isCreated())
-            .andExpect(header().string(HttpHeaders.LOCATION, "/posts/" + createdPostId))
+            .andExpect(header().string(HttpHeaders.LOCATION, "/api/v1/posts/" + createdPostId))
             .andDo(document("post-create",
                 requestCookies(
                     cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
@@ -172,7 +172,7 @@ public class PostControllerTest extends IntegrationTest {
 
     private ResultActions callCreatePostApi(MockMultipartFile request)
         throws Exception {
-      return mockMvc.perform(multipart("/posts")
+      return mockMvc.perform(multipart("/api/v1/posts")
               .file(photoTestHelper.getImageFile())
               .file(request)
               .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -183,7 +183,7 @@ public class PostControllerTest extends IntegrationTest {
 
     private ResultActions callCreatePostApiWithoutImage(MockMultipartFile request)
         throws Exception {
-      return mockMvc.perform(multipart("/posts")
+      return mockMvc.perform(multipart("/api/v1/posts")
               .file(request)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .accept(MediaType.APPLICATION_JSON)
@@ -305,7 +305,7 @@ public class PostControllerTest extends IntegrationTest {
     private ResultActions callUpdatePostApiWithOutImages(Long id, MockMultipartFile request)
         throws Exception {
       return mockMvc.perform(
-              RestDocumentationRequestBuilders.multipart("/posts/{id}", id)
+              RestDocumentationRequestBuilders.multipart("/api/v1/posts/{id}", id)
                   .file(request)
                   .contentType(MediaType.MULTIPART_FORM_DATA)
                   .accept(MediaType.APPLICATION_JSON)
@@ -316,7 +316,7 @@ public class PostControllerTest extends IntegrationTest {
     private ResultActions callUpdatePostApi(Long id, MockMultipartFile request)
         throws Exception {
       return mockMvc.perform(
-              RestDocumentationRequestBuilders.multipart("/posts/{id}", id)
+              RestDocumentationRequestBuilders.multipart("/api/v1/posts/{id}", id)
                   .file(photoTestHelper.getImageFile())
                   .file(request)
                   .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -350,7 +350,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     private ResultActions callDeletePostApi(Long postId) throws Exception {
-      return mockMvc.perform(delete("/posts/{id}", postId)
+      return mockMvc.perform(delete("/api/v1/posts/{id}", postId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
@@ -414,7 +414,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetThumbnailsApi(String id) throws Exception {
-      return mockMvc.perform(get("/posts/users/{id}/thumbnails", id)
+      return mockMvc.perform(get("/api/v1/posts/users/{id}/thumbnails", id)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .param("page", "0")
               .param("size", "2"))
@@ -490,7 +490,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetFeedApi() throws Exception {
-      return mockMvc.perform(get("/posts/feed")
+      return mockMvc.perform(get("/api/v1/posts/feed")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .param("page", "0")
               .param("size", "4"))
@@ -544,7 +544,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetPostThumbnailsApi() throws Exception {
-      return mockMvc.perform(get("/posts/thumbnails")
+      return mockMvc.perform(get("/api/v1/posts/thumbnails")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }

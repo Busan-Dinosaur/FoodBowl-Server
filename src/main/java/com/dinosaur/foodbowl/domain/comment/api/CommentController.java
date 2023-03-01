@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comments")
+@RequestMapping("/api/v1/comments")
 public class CommentController {
 
   private final CommentService commentService;
@@ -39,7 +39,7 @@ public class CommentController {
     commentService.writeComment(user, commentWriteRequestDto);
 
     return ResponseEntity.status(HttpStatus.SEE_OTHER)
-        .location(URI.create("/comments/posts/" + commentWriteRequestDto.getPostId()))
+        .location(URI.create("/api/v1/comments/posts/" + commentWriteRequestDto.getPostId()))
         .build();
   }
 
@@ -50,7 +50,7 @@ public class CommentController {
     long postId = commentService.updateComment(user, commentId, message);
 
     return ResponseEntity.status(HttpStatus.SEE_OTHER)
-        .location(URI.create("/comments/posts/" + postId))
+        .location(URI.create("/api/v1/comments/posts/" + postId))
         .build();
   }
 

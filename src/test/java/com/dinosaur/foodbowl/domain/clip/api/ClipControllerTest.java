@@ -61,7 +61,7 @@ class ClipControllerTest extends IntegrationTest {
     }
 
     private ResultActions callClipApi(String id) throws Exception {
-      return mockMvc.perform(post("/clips/posts/{id}/clip", id)
+      return mockMvc.perform(post("/api/v1/clips/posts/{id}/clip", id)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
@@ -96,7 +96,7 @@ class ClipControllerTest extends IntegrationTest {
     }
 
     private ResultActions callUnclipApi(String id) throws Exception {
-      return mockMvc.perform(post("/clips/posts/{id}/unclip", id)
+      return mockMvc.perform(post("/api/v1/clips/posts/{id}/unclip", id)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
@@ -142,7 +142,7 @@ class ClipControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetClipPostThumbnailsApi() throws Exception {
-      return mockMvc.perform(get("/clips/thumbnails")
+      return mockMvc.perform(get("/api/v1/clips/thumbnails")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }

@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/api/v1/posts")
 public class PostController {
 
   private final PostService postService;
@@ -39,7 +39,7 @@ public class PostController {
 
     Long postId = postService.createPost(me, request, images);
 
-    return ResponseEntity.created(URI.create("/posts/" + postId))
+    return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
         .build();
   }
 

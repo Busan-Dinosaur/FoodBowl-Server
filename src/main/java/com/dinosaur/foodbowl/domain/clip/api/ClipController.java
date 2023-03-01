@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/clips")
+@RequestMapping("/api/v1/clips")
 public class ClipController {
 
   private final ClipService clipService;

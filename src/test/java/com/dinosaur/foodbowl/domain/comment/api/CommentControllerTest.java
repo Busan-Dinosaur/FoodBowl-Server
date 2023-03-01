@@ -61,7 +61,7 @@ class CommentControllerTest extends IntegrationTest {
 
       callWriteCommentApi(request)
           .andExpect(status().isSeeOther())
-          .andExpect(header().string("Location", "/comments/posts/" + 1))
+          .andExpect(header().string("Location", "/api/v1/comments/posts/" + 1))
           .andDo(document("comment-write",
               requestFields(
                   fieldWithPath("postId").description("댓글을 작성하고자 하는 게시글 ID"),
@@ -83,7 +83,7 @@ class CommentControllerTest extends IntegrationTest {
           .message("테스트 댓글")
           .build();
 
-      mockMvc.perform(post("/comments")
+      mockMvc.perform(post("/api/v1/comments")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
@@ -100,7 +100,7 @@ class CommentControllerTest extends IntegrationTest {
           .message("가".repeat(MAX_MESSAGE_LENGTH + 1))
           .build();
 
-      mockMvc.perform(post("/comments")
+      mockMvc.perform(post("/api/v1/comments")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
@@ -108,7 +108,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     private ResultActions callWriteCommentApi(CommentWriteRequestDto request) throws Exception {
-      return mockMvc.perform(post("/comments")
+      return mockMvc.perform(post("/api/v1/comments")
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
@@ -130,7 +130,7 @@ class CommentControllerTest extends IntegrationTest {
 
       callUpdateCommentApi("1", "update Message")
           .andExpect(status().isSeeOther())
-          .andExpect(header().string("Location", "/comments/posts/" + postId))
+          .andExpect(header().string("Location", "/api/v1/comments/posts/" + postId))
           .andDo(document("comment-update",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
@@ -174,7 +174,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     private ResultActions callUpdateCommentApi(String id, String message) throws Exception {
-      return mockMvc.perform(patch("/comments/{id}", id)
+      return mockMvc.perform(patch("/api/v1/comments/{id}", id)
               .queryParam("message", message)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
@@ -213,7 +213,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     private ResultActions callDeleteCommentApi(String id) throws Exception {
-      return mockMvc.perform(delete("/comments/{id}", id)
+      return mockMvc.perform(delete("/api/v1/comments/{id}", id)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
@@ -282,7 +282,7 @@ class CommentControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetCommentsApi(String id) throws Exception {
-      return mockMvc.perform(get("/comments/posts/{id}", id)
+      return mockMvc.perform(get("/api/v1/comments/posts/{id}", id)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
           .andDo(print());
     }
