@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -22,8 +23,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Photo extends BaseEntity {
 
-  private static final int MAX_PATH_LENGTH = 512;
+  public static final int MAX_PATH_LENGTH = 512;
 
+  @Getter
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", updatable = false, nullable = false)
@@ -33,6 +35,7 @@ public class Photo extends BaseEntity {
   @JoinColumn(name = "post_id", nullable = false)
   private Post post;
 
+  @Getter
   @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
   private String path;
 

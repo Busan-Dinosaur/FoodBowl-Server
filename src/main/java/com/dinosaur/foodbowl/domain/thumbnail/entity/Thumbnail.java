@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Thumbnail extends BaseEntity {
 
   public static final int MAX_PATH_LENGTH = 512;
-
+  @Getter
   @Id
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)

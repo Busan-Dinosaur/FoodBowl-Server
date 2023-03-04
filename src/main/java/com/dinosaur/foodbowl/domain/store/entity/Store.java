@@ -1,7 +1,8 @@
 package com.dinosaur.foodbowl.domain.store.entity;
 
+import static jakarta.persistence.CascadeType.*;
+
 import com.dinosaur.foodbowl.domain.address.entity.Address;
-import com.dinosaur.foodbowl.domain.category.entity.Category;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,8 +16,10 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,15 +33,17 @@ public class Store extends BaseEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @Getter
+  @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
   @JoinColumn(name = "address_id", nullable = false)
   private Address address;
 
+  @Getter
   @Column(name = "store_name", nullable = false, unique = true, length = MAX_STORE_NAME_LENGTH)
   private String storeName;
 
   @Builder
-  private Store(Address address, Category category, String storeName) {
+  private Store(Address address, String storeName) {
     this.address = address;
     this.storeName = storeName;
   }
