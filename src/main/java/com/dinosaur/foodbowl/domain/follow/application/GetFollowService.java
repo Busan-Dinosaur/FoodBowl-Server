@@ -1,6 +1,8 @@
 package com.dinosaur.foodbowl.domain.follow.application;
 
-import com.dinosaur.foodbowl.domain.follow.dto.FollowGetResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowerResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowingResponseDto;
 import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.user.dao.UserRepository;
 import com.dinosaur.foodbowl.domain.user.entity.User;
@@ -17,18 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class GetFollowService {
 
   private final UserRepository userRepository;
+  private final FollowRepository followRepository;
 
-  public List<FollowGetResponseDto> getFollowers(User user, Pageable pageable) {
+  public List<FollowerResponseDto> getFollowers(User user, Pageable pageable) {
+    List<Follow> follows = followRepository.findFollowByFollowing(user, pageable);
 
-    return userRepository.findFollowersByUser(user, pageable).stream()
-        .map(FollowGetResponseDto::toDto)
+    return follows.stream()
+        .map(FollowerResponseDto::of)
         .collect(Collectors.toList());
   }
 
-  public List<FollowGetResponseDto> getFollowings(User user, Pageable pageable) {
+  public List<FollowingResponseDto> getFollowings(User user, Pageable pageable) {
+    List<Follow> follows = followRepository.findFollowByFollower(user, pageable);
 
-    return userRepository.findFollowingsByUser(user, pageable).stream()
-        .map(FollowGetResponseDto::toDto)
+    return follows.stream()
+        .map(FollowingResponseDto::of)
         .collect(Collectors.toList());
   }
 

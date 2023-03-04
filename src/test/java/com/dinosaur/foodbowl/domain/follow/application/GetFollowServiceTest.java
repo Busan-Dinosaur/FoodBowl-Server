@@ -1,10 +1,10 @@
 package com.dinosaur.foodbowl.domain.follow.application;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.follow.dto.FollowGetResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowerResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowingResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -29,8 +29,8 @@ class GetFollowServiceTest extends IntegrationTest {
 
     Pageable pageable = PageRequest.of(0, 5);
 
-    List<FollowGetResponseDto> response = getFollowService.getFollowers(me, pageable);
-    List<Long> responseUserIds = response.stream().map(FollowGetResponseDto::getUserId).toList();
+    List<FollowerResponseDto> response = getFollowService.getFollowers(me, pageable);
+    List<Long> responseUserIds = response.stream().map(FollowerResponseDto::getUserId).toList();
 
     assertThat(response.size()).isEqualTo(2);
     assertThat(responseUserIds).contains(follower1.getId(), follower2.getId());
@@ -50,8 +50,8 @@ class GetFollowServiceTest extends IntegrationTest {
     followService.follow(following1, me);
 
     Pageable pageable = PageRequest.of(0, 5);
-    List<FollowGetResponseDto> response = getFollowService.getFollowings(me, pageable);
-    List<Long> responseUserIds = response.stream().map(FollowGetResponseDto::getUserId).toList();
+    List<FollowingResponseDto> response = getFollowService.getFollowings(me, pageable);
+    List<Long> responseUserIds = response.stream().map(FollowingResponseDto::getUserId).toList();
 
     assertThat(response.size()).isEqualTo(2);
     assertThat(responseUserIds).contains(following1.getId(), following2.getId());

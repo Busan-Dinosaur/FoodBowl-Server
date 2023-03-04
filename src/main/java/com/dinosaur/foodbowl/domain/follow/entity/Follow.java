@@ -33,6 +33,7 @@ public class Follow extends BaseEntity {
   @JoinColumn(name = "following_id", nullable = false, updatable = false)
   private User following;
 
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "follower_id", nullable = false, updatable = false)
   private User follower;

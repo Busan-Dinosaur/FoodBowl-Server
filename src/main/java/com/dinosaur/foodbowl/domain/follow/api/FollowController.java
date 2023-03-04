@@ -2,7 +2,8 @@ package com.dinosaur.foodbowl.domain.follow.api;
 
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
 import com.dinosaur.foodbowl.domain.follow.application.GetFollowService;
-import com.dinosaur.foodbowl.domain.follow.dto.FollowGetResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowerResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowingResponseDto;
 import com.dinosaur.foodbowl.domain.user.application.UserFindService;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import com.dinosaur.foodbowl.global.util.resolver.LoginUser;
@@ -53,25 +54,25 @@ public class FollowController {
   }
 
   @GetMapping("/{userId}/followers")
-  public ResponseEntity<List<FollowGetResponseDto>> getFollowers(
+  public ResponseEntity<List<FollowerResponseDto>> getFollowers(
       @PathVariable("userId") Long userId,
-      @PageableDefault(size = 10, sort = "userId", direction = Direction.ASC) Pageable pageable) {
+      @PageableDefault(size = 12, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
 
     User user = userFindService.findById(userId);
 
-    List<FollowGetResponseDto> response = getFollowService.getFollowers(user, pageable);
+    List<FollowerResponseDto> response = getFollowService.getFollowers(user, pageable);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{userId}/followings")
-  public ResponseEntity<List<FollowGetResponseDto>> getFollowings(
+  public ResponseEntity<List<FollowingResponseDto>> getFollowings(
       @PathVariable("userId") Long userId,
-      @PageableDefault(size = 10, sort = "userId", direction = Direction.ASC) Pageable pageable) {
+      @PageableDefault(size = 12, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
 
     User user = userFindService.findById(userId);
 
-    List<FollowGetResponseDto> response = getFollowService.getFollowings(user, pageable);
+    List<FollowingResponseDto> response = getFollowService.getFollowings(user, pageable);
 
     return ResponseEntity.ok(response);
   }

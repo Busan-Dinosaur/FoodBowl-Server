@@ -21,7 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dinosaur.foodbowl.IntegrationTest;
-import com.dinosaur.foodbowl.domain.follow.dto.FollowGetResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowerResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowingResponseDto;
 import com.dinosaur.foodbowl.domain.user.entity.Role.RoleType;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import jakarta.servlet.http.Cookie;
@@ -57,7 +58,7 @@ public class FollowControllerTest extends IntegrationTest {
     @Test
     @DisplayName("팔로우 요청을 성공하면 204 NO Content 를 반환한다.")
     void shouldSucceedFollowWhenValidatedUsers() throws Exception {
-      doNothing().when(followService).follow(any(User.class),any(User.class));
+      doNothing().when(followService).follow(any(User.class), any(User.class));
 
       callFollowApi(otherId).andExpect(status().isNoContent())
           .andDo(print())
@@ -75,7 +76,7 @@ public class FollowControllerTest extends IntegrationTest {
     @Test
     @DisplayName("팔로우 취소 요청을 성공하면 204 NO Content 를 반환한다.")
     void shouldSucceedUnfollowWhenValidatedUsers() throws Exception {
-      doNothing().when(followService).unfollow(any(User.class),any(User.class));
+      doNothing().when(followService).unfollow(any(User.class), any(User.class));
 
       callUnfollowApi(otherId).andExpect(status().isNoContent())
           .andDo(print())
@@ -144,12 +145,12 @@ public class FollowControllerTest extends IntegrationTest {
     void should_success_get_followings() throws Exception {
       mockingAuth();
 
-      FollowGetResponseDto response1 = FollowGetResponseDto.builder()
+      FollowingResponseDto response1 = FollowingResponseDto.builder()
           .userId(2L)
           .thumbnailURL("url1")
           .nickName("following1")
           .build();
-      FollowGetResponseDto response2 = FollowGetResponseDto.builder()
+      FollowingResponseDto response2 = FollowingResponseDto.builder()
           .userId(3L)
           .thumbnailURL("url2")
           .nickName("following2")
@@ -174,7 +175,7 @@ public class FollowControllerTest extends IntegrationTest {
                   parameterWithName("id").description("팔로워 목록을 조회할 유저 ID")
               ),
               queryParameters(
-                  parameterWithName("pages").optional()
+                  parameterWithName("page").optional()
                       .description("불러오고 싶은 팔로워 목록 페이지 +\n(default: 0)"),
                   parameterWithName("size").optional()
                       .description("불러오고 싶은 팔로워 목록 크기 +\n(default: 10)")
@@ -182,14 +183,15 @@ public class FollowControllerTest extends IntegrationTest {
               responseFields(
                   fieldWithPath("[].userId").description("팔로워 ID"),
                   fieldWithPath("[].nickName").description("팔로워 nickname"),
-                  fieldWithPath("[].thumbnailURL").description("팔로워 thumbnailURL")
+                  fieldWithPath("[].thumbnailURL").description("팔로워 thumbnailURL"),
+                  fieldWithPath("[].createdAt").description("팔로워가 유저를 팔로우한 시간")
               )));
     }
 
     private ResultActions callGetFollowingsApi(String userId) throws Exception {
       return mockMvc.perform(get("/follows/{id}/followings", userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
-              .param("pages", "0")
+              .param("page", "0")
               .param("size", "2"))
           .andDo(print());
     }
@@ -199,12 +201,12 @@ public class FollowControllerTest extends IntegrationTest {
     void should_success_get_followers() throws Exception {
       mockingAuth();
 
-      FollowGetResponseDto response1 = FollowGetResponseDto.builder()
+      FollowerResponseDto response1 = FollowerResponseDto.builder()
           .userId(2L)
           .thumbnailURL("url1")
           .nickName("follower1")
           .build();
-      FollowGetResponseDto response2 = FollowGetResponseDto.builder()
+      FollowerResponseDto response2 = FollowerResponseDto.builder()
           .userId(3L)
           .thumbnailURL("url2")
           .nickName("follower2")
@@ -229,7 +231,7 @@ public class FollowControllerTest extends IntegrationTest {
                   parameterWithName("id").description("팔로워 목록을 조회할 유저 ID")
               ),
               queryParameters(
-                  parameterWithName("pages").optional()
+                  parameterWithName("page").optional()
                       .description("불러오고 싶은 팔로워 목록 페이지 +\n(default: 0)"),
                   parameterWithName("size").optional()
                       .description("불러오고 싶은 팔로워 목록 크기 +\n(default: 10)")
@@ -237,14 +239,15 @@ public class FollowControllerTest extends IntegrationTest {
               responseFields(
                   fieldWithPath("[].userId").description("팔로워 ID"),
                   fieldWithPath("[].nickName").description("팔로워 nickname"),
-                  fieldWithPath("[].thumbnailURL").description("팔로워 thumbnailURL")
+                  fieldWithPath("[].thumbnailURL").description("팔로워 thumbnailURL"),
+                  fieldWithPath("[].createdAt").description("유저를 팔로우한 시간")
               )));
     }
 
     private ResultActions callGetFollowersApi(String userId) throws Exception {
       return mockMvc.perform(get("/follows/{id}/followers", userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
-              .param("pages", "0")
+              .param("page", "0")
               .param("size", "2"))
           .andDo(print());
     }
