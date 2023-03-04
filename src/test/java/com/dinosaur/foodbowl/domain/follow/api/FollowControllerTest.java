@@ -156,7 +156,7 @@ public class FollowControllerTest extends IntegrationTest {
           .nickName("following2")
           .build();
 
-      doReturn(List.of(response1, response2)).when(getFollowService)
+      doReturn(List.of(response1, response2)).when(followService)
           .getFollowings(any(User.class), any(Pageable.class));
 
       callGetFollowingsApi("1")
@@ -172,7 +172,7 @@ public class FollowControllerTest extends IntegrationTest {
                   cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
               ),
               pathParameters(
-                  parameterWithName("id").description("팔로워 목록을 조회할 유저 ID")
+                  parameterWithName("userId").description("팔로워 목록을 조회할 유저 ID")
               ),
               queryParameters(
                   parameterWithName("page").optional()
@@ -189,7 +189,7 @@ public class FollowControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetFollowingsApi(String userId) throws Exception {
-      return mockMvc.perform(get("/follows/{id}/followings", userId)
+      return mockMvc.perform(get("/follows/{userId}/followings", userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .param("page", "0")
               .param("size", "2"))
@@ -212,7 +212,7 @@ public class FollowControllerTest extends IntegrationTest {
           .nickName("follower2")
           .build();
 
-      doReturn(List.of(response1, response2)).when(getFollowService)
+      doReturn(List.of(response1, response2)).when(followService)
           .getFollowers(any(User.class), any(Pageable.class));
 
       callGetFollowersApi("1")
@@ -228,7 +228,7 @@ public class FollowControllerTest extends IntegrationTest {
                   cookieWithName(ACCESS_TOKEN.getName()).description("사용자 인증에 필요한 access token")
               ),
               pathParameters(
-                  parameterWithName("id").description("팔로워 목록을 조회할 유저 ID")
+                  parameterWithName("userId").description("팔로워 목록을 조회할 유저 ID")
               ),
               queryParameters(
                   parameterWithName("page").optional()
@@ -245,7 +245,7 @@ public class FollowControllerTest extends IntegrationTest {
     }
 
     private ResultActions callGetFollowersApi(String userId) throws Exception {
-      return mockMvc.perform(get("/follows/{id}/followers", userId)
+      return mockMvc.perform(get("/follows/{userId}/followers", userId)
               .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
               .param("page", "0")
               .param("size", "2"))

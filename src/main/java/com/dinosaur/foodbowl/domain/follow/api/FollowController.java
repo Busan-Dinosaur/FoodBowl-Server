@@ -1,7 +1,6 @@
 package com.dinosaur.foodbowl.domain.follow.api;
 
 import com.dinosaur.foodbowl.domain.follow.application.FollowService;
-import com.dinosaur.foodbowl.domain.follow.application.GetFollowService;
 import com.dinosaur.foodbowl.domain.follow.dto.FollowerResponseDto;
 import com.dinosaur.foodbowl.domain.follow.dto.FollowingResponseDto;
 import com.dinosaur.foodbowl.domain.user.application.UserFindService;
@@ -31,7 +30,6 @@ public class FollowController {
 
   private final UserFindService userFindService;
   private final FollowService followService;
-  private final GetFollowService getFollowService;
 
   @PostMapping("/{userId}")
   public ResponseEntity<Void> follow(@PathVariable("userId") @NotMe Long otherId,
@@ -60,7 +58,7 @@ public class FollowController {
 
     User user = userFindService.findById(userId);
 
-    List<FollowerResponseDto> response = getFollowService.getFollowers(user, pageable);
+    List<FollowerResponseDto> response = followService.getFollowers(user, pageable);
 
     return ResponseEntity.ok(response);
   }
@@ -72,7 +70,7 @@ public class FollowController {
 
     User user = userFindService.findById(userId);
 
-    List<FollowingResponseDto> response = getFollowService.getFollowings(user, pageable);
+    List<FollowingResponseDto> response = followService.getFollowings(user, pageable);
 
     return ResponseEntity.ok(response);
   }
