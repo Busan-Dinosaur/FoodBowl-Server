@@ -140,5 +140,47 @@ class FollowServiceTest extends IntegrationTest {
       assertThat(response.size()).isEqualTo(2);
       assertThat(responseUserIds).contains(following1.getId(), following2.getId());
     }
+
+    @Test
+    @DisplayName("유저가 팔로우한 유저 목록 조회시 팔로잉한 유저의 팔로워 수도 함께 조회한다.")
+    public void getFollowingsWithFollowerCount() {
+      User me = userTestHelper.builder().build();
+      User follower1 = userTestHelper.builder().build();
+      User follower2 = userTestHelper.builder().build();
+      User following = userTestHelper.builder().build();
+
+      followService.follow(me, following);
+      followService.follow(follower1, following);
+      followService.follow(follower2, following);
+
+      Pageable pageable = PageRequest.of(0, 5);
+      List<FollowingResponseDto> response = followService.getFollowings(me, pageable);
+      List<Long> responseUserIds = response.stream().map(FollowingResponseDto::getUserId).toList();
+
+      assertThat(response.size()).isEqualTo(1);
+      assertThat(responseUserIds).contains(following.getId());
+      assertThat(response.get(0).getFollowerCount()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("유저를 팔로우한 유저 목록 조회시 팔로워의 팔로워 수도 함께 조회한다.")
+    public void getFollowersWithFollowerCount() {
+      User me = userTestHelper.builder().build();
+      User follower1 = userTestHelper.builder().build();
+      User follower2 = userTestHelper.builder().build();
+      User follower3 = userTestHelper.builder().build();
+
+      followService.follow(follower1, me);
+      followService.follow(follower2, follower1);
+      followService.follow(follower3, follower1);
+
+      Pageable pageable = PageRequest.of(0, 5);
+      List<FollowerResponseDto> response = followService.getFollowers(me, pageable);
+      List<Long> responseUserIds = response.stream().map(FollowerResponseDto::getUserId).toList();
+
+      assertThat(response.size()).isEqualTo(1);
+      assertThat(responseUserIds).contains(follower1.getId());
+      assertThat(response.get(0).getFollowerCount()).isEqualTo(2);
+    }
   }
 }

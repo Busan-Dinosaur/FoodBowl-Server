@@ -42,7 +42,7 @@ public class FollowService {
     List<Follow> follows = followRepository.findFollowByFollowing(user, pageable);
 
     return follows.stream()
-        .map(FollowerResponseDto::from)
+        .map(follow -> FollowerResponseDto.from(follow, getFollowerCount(follow.getFollower())))
         .collect(Collectors.toList());
   }
 
@@ -50,7 +50,12 @@ public class FollowService {
     List<Follow> follows = followRepository.findFollowByFollower(user, pageable);
 
     return follows.stream()
-        .map(FollowingResponseDto::from)
+        .map(follow -> FollowingResponseDto.from(follow, getFollowerCount(follow.getFollowing())))
         .collect(Collectors.toList());
   }
+
+  private long getFollowerCount(User user) {
+    return followRepository.countByFollowing(user);
+  }
+
 }

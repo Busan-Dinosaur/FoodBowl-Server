@@ -181,10 +181,11 @@ public class FollowControllerTest extends IntegrationTest {
                       .description("불러오고 싶은 팔로워 목록 크기 +\n(default: 10)")
               ),
               responseFields(
-                  fieldWithPath("[].userId").description("팔로워 ID"),
-                  fieldWithPath("[].nickName").description("팔로워 nickname"),
-                  fieldWithPath("[].thumbnailURL").description("팔로워 thumbnailURL"),
-                  fieldWithPath("[].createdAt").description("팔로워가 유저를 팔로우한 시간")
+                  fieldWithPath("[].userId").description("팔로잉 ID"),
+                  fieldWithPath("[].nickName").description("팔로잉 nickname"),
+                  fieldWithPath("[].thumbnailURL").description("팔로잉 thumbnailURL"),
+                  fieldWithPath("[].followerCount").description("팔로잉의 팔로워 수"),
+                  fieldWithPath("[].createdAt").description("유저가 팔로잉 유저를 팔로우한 시간")
               )));
     }
 
@@ -240,7 +241,8 @@ public class FollowControllerTest extends IntegrationTest {
                   fieldWithPath("[].userId").description("팔로워 ID"),
                   fieldWithPath("[].nickName").description("팔로워 nickname"),
                   fieldWithPath("[].thumbnailURL").description("팔로워 thumbnailURL"),
-                  fieldWithPath("[].createdAt").description("유저를 팔로우한 시간")
+                  fieldWithPath("[].followerCount").description("팔로워의 팔로워 수"),
+                  fieldWithPath("[].createdAt").description("팔로워가 유저를 팔로우한 시간")
               )));
     }
 
