@@ -14,7 +14,7 @@ public class FollowerResponseDto {
   private final String nickName;
   private final LocalDateTime createdAt;
 
-  public static FollowerResponseDto of(Follow follow) {
+  public static FollowerResponseDto from(Follow follow) {
     return FollowerResponseDto.builder()
         .userId(follow.getFollower().getId())
         .thumbnailURL(follow.getFollower().getThumbnailURL().orElseGet(() -> null))
