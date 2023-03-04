@@ -153,6 +153,9 @@ class FollowServiceTest extends IntegrationTest {
       followService.follow(follower1, following);
       followService.follow(follower2, following);
 
+      em.flush();
+      em.clear();
+      
       Pageable pageable = PageRequest.of(0, 5);
       List<FollowingResponseDto> response = followService.getFollowings(me, pageable);
       List<Long> responseUserIds = response.stream().map(FollowingResponseDto::getUserId).toList();
@@ -173,6 +176,9 @@ class FollowServiceTest extends IntegrationTest {
       followService.follow(follower1, me);
       followService.follow(follower2, follower1);
       followService.follow(follower3, follower1);
+
+      em.flush();
+      em.clear();
 
       Pageable pageable = PageRequest.of(0, 5);
       List<FollowerResponseDto> response = followService.getFollowers(me, pageable);

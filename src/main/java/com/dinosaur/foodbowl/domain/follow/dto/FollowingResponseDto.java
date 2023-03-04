@@ -15,12 +15,12 @@ public class FollowingResponseDto {
   private final Long followerCount;
   private final LocalDateTime createdAt;
 
-  public static FollowingResponseDto from(Follow follow, long followerCount) {
+  public static FollowingResponseDto from(Follow follow) {
     return FollowingResponseDto.builder()
         .userId(follow.getFollowing().getId())
         .thumbnailURL(follow.getFollowing().getThumbnailURL().orElseGet(() -> null))
         .nickName(follow.getFollowing().getNickname().getNickname())
-        .followerCount(followerCount)
+        .followerCount(follow.getFollowing().getFollowerSize())
         .createdAt(follow.getCreatedAt())
         .build();
   }

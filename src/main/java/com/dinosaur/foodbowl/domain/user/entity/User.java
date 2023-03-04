@@ -70,7 +70,7 @@ public class User extends BaseEntity {
   @Getter
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
   private final Set<UserRole> userRole = new HashSet<>();
-  
+
   @OneToMany(mappedBy = "following", cascade = REMOVE)
   private final Set<Follow> follower = new HashSet<>();
 
@@ -119,7 +119,7 @@ public class User extends BaseEntity {
     return posts.size();
   }
 
-  public int getFollowerSize() {
+  public long getFollowerSize() {
     return follower.size();
   }
 }
