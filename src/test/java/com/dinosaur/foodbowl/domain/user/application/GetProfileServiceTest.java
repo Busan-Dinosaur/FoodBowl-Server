@@ -31,9 +31,9 @@ class GetProfileServiceTest extends IntegrationTest {
       User userA = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       User userB = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
-      me.follow(userA);
-      me.follow(userB);
-      userA.follow(me);
+      followService.follow(me, userA);
+      followService.follow(me, userB);
+      followService.follow(userA, me);
 
       em.flush();
       em.clear();

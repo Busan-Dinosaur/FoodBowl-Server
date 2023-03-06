@@ -56,3 +56,67 @@ include::{snippets}/unfollow/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/unfollow/http-response.adoc[]
+
+== *팔로우 목록 조회"
+
+=== 요청
+
+==== Request
+
+include::{snippets}/follow-get-followers/http-request.adoc[]
+
+=== Request Cookies
+
+include::{snippets}/follow-get-followers/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/follow-get-followers/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/follow-get-followers/query-parameters.adoc[]
+
+NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/follow-get-followers/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/follow-get-followers/response-fields.adoc[]
+
+== *팔로워 목록 조회"
+
+=== 요청
+
+==== Request
+
+include::{snippets}/follow-get-followers/http-request.adoc[]
+
+=== Request Cookies
+
+include::{snippets}/follow-get-followers/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/follow-get-followers/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/follow-get-followers/query-parameters.adoc[]
+
+NOTE: page, size를 지정하지 않아도 디폴트 값으로 처리됩니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/follow-get-followers/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/follow-get-followers/response-fields.adoc[]

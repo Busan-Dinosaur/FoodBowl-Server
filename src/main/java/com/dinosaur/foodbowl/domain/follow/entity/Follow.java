@@ -33,6 +33,7 @@ public class Follow extends BaseEntity {
   @JoinColumn(name = "following_id", nullable = false, updatable = false)
   private User following;
 
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "follower_id", nullable = false, updatable = false)
   private User follower;
@@ -41,5 +42,12 @@ public class Follow extends BaseEntity {
   private Follow(User following, User follower) {
     this.following = following;
     this.follower = follower;
+  }
+
+  public static Follow of(User follower, User following) {
+    return Follow.builder()
+        .follower(follower)
+        .following(following)
+        .build();
   }
 }

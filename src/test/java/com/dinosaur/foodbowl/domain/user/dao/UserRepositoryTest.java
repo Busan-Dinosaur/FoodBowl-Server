@@ -230,10 +230,10 @@ class UserRepositoryTest extends IntegrationTest {
       User other1 = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
       User other2 = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
-      me.follow(other1);
-      me.follow(other2);
-      me.follow(other2);
-      me.follow(other2);
+      followService.follow(me, other1);
+      followService.follow(me, other2);
+      followService.follow(me, other2);
+      followService.follow(me, other2);
 
       em.flush();
       em.clear();

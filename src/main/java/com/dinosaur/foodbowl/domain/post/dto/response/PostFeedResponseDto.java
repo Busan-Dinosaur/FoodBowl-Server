@@ -19,7 +19,7 @@ public class PostFeedResponseDto {
 
   private final String nickname;
   private final String thumbnailPath;
-  private final int followerCount;
+  private final long followerCount;
   private final List<String> photoPaths;
   private final String storeName;
   private final List<String> categories;

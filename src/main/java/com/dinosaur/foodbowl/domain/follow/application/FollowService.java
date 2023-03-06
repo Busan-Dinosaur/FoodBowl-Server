@@ -1,8 +1,15 @@
 package com.dinosaur.foodbowl.domain.follow.application;
 
-import com.dinosaur.foodbowl.domain.user.application.UserFindService;
+import com.dinosaur.foodbowl.domain.follow.dao.FollowRepository;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowerResponseDto;
+import com.dinosaur.foodbowl.domain.follow.dto.FollowingResponseDto;
+import com.dinosaur.foodbowl.domain.follow.entity.Follow;
 import com.dinosaur.foodbowl.domain.user.entity.User;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,27 +18,40 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FollowService {
 
-  private final UserFindService userFindService;
+  private final FollowRepository followRepository;
 
   @Transactional
-  public void follow(User me, Long otherId) {
-    User other = userFindService.findById(otherId);
+  public void follow(User me, User other) {
 
-    if (me.isFollowing(other)) {
+    if (followRepository.existsByFollowerAndFollowing(me, other)) {
       return;
     }
 
-    me.follow(other);
+    Follow follow = Follow.of(me, other);
+    followRepository.save(follow);
   }
 
   @Transactional
-  public void unfollow(User me, Long otherId) {
-    User other = userFindService.findById(otherId);
+  public void unfollow(User me, User other) {
+    Optional<Follow> follow = followRepository.findByFollowerAndFollowing(me, other);
 
-    if (!me.isFollowing(other)) {
-      return;
-    }
-
-    me.unfollow(other);
+    follow.ifPresent(followRepository::delete);
   }
+
+  public List<FollowerResponseDto> getFollowers(User user, Pageable pageable) {
+    List<Follow> follows = followRepository.findFollowByFollowing(user, pageable);
+
+    return follows.stream()
+        .map(FollowerResponseDto::from)
+        .collect(Collectors.toList());
+  }
+
+  public List<FollowingResponseDto> getFollowings(User user, Pageable pageable) {
+    List<Follow> follows = followRepository.findFollowByFollower(user, pageable);
+
+    return follows.stream()
+        .map(FollowingResponseDto::from)
+        .collect(Collectors.toList());
+  }
+
 }

@@ -71,9 +71,6 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
   private final Set<UserRole> userRole = new HashSet<>();
 
-  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
-  private final Set<Follow> following = new HashSet<>();
-
   @OneToMany(mappedBy = "following", cascade = REMOVE)
   private final Set<Follow> follower = new HashSet<>();
 
@@ -118,27 +115,11 @@ public class User extends BaseEntity {
     }
   }
 
-  public void follow(User other) {
-    following.add(Follow.builder()
-        .follower(this)
-        .following(other)
-        .build());
-  }
-
-  public void unfollow(User other) {
-    following.removeIf(follow -> follow.getFollowing().equals(other));
-  }
-
-  public boolean isFollowing(User other) {
-    return following.stream()
-        .anyMatch(follow -> follow.getFollowing().equals(other));
-  }
-
   public long getPostCount() {
     return posts.size();
   }
 
-  public int getFollowerSize() {
+  public long getFollowerSize() {
     return follower.size();
   }
 }
