@@ -17,17 +17,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostUpdateRequestDto {
 
-  @NotNull
-  private String content;
+    @NotNull
+    private String content;
 
-  @NotNull
-  private StoreRequestDto store;
+    @NotNull
+    private StoreRequestDto store;
 
-  @NotNull
-  private AddressRequestDto address;
+    @NotNull
+    private AddressRequestDto address;
 
-  @Valid
-  @NotNull
-  private List<Long> categoryIds;
-
+    @Valid
+    @NotNull
+    private List<Long> categoryIds;
 }

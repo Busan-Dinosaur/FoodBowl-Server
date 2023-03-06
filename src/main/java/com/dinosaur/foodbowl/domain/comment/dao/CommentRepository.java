@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-  @Query("select c from Comment c"
-      + " left join fetch c.blames"
-      + " join fetch c.user"
-      + " left join fetch c.user.thumbnail"
-      + " where c.post = :post and size(c.blames) < 5 order by c.createdAt")
-  List<Comment> findUnrestrictedComments(@Param("post") Post post);
+    @Query("select c from Comment c"
+            + " left join fetch c.blames"
+            + " join fetch c.user"
+            + " left join fetch c.user.thumbnail"
+            + " where c.post = :post and size(c.blames) < 5 order by c.createdAt")
+    List<Comment> findUnrestrictedComments(@Param("post") Post post);
 }

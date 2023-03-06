@@ -36,57 +36,57 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Comment extends BaseEntity {
 
-  public static final int MAX_MESSAGE_LENGTH = 255;
+    public static final int MAX_MESSAGE_LENGTH = 255;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_id")
-  private Comment comment;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment comment;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "post_id", nullable = false)
-  private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-  @Column(name = "message", nullable = false, length = MAX_MESSAGE_LENGTH)
-  private String message;
+    @Column(name = "message", nullable = false, length = MAX_MESSAGE_LENGTH)
+    private String message;
 
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-  @JoinColumn(name = "target_id", updatable = false)
-  private List<Blame> blames = new ArrayList<>();
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinColumn(name = "target_id", updatable = false)
+    private List<Blame> blames = new ArrayList<>();
 
-  @LastModifiedDate
-  @Column(name = "updated_at", nullable = false)
-  private LocalDateTime updatedAt;
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
-  @Builder
-  private Comment(Comment comment, Post post, User user, String message) {
-    this.comment = comment;
-    this.post = post;
-    this.user = user;
-    this.message = message;
-  }
-
-  public void updateMessage(String message) {
-    this.message = message;
-  }
-
-  public void report(User user) {
-    Blame blame = Blame.builder()
-        .user(user)
-        .targetId(this.id)
-        .targetType(TargetType.COMMENT)
-        .build();
-
-    if (!blames.contains(blame)) {
-      blames.add(blame);
+    @Builder
+    private Comment(Comment comment, Post post, User user, String message) {
+        this.comment = comment;
+        this.post = post;
+        this.user = user;
+        this.message = message;
     }
-  }
+
+    public void updateMessage(String message) {
+        this.message = message;
+    }
+
+    public void report(User user) {
+        Blame blame = Blame.builder()
+                .user(user)
+                .targetId(this.id)
+                .targetType(TargetType.COMMENT)
+                .build();
+
+        if (!blames.contains(blame)) {
+            blames.add(blame);
+        }
+    }
 }

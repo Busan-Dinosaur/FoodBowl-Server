@@ -12,61 +12,61 @@ import org.junit.jupiter.api.Test;
 
 class GetProfileServiceTest extends IntegrationTest {
 
-  private UserBuilder userBuilder;
+    private UserBuilder userBuilder;
 
-  @BeforeEach
-  void setUp() {
-    userBuilder = userTestHelper.builder();
-  }
-
-  @Nested
-  class 프로필_조회 {
-
-    @Test
-    void 프로필_조회_시_팔로잉_숫자가_일치한다() {
-      User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
-      User userA = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
-      User userB = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
-
-      me.follow(userA);
-      me.follow(userB);
-      userA.follow(me);
-
-      em.flush();
-      em.clear();
-
-      ProfileResponseDto result = getProfileService.getProfile(me.getId());
-
-      assertThat(result.getUserId()).isEqualTo(me.getId());
-      assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
-      assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
-      assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
-      assertThat(result.getFollowerCount()).isEqualTo(1);
-      assertThat(result.getFollowingCount()).isEqualTo(2);
+    @BeforeEach
+    void setUp() {
+        userBuilder = userTestHelper.builder();
     }
 
-    @Test
-    void 프로필_조회_시_게시글_숫자가_일치한다() {
-      User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
-      User other = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
-      int myPostCount = 10;
+    @Nested
+    class 프로필_조회 {
 
-      postTestHelper.builder().user(other).build();
-      for (int i = 0; i < myPostCount; i++) {
-        postTestHelper.builder().user(me).build();
-      }
-      postTestHelper.builder().user(other).build();
+        @Test
+        void 프로필_조회_시_팔로잉_숫자가_일치한다() {
+            User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+            User userA = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+            User userB = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
-      em.flush();
-      em.clear();
+            me.follow(userA);
+            me.follow(userB);
+            userA.follow(me);
 
-      ProfileResponseDto result = getProfileService.getProfile(me.getId());
+            em.flush();
+            em.clear();
 
-      assertThat(result.getUserId()).isEqualTo(me.getId());
-      assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
-      assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
-      assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
-      assertThat(result.getPostCount()).isEqualTo(myPostCount);
+            ProfileResponseDto result = getProfileService.getProfile(me.getId());
+
+            assertThat(result.getUserId()).isEqualTo(me.getId());
+            assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
+            assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
+            assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
+            assertThat(result.getFollowerCount()).isEqualTo(1);
+            assertThat(result.getFollowingCount()).isEqualTo(2);
+        }
+
+        @Test
+        void 프로필_조회_시_게시글_숫자가_일치한다() {
+            User me = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+            User other = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
+            int myPostCount = 10;
+
+            postTestHelper.builder().user(other).build();
+            for (int i = 0; i < myPostCount; i++) {
+                postTestHelper.builder().user(me).build();
+            }
+            postTestHelper.builder().user(other).build();
+
+            em.flush();
+            em.clear();
+
+            ProfileResponseDto result = getProfileService.getProfile(me.getId());
+
+            assertThat(result.getUserId()).isEqualTo(me.getId());
+            assertThat(result.getNickname()).isEqualTo(me.getNickname().getNickname());
+            assertThat(result.getIntroduce()).isEqualTo(me.getIntroduce());
+            assertThat(result.getThumbnailURL()).isEqualTo(me.getThumbnailURL().orElseThrow());
+            assertThat(result.getPostCount()).isEqualTo(myPostCount);
+        }
     }
-  }
 }

@@ -22,47 +22,47 @@ import org.springframework.test.util.ReflectionTestUtils;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class JwtTokenProviderTest {
 
-  private static final String TEST_SECRET_KEY = "2B4B6250655368566D597133743677397A244326452948404D635166546A576E";
-  private static final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private static final String TEST_SECRET_KEY = "2B4B6250655368566D597133743677397A244326452948404D635166546A576E";
+    private static final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
-  @BeforeAll
-  static void setUp() {
-    ReflectionTestUtils.setField(jwtTokenProvider, "secretKey", TEST_SECRET_KEY);
-  }
+    @BeforeAll
+    static void setUp() {
+        ReflectionTestUtils.setField(jwtTokenProvider, "secretKey", TEST_SECRET_KEY);
+    }
 
-  @Test
-  void 엑세스_토큰을_생성한다() {
-    long userPk = 1;
-    RoleType[] roleType = new RoleType[]{RoleType.ROLE_회원, RoleType.ROLE_관리자};
+    @Test
+    void 엑세스_토큰을_생성한다() {
+        long userPk = 1;
+        RoleType[] roleType = new RoleType[]{RoleType.ROLE_회원, RoleType.ROLE_관리자};
 
-    String accessToken = jwtTokenProvider.createAccessToken(userPk, roleType);
-    Claims claims = Jwts.parser().setSigningKey(TEST_SECRET_KEY)
-        .parseClaimsJws(accessToken)
-        .getBody();
+        String accessToken = jwtTokenProvider.createAccessToken(userPk, roleType);
+        Claims claims = Jwts.parser().setSigningKey(TEST_SECRET_KEY)
+                .parseClaimsJws(accessToken)
+                .getBody();
 
-    long resultUserPK = Long.parseLong(claims.getSubject());
-    String roles = claims.get("roles").toString();
-    assertThat(resultUserPK).isEqualTo(userPk);
-    assertThat(roles).isEqualTo("ROLE_회원,ROLE_관리자");
-  }
+        long resultUserPK = Long.parseLong(claims.getSubject());
+        String roles = claims.get("roles").toString();
+        assertThat(resultUserPK).isEqualTo(userPk);
+        assertThat(roles).isEqualTo("ROLE_회원,ROLE_관리자");
+    }
 
-  @Test
-  void 인증_정보를_확인한다() {
-    /**
-     * PK: 1
-     * ROLE: 회원, 관리자
-     * expired: 2073년 1월 16일
-     */
-    String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3Mzg0OTAxNSwiZXhwIjoxNjc4MTY5MDE1fQ.jN1AbCdUaYXHaMVPB3rDebkRx335cub44_2hLo5Ne0c";
+    @Test
+    void 인증_정보를_확인한다() {
+        /**
+         * PK: 1
+         * ROLE: 회원, 관리자
+         * expired: 2073년 1월 16일
+         */
+        String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCxST0xFX-q0gOumrOyekCIsImlhdCI6MTY3Mzg0OTAxNSwiZXhwIjoxNjc4MTY5MDE1fQ.jN1AbCdUaYXHaMVPB3rDebkRx335cub44_2hLo5Ne0c";
 
-    Authentication authentication = jwtTokenProvider.getAuthentication(validToken);
+        Authentication authentication = jwtTokenProvider.getAuthentication(validToken);
 
-    assertThat(authentication.isAuthenticated()).isTrue();
-    assertThat(authentication.getPrincipal()).isInstanceOf(UserDetails.class);
-    List<String> authorities = authentication.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.toList());
-    assertThat(authorities).containsAll(List.of("ROLE_회원", "ROLE_관리자"));
-  }
+        assertThat(authentication.isAuthenticated()).isTrue();
+        assertThat(authentication.getPrincipal()).isInstanceOf(UserDetails.class);
+        List<String> authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        assertThat(authorities).containsAll(List.of("ROLE_회원", "ROLE_관리자"));
+    }
 }
 

@@ -20,48 +20,49 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ClipService {
 
-  private final ClipRepository clipRepository;
-  private final PostFindService postFindService;
+    private final ClipRepository clipRepository;
+    private final PostFindService postFindService;
 
-  @Transactional
-  public ClipStatusResponseDto clip(User user, Long postId) {
-    Post post = postFindService.findById(postId);
+    @Transactional
+    public ClipStatusResponseDto clip(User user, Long postId) {
+        Post post = postFindService.findById(postId);
 
-    if (!clipRepository.existsClipByUserAndPost(user, post)) {
-      clipRepository.save(Clip.builder()
-          .user(user)
-          .post(post)
-          .build());
+        if (!clipRepository.existsClipByUserAndPost(user, post)) {
+            clipRepository.save(Clip.builder()
+                    .user(user)
+                    .post(post)
+                    .build()
+            );
+        }
+
+        return ClipStatusResponseDto.from("ok");
     }
 
-    return ClipStatusResponseDto.from("ok");
-  }
+    @Transactional
+    public ClipStatusResponseDto unclip(User user, Long postId) {
+        Post post = postFindService.findById(postId);
+        Optional<Clip> clip = clipRepository.findClipByUserAndPost(user, post);
 
-  @Transactional
-  public ClipStatusResponseDto unclip(User user, Long postId) {
-    Post post = postFindService.findById(postId);
-    Optional<Clip> clip = clipRepository.findClipByUserAndPost(user, post);
+        if (clip.isPresent()) {
+            clipRepository.delete(clip.get());
+        }
 
-    if (clip.isPresent()) {
-      clipRepository.delete(clip.get());
+        return ClipStatusResponseDto.from("ok");
     }
 
-    return ClipStatusResponseDto.from("ok");
-  }
+    public List<ClipPostThumbnailResponse> getClipPostThumbnails(
+            final User user, final Pageable pageable
+    ) {
+        final List<Clip> clips = clipRepository.findClipByUser(user, pageable);
 
-  public List<ClipPostThumbnailResponse> getClipPostThumbnails(
-      final User user, final Pageable pageable
-  ) {
-    final List<Clip> clips = clipRepository.findClipByUser(user, pageable);
+        final List<ClipPostThumbnailResponse> response = new ArrayList<>();
 
-    final List<ClipPostThumbnailResponse> response = new ArrayList<>();
+        for (final Clip clip : clips) {
+            final Long clipId = clip.getId();
+            final String thumbnailPath = clip.getPost().getThumbnail().getPath();
+            response.add(new ClipPostThumbnailResponse(clipId, thumbnailPath));
+        }
 
-    for (final Clip clip : clips) {
-      final Long clipId = clip.getId();
-      final String thumbnailPath = clip.getPost().getThumbnail().getPath();
-      response.add(new ClipPostThumbnailResponse(clipId, thumbnailPath));
+        return response;
     }
-
-    return response;
-  }
 }

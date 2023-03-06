@@ -12,9 +12,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = {NotMeValidator.class})
 public @interface NotMe {
 
-  String message() default "Unable to request yourself";
+    String message() default "Unable to request yourself";
 
-  Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-  Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

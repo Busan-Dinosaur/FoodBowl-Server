@@ -23,34 +23,35 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignUpRequestDto {
 
-  @Pattern(regexp = "^[a-zA-Z0-9_]{4,12}", message = Message.LOGIN_ID_INVALID)
-  private String loginId;
-  @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$", message = Message.PASSWORD_INVALID)
-  private String password;
-  @Valid
-  private Nickname nickname;
-  @Length(max = MAX_INTRODUCE_LENGTH)
-  private String introduce;
-  @ImageOrNull
-  private MultipartFile thumbnail;
+    @Pattern(regexp = "^[a-zA-Z0-9_]{4,12}", message = Message.LOGIN_ID_INVALID)
+    private String loginId;
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$", message = Message.PASSWORD_INVALID)
+    private String password;
+    @Valid
+    private Nickname nickname;
+    @Length(max = MAX_INTRODUCE_LENGTH)
+    private String introduce;
+    @ImageOrNull
+    private MultipartFile thumbnail;
 
-  @Builder
-  private SignUpRequestDto(String loginId, String password, Nickname nickname,
-      String introduce, MultipartFile thumbnail) {
-    this.loginId = loginId;
-    this.password = password;
-    this.nickname = nickname;
-    this.introduce = introduce;
-    this.thumbnail = thumbnail;
-  }
+    @Builder
+    private SignUpRequestDto(String loginId, String password, Nickname nickname, String introduce,
+            MultipartFile thumbnail
+    ) {
+        this.loginId = loginId;
+        this.password = password;
+        this.nickname = nickname;
+        this.introduce = introduce;
+        this.thumbnail = thumbnail;
+    }
 
-  public User toEntity(Thumbnail thumbnail, PasswordEncoder passwordEncoder) {
-    return User.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .nickname(nickname)
-        .introduce(introduce)
-        .thumbnail(thumbnail)
-        .build();
-  }
+    public User toEntity(Thumbnail thumbnail, PasswordEncoder passwordEncoder) {
+        return User.builder()
+                .loginId(loginId)
+                .password(passwordEncoder.encode(password))
+                .nickname(nickname)
+                .introduce(introduce)
+                .thumbnail(thumbnail)
+                .build();
+    }
 }

@@ -5,13 +5,13 @@ import lombok.Getter;
 @Getter
 public enum JwtConstants {
 
-  CLAIMS_SUB("sub"),
-  CLAIMS_ROLES("roles"),
-  DELIMITER(",");
+    CLAIMS_SUB("sub"),
+    CLAIMS_ROLES("roles"),
+    DELIMITER(",");
 
-  private final String name;
+    private final String name;
 
-  JwtConstants(String name) {
-    this.name = name;
-  }
+    JwtConstants(String name) {
+        this.name = name;
+    }
 }

@@ -15,63 +15,64 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentTestHelper {
 
-  @Autowired
-  private CommentRepository commentRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
-  @Autowired
-  private UserTestHelper userTestHelper;
+    @Autowired
+    private UserTestHelper userTestHelper;
 
-  @Autowired
-  private PostTestHelper postTestHelper;
+    @Autowired
+    private PostTestHelper postTestHelper;
 
-  private String getRandomUUIDLengthWith(int length) {
-    String randomString = UUID.randomUUID()
-        .toString();
-    length = Math.min(length, randomString.length());
-    return randomString.substring(0, length);
-  }
-
-  public CommentBuilder builder() {
-    return new CommentBuilder();
-  }
-
-  public final class CommentBuilder {
-
-    private Comment comment;
-    private Post post;
-    private User user;
-    private String message;
-
-    private CommentBuilder() {
+    private String getRandomUUIDLengthWith(int length) {
+        String randomString = UUID.randomUUID().toString();
+        length = Math.min(length, randomString.length());
+        return randomString.substring(0, length);
     }
 
-    public CommentBuilder comment(Comment comment) {
-      this.comment = comment;
-      return this;
+    public CommentBuilder builder() {
+        return new CommentBuilder();
     }
 
-    public CommentBuilder post(Post post) {
-      this.post = post;
-      return this;
-    }
+    public final class CommentBuilder {
 
-    public CommentBuilder user(User user) {
-      this.user = user;
-      return this;
-    }
+        private Comment comment;
+        private Post post;
+        private User user;
+        private String message;
 
-    public CommentBuilder message(String message) {
-      this.message = message;
-      return this;
-    }
+        private CommentBuilder() {
+        }
 
-    public Comment build() {
-      return commentRepository.save(Comment.builder()
-          .comment(comment)
-          .post(post != null ? post : postTestHelper.builder().build())
-          .user(user != null ? user : userTestHelper.builder().build())
-          .message(message != null ? message : getRandomUUIDLengthWith(MAX_MESSAGE_LENGTH))
-          .build());
+        public CommentBuilder comment(Comment comment) {
+            this.comment = comment;
+            return this;
+        }
+
+        public CommentBuilder post(Post post) {
+            this.post = post;
+            return this;
+        }
+
+        public CommentBuilder user(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public CommentBuilder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Comment build() {
+            return commentRepository.save(Comment.builder()
+                    .comment(comment)
+                    .post(post != null ? post : postTestHelper.builder().build())
+                    .user(user != null ? user : userTestHelper.builder().build())
+                    .message(message != null ?
+                            message : getRandomUUIDLengthWith(MAX_MESSAGE_LENGTH)
+                    )
+                    .build());
+        }
     }
-  }
 }

@@ -23,25 +23,25 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Photo extends BaseEntity {
 
-  public static final int MAX_PATH_LENGTH = 512;
+    public static final int MAX_PATH_LENGTH = 512;
 
-  @Getter
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long id;
+    @Getter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "post_id", nullable = false)
-  private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
-  @Getter
-  @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
-  private String path;
+    @Getter
+    @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
+    private String path;
 
-  @Builder
-  private Photo(Post post, String path) {
-    this.post = post;
-    this.path = path;
-  }
+    @Builder
+    private Photo(Post post, String path) {
+        this.post = post;
+        this.path = path;
+    }
 }

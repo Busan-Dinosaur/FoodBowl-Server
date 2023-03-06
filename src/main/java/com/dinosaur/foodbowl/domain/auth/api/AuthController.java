@@ -33,65 +33,67 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class AuthController {
 
-  private final AuthService authService;
-  private final TokenService tokenService;
-  private final CookieUtils cookieUtils;
+    private final AuthService authService;
+    private final TokenService tokenService;
+    private final CookieUtils cookieUtils;
 
-  @GetMapping("/health-check")
-  public String healthCheck() {
-    return "health-check";
-  }
+    @GetMapping("/health-check")
+    public String healthCheck() {
+        return "health-check";
+    }
 
-  @PostMapping("/sign-up")
-  public ResponseEntity<SignUpResponseDto> signUp(@Valid @ModelAttribute SignUpRequestDto request,
-      HttpServletResponse response) {
-    SignUpResponseDto signUpResponseDto = authService.signUp(request);
+    @PostMapping("/sign-up")
+    public ResponseEntity<SignUpResponseDto> signUp(
+            @Valid @ModelAttribute SignUpRequestDto request, HttpServletResponse response
+    ) {
+        SignUpResponseDto signUpResponseDto = authService.signUp(request);
 
-    String accessToken = tokenService.createAccessToken(signUpResponseDto.getUserId(), ROLE_회원);
-    String refreshToken = tokenService.createRefreshToken(signUpResponseDto.getUserId());
+        String accessToken = tokenService.createAccessToken(signUpResponseDto.getUserId(), ROLE_회원);
+        String refreshToken = tokenService.createRefreshToken(signUpResponseDto.getUserId());
 
-    Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
-        (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-    Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
-        (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
+        Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
+                (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
+        Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+                (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
-    response.addCookie(accessCookie);
-    response.addCookie(refreshCookie);
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
 
-    return ResponseEntity.created(URI.create("/api/v1/users/" + signUpResponseDto.getUserId()))
-        .body(signUpResponseDto);
-  }
+        return ResponseEntity.created(URI.create("/api/v1/users/" + signUpResponseDto.getUserId()))
+                .body(signUpResponseDto);
+    }
 
-  @GetMapping("/sign-up/check/nickname")
-  public ResponseEntity<CheckResponseDto> checkNickname(@RequestParam @NotNull String nickname) {
-    CheckResponseDto response = authService.checkNickname(nickname);
+    @GetMapping("/sign-up/check/nickname")
+    public ResponseEntity<CheckResponseDto> checkNickname(@RequestParam @NotNull String nickname) {
+        CheckResponseDto response = authService.checkNickname(nickname);
 
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.ok(response);
+    }
 
-  @PostMapping("/log-in")
-  public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
-      HttpServletResponse response) {
-    long userId = authService.login(loginRequestDto);
+    @PostMapping("/log-in")
+    public ResponseEntity<Void> login(
+            @Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response
+    ) {
+        long userId = authService.login(loginRequestDto);
 
-    String accessToken = tokenService.createAccessToken(userId, ROLE_회원);
-    String refreshToken = tokenService.createRefreshToken(userId);
+        String accessToken = tokenService.createAccessToken(userId, ROLE_회원);
+        String refreshToken = tokenService.createRefreshToken(userId);
 
-    Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
-        (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-    Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
-        (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
+        Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), accessToken,
+                (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
+        Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(), refreshToken,
+                (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
-    response.addCookie(accessCookie);
-    response.addCookie(refreshCookie);
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
 
-    return ResponseEntity.ok().build();
-  }
+        return ResponseEntity.ok().build();
+    }
 
-  @PostMapping("/log-out")
-  public ResponseEntity<Void> logout(@LoginUser User user) {
-    tokenService.deleteToken(user.getId());
+    @PostMapping("/log-out")
+    public ResponseEntity<Void> logout(@LoginUser User user) {
+        tokenService.deleteToken(user.getId());
 
-    return ResponseEntity.noContent().build();
-  }
+        return ResponseEntity.noContent().build();
+    }
 }

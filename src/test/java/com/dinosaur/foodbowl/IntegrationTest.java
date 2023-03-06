@@ -89,182 +89,186 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class IntegrationTest {
 
-  /******* Dao *******/
-  @SpyBean
-  protected UserRepository userRepository;
+    /******* Dao *******/
+    @SpyBean
+    protected UserRepository userRepository;
 
-  @SpyBean
-  protected RoleRepository roleRepository;
+    @SpyBean
+    protected RoleRepository roleRepository;
 
-  @SpyBean
-  protected UserRoleRepository userRoleRepository;
+    @SpyBean
+    protected UserRoleRepository userRoleRepository;
 
-  @SpyBean
-  protected FollowRepository followRepository;
+    @SpyBean
+    protected FollowRepository followRepository;
 
-  @SpyBean
-  protected ThumbnailRepository thumbnailRepository;
+    @SpyBean
+    protected ThumbnailRepository thumbnailRepository;
 
-  @SpyBean
-  protected PostRepository postRepository;
+    @SpyBean
+    protected PostRepository postRepository;
 
-  @SpyBean
-  protected CategoryRepository categoryRepository;
+    @SpyBean
+    protected CategoryRepository categoryRepository;
 
-  @SpyBean
-  protected CommentRepository commentRepository;
+    @SpyBean
+    protected CommentRepository commentRepository;
 
-  @SpyBean
-  protected BlameRepository blameRepository;
+    @SpyBean
+    protected BlameRepository blameRepository;
 
-  @SpyBean
-  protected ClipRepository clipRepository;
+    @SpyBean
+    protected ClipRepository clipRepository;
 
-  @SpyBean
-  protected PhotoRepository photoRepository;
+    @SpyBean
+    protected PhotoRepository photoRepository;
 
-  /******* Service *******/
-  @SpyBean
-  protected AuthService authService;
+    /******* Service *******/
+    @SpyBean
+    protected AuthService authService;
 
-  @SpyBean
-  protected TokenService tokenService;
+    @SpyBean
+    protected TokenService tokenService;
 
-  @SpyBean
-  protected UserFindService userFindService;
+    @SpyBean
+    protected UserFindService userFindService;
 
-  @SpyBean
-  protected GetProfileService getProfileService;
+    @SpyBean
+    protected GetProfileService getProfileService;
 
-  @SpyBean
-  protected DeleteAccountService deleteAccountService;
+    @SpyBean
+    protected DeleteAccountService deleteAccountService;
 
-  @SpyBean
-  protected UpdateProfileService updateProfileService;
+    @SpyBean
+    protected UpdateProfileService updateProfileService;
 
-  @SpyBean
-  protected FollowService followService;
+    @SpyBean
+    protected FollowService followService;
 
-  @SpyBean
-  protected PhotoFileService photoFileService;
+    @SpyBean
+    protected PhotoFileService photoFileService;
 
-  @SpyBean
-  protected PostService postService;
+    @SpyBean
+    protected PostService postService;
 
-  @SpyBean
-  protected PostFindService postFindService;
+    @SpyBean
+    protected PostFindService postFindService;
 
-  @SpyBean
-  protected CommentService commentService;
+    @SpyBean
+    protected CommentService commentService;
 
-  @SpyBean
-  protected CommentFindService commentFindService;
+    @SpyBean
+    protected CommentFindService commentFindService;
 
-  @SpyBean
-  protected ClipService clipService;
+    @SpyBean
+    protected ClipService clipService;
 
-  /******* TestHelper *******/
-  @Autowired
-  protected UserTestHelper userTestHelper;
+    /******* TestHelper *******/
+    @Autowired
+    protected UserTestHelper userTestHelper;
 
-  @Autowired
-  protected ThumbnailTestHelper thumbnailTestHelper;
+    @Autowired
+    protected ThumbnailTestHelper thumbnailTestHelper;
 
-  @Autowired
-  protected PostTestHelper postTestHelper;
+    @Autowired
+    protected PostTestHelper postTestHelper;
 
-  @Autowired
-  protected PhotoTestHelper photoTestHelper;
+    @Autowired
+    protected PhotoTestHelper photoTestHelper;
 
-  @Autowired
-  protected CommentTestHelper commentTestHelper;
+    @Autowired
+    protected CommentTestHelper commentTestHelper;
 
-  @Autowired
-  protected BlameTestHelper blameTestHelper;
+    @Autowired
+    protected BlameTestHelper blameTestHelper;
 
-  @Autowired
-  protected ClipTestHelper clipTestHelper;
+    @Autowired
+    protected ClipTestHelper clipTestHelper;
 
-  @Autowired
-  protected FollowTestHelper followTestHelper;
+    @Autowired
+    protected FollowTestHelper followTestHelper;
 
-  @Autowired
-  protected PostCategoryTestHelper postCategoryTestHelper;
+    @Autowired
+    protected PostCategoryTestHelper postCategoryTestHelper;
 
-  /******* Util *******/
-  @SpyBean
-  protected ThumbnailFileUtil thumbnailFileUtil;
+    /******* Util *******/
+    @SpyBean
+    protected ThumbnailFileUtil thumbnailFileUtil;
 
-  @SpyBean
-  protected CookieUtils cookieUtils;
+    @SpyBean
+    protected CookieUtils cookieUtils;
 
-  /******* Spring Bean *******/
-  @Autowired
-  protected WebApplicationContext webApplicationContext;
+    /******* Spring Bean *******/
+    @Autowired
+    protected WebApplicationContext webApplicationContext;
 
-  @SpyBean
-  protected JwtTokenProvider jwtTokenProvider;
+    @SpyBean
+    protected JwtTokenProvider jwtTokenProvider;
 
-  @Autowired
-  protected PasswordEncoder passwordEncoder;
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
 
-  @Autowired
-  protected RedisTemplate redisTemplate;
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
-  @PersistenceContext
-  protected EntityManager em;
+    @PersistenceContext
+    protected EntityManager em;
 
-  protected MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
-  @BeforeEach
-  protected void setUpAll(RestDocumentationContextProvider restDocumentationContextProvider) {
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-        .addFilter(new CharacterEncodingFilter("UTF-8", true))
-        .apply(springSecurity())
-        .apply(documentationConfiguration(restDocumentationContextProvider)
-            .operationPreprocessors()
-            .withRequestDefaults(
-                modifyUris().scheme("https").host("docs.api.com").removePort(), prettyPrint())
-            .withResponseDefaults(prettyPrint())
-        )
-        .build();
-  }
-
-  @AfterAll
-  static void deleteAllThumbnails() throws IOException {
-    File todayThumbnailDirectory = new File(getTodayThumbnailFilesPath());
-    if (todayThumbnailDirectory.exists()) {
-      FileUtils.cleanDirectory(todayThumbnailDirectory);
+    @BeforeEach
+    protected void setUpAll(RestDocumentationContextProvider restDocumentationContextProvider) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .addFilter(new CharacterEncodingFilter("UTF-8", true))
+                .apply(springSecurity())
+                .apply(documentationConfiguration(restDocumentationContextProvider)
+                        .operationPreprocessors()
+                        .withRequestDefaults(
+                                modifyUris().scheme("https").host("docs.api.com").removePort(),
+                                prettyPrint()
+                        )
+                        .withResponseDefaults(prettyPrint())
+                )
+                .build();
     }
-  }
 
-  private static String getTodayThumbnailFilesPath() {
-    return new ClassPathResource("static").getPath() + separator +
-        "thumbnail" + separator +
-        LocalDate.now();
-  }
-
-  protected String asJsonString(final Object obj) {
-    try {
-      final ObjectMapper objectMapper = new ObjectMapper();
-      final String content = objectMapper.writeValueAsString(obj);
-      return content;
-    } catch (IOException e) {
-      throw new RuntimeException();
+    @AfterAll
+    static void deleteAllThumbnails() throws IOException {
+        File todayThumbnailDirectory = new File(getTodayThumbnailFilesPath());
+        if (todayThumbnailDirectory.exists()) {
+            FileUtils.cleanDirectory(todayThumbnailDirectory);
+        }
     }
-  }
 
-  protected void mockingAuth() {
-    User user = userTestHelper.builder().build();
-    ReflectionTestUtils.setField(user, "id", 1L);
-    UserDetails userDetails = new JwtUserEntity(String.valueOf(user.getId()), List.of("ROLE_회원"));
-    TokenValidationDto tokenDto = TokenValidationDto.of(true, VALID, "token");
-    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, "",
-        userDetails.getAuthorities());
+    private static String getTodayThumbnailFilesPath() {
+        return new ClassPathResource("static").getPath() + separator + "thumbnail"
+                + separator + LocalDate.now();
+    }
 
-    doReturn(tokenDto).when(jwtTokenProvider)
-        .tryCheckTokenValid(any(HttpServletRequest.class), any(JwtToken.class));
-    doReturn(auth).when(jwtTokenProvider).getAuthentication(anyString());
-    doReturn(user).when(userFindService).findById(anyLong());
-  }
+    protected String asJsonString(final Object obj) {
+        try {
+            final ObjectMapper objectMapper = new ObjectMapper();
+            final String content = objectMapper.writeValueAsString(obj);
+            return content;
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    protected void mockingAuth() {
+        User user = userTestHelper.builder().build();
+        ReflectionTestUtils.setField(user, "id", 1L);
+        UserDetails userDetails = new JwtUserEntity(
+                String.valueOf(user.getId()), List.of("ROLE_회원")
+        );
+        TokenValidationDto tokenDto = TokenValidationDto.of(true, VALID, "token");
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                userDetails, "", userDetails.getAuthorities()
+        );
+
+        doReturn(tokenDto).when(jwtTokenProvider)
+                .tryCheckTokenValid(any(HttpServletRequest.class), any(JwtToken.class));
+        doReturn(auth).when(jwtTokenProvider).getAuthentication(anyString());
+        doReturn(user).when(userFindService).findById(anyLong());
+    }
 }

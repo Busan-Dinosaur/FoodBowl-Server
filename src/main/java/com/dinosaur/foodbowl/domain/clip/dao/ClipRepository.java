@@ -12,14 +12,14 @@ import org.springframework.data.repository.Repository;
 
 public interface ClipRepository extends Repository<Clip, Long> {
 
-  Clip save(Clip save);
+    Clip save(Clip save);
 
-  void delete(Clip clip);
+    void delete(Clip clip);
 
-  boolean existsClipByUserAndPost(User user, Post post);
+    boolean existsClipByUserAndPost(User user, Post post);
 
-  Optional<Clip> findClipByUserAndPost(User user, Post post);
+    Optional<Clip> findClipByUserAndPost(User user, Post post);
 
-  @EntityGraph(attributePaths = {"post", "post.thumbnail"}, type = EntityGraphType.LOAD)
-  List<Clip> findClipByUser(User user, Pageable pageable);
+    @EntityGraph(attributePaths = {"post", "post.thumbnail"}, type = EntityGraphType.LOAD)
+    List<Clip> findClipByUser(User user, Pageable pageable);
 }

@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateProfileRequestDto {
 
-  @Length(max = MAX_INTRODUCE_LENGTH)
-  private String introduce;
-  @ImageOrNull
-  private MultipartFile thumbnail;
+    @Length(max = MAX_INTRODUCE_LENGTH)
+    private String introduce;
+    @ImageOrNull
+    private MultipartFile thumbnail;
 }

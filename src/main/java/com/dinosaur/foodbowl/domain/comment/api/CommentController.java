@@ -31,41 +31,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/comments")
 public class CommentController {
 
-  private final CommentService commentService;
+    private final CommentService commentService;
 
-  @PostMapping
-  public ResponseEntity<Void> writeComment(@LoginUser User user,
-      @Valid @RequestBody CommentWriteRequestDto commentWriteRequestDto) {
-    commentService.writeComment(user, commentWriteRequestDto);
+    @PostMapping
+    public ResponseEntity<Void> writeComment(
+            @LoginUser User user,
+            @Valid @RequestBody CommentWriteRequestDto commentWriteRequestDto
+    ) {
+        commentService.writeComment(user, commentWriteRequestDto);
 
-    return ResponseEntity.status(HttpStatus.SEE_OTHER)
-        .location(URI.create("/api/v1/comments/posts/" + commentWriteRequestDto.getPostId()))
-        .build();
-  }
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(
+                        URI.create("/api/v1/comments/posts/" + commentWriteRequestDto.getPostId())
+                )
+                .build();
+    }
 
-  @PatchMapping("/{id}")
-  public ResponseEntity<Void> updateComment(@LoginUser User user,
-      @PathVariable("id") Long commentId,
-      @RequestParam @NotBlank @Size(max = Comment.MAX_MESSAGE_LENGTH) String message) {
-    long postId = commentService.updateComment(user, commentId, message);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateComment(
+            @LoginUser User user,
+            @PathVariable("id") Long commentId,
+            @RequestParam @NotBlank @Size(max = Comment.MAX_MESSAGE_LENGTH) String message
+    ) {
+        long postId = commentService.updateComment(user, commentId, message);
 
-    return ResponseEntity.status(HttpStatus.SEE_OTHER)
-        .location(URI.create("/api/v1/comments/posts/" + postId))
-        .build();
-  }
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(URI.create("/api/v1/comments/posts/" + postId))
+                .build();
+    }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteComment(@LoginUser User user,
-      @PathVariable("id") Long commentId) {
-    commentService.deleteComment(user, commentId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(
+            @LoginUser User user, @PathVariable("id") Long commentId
+    ) {
+        commentService.deleteComment(user, commentId);
 
-    return ResponseEntity.noContent().build();
-  }
+        return ResponseEntity.noContent().build();
+    }
 
-  @GetMapping("/posts/{id}")
-  public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable("id") Long postId) {
-    List<CommentResponseDto> comments = commentService.getComments(postId);
+    @GetMapping("/posts/{id}")
+    public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable("id") Long postId) {
+        List<CommentResponseDto> comments = commentService.getComments(postId);
 
-    return ResponseEntity.ok(comments);
-  }
+        return ResponseEntity.ok(comments);
+    }
 }

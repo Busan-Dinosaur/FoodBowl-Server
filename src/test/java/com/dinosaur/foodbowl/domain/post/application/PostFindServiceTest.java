@@ -12,25 +12,25 @@ import org.junit.jupiter.api.Test;
 
 class PostFindServiceTest extends IntegrationTest {
 
-  @Nested
-  class 게시글_조회 {
+    @Nested
+    class 게시글_조회 {
 
-    @Test
-    void 게시글_ID가_존재하면_게시글을_조회한다() {
-      Post savedPost = postTestHelper.builder().build();
+        @Test
+        void 게시글_ID가_존재하면_게시글을_조회한다() {
+            Post savedPost = postTestHelper.builder().build();
 
-      Post findPost = postFindService.findById(savedPost.getId());
+            Post findPost = postFindService.findById(savedPost.getId());
 
-      assertThat(savedPost).isEqualTo(findPost);
+            assertThat(savedPost).isEqualTo(findPost);
+        }
+
+        @Test
+        void 게시글_ID가_존재하지_않으면_예외가_발생한다() {
+            long postId = -999l;
+
+            assertThatThrownBy(() -> postFindService.findById(postId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining(POST_NOT_FOUND.getMessage());
+        }
     }
-
-    @Test
-    void 게시글_ID가_존재하지_않으면_예외가_발생한다() {
-      long postId = -999l;
-
-      assertThatThrownBy(() -> postFindService.findById(postId))
-          .isInstanceOf(BusinessException.class)
-          .hasMessageContaining(POST_NOT_FOUND.getMessage());
-    }
-  }
 }

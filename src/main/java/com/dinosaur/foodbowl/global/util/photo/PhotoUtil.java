@@ -6,5 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public abstract class PhotoUtil {
 
-  public abstract List<Photo> save(List<MultipartFile> files);
+    public abstract List<Photo> save(List<MultipartFile> files);
 }

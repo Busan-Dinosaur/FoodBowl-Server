@@ -37,108 +37,108 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class User extends BaseEntity {
 
-  public static final int MAX_LOGIN_ID_LENGTH = 45;
-  public static final int MAX_PASSWORD_LENGTH = 512;
-  public static final int MAX_INTRODUCE_LENGTH = 255;
+    public static final int MAX_LOGIN_ID_LENGTH = 45;
+    public static final int MAX_PASSWORD_LENGTH = 512;
+    public static final int MAX_INTRODUCE_LENGTH = 255;
 
-  @Getter
-  @Id
-  @GeneratedValue(strategy = IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    @Getter
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @ManyToOne(fetch = LAZY, cascade = ALL)
-  @JoinColumn(name = "thumbnail_id")
-  private Thumbnail thumbnail;
+    @ManyToOne(fetch = LAZY, cascade = ALL)
+    @JoinColumn(name = "thumbnail_id")
+    private Thumbnail thumbnail;
 
-  @Getter
-  @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
-  private String loginId;
+    @Getter
+    @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
+    private String loginId;
 
-  @Getter
-  @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
-  private String password;
+    @Getter
+    @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
+    private String password;
 
-  @Getter
-  @Embedded
-  private Nickname nickname;
+    @Getter
+    @Embedded
+    private Nickname nickname;
 
-  @Getter
-  @Column(name = "introduce", length = MAX_INTRODUCE_LENGTH)
-  private String introduce;
+    @Getter
+    @Column(name = "introduce", length = MAX_INTRODUCE_LENGTH)
+    private String introduce;
 
-  @Getter
-  @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
-  private final Set<UserRole> userRole = new HashSet<>();
+    @Getter
+    @OneToMany(mappedBy = "user", cascade = ALL, orphanRemoval = true)
+    private final Set<UserRole> userRole = new HashSet<>();
 
-  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
-  private final Set<Follow> following = new HashSet<>();
+    @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
+    private final Set<Follow> following = new HashSet<>();
 
-  @OneToMany(mappedBy = "following", cascade = REMOVE)
-  private final Set<Follow> follower = new HashSet<>();
+    @OneToMany(mappedBy = "following", cascade = REMOVE)
+    private final Set<Follow> follower = new HashSet<>();
 
-  @OneToMany(mappedBy = "user", cascade = REMOVE)
-  private final List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = REMOVE)
+    private final List<Post> posts = new ArrayList<>();
 
-  @Builder
-  private User(Thumbnail thumbnail, String loginId, String password, Nickname nickname,
-      String introduce) {
-    this.thumbnail = thumbnail;
-    this.loginId = loginId;
-    this.password = password;
-    this.nickname = nickname;
-    this.introduce = introduce;
-    this.assignRole(RoleType.ROLE_회원);
-  }
-
-  public void assignRole(RoleType roleType) {
-    this.userRole.add(UserRole.builder()
-        .user(this)
-        .role(Role.getRoleBy(roleType))
-        .build());
-  }
-
-  public Optional<String> getThumbnailURL() {
-    return thumbnail == null ? Optional.empty() : Optional.of(thumbnail.getPath());
-  }
-
-  public boolean containsRole(RoleType roleType) {
-    return userRole.contains(UserRole.builder()
-        .user(this)
-        .role(Role.getRoleBy(roleType))
-        .build());
-  }
-
-  public void updateProfile(Thumbnail thumbnail, String introduce) {
-    if (thumbnail != null) {
-      this.thumbnail = thumbnail;
+    @Builder
+    private User(Thumbnail thumbnail, String loginId, String password, Nickname nickname,
+            String introduce) {
+        this.thumbnail = thumbnail;
+        this.loginId = loginId;
+        this.password = password;
+        this.nickname = nickname;
+        this.introduce = introduce;
+        this.assignRole(RoleType.ROLE_회원);
     }
-    if (introduce != null) {
-      this.introduce = introduce;
+
+    public void assignRole(RoleType roleType) {
+        this.userRole.add(UserRole.builder()
+                .user(this)
+                .role(Role.getRoleBy(roleType))
+                .build());
     }
-  }
 
-  public void follow(User other) {
-    following.add(Follow.builder()
-        .follower(this)
-        .following(other)
-        .build());
-  }
+    public Optional<String> getThumbnailURL() {
+        return thumbnail == null ? Optional.empty() : Optional.of(thumbnail.getPath());
+    }
 
-  public void unfollow(User other) {
-    following.removeIf(follow -> follow.getFollowing().equals(other));
-  }
+    public boolean containsRole(RoleType roleType) {
+        return userRole.contains(UserRole.builder()
+                .user(this)
+                .role(Role.getRoleBy(roleType))
+                .build());
+    }
 
-  public boolean isFollowing(User other) {
-    return following.stream()
-        .anyMatch(follow -> follow.getFollowing().equals(other));
-  }
+    public void updateProfile(Thumbnail thumbnail, String introduce) {
+        if (thumbnail != null) {
+            this.thumbnail = thumbnail;
+        }
+        if (introduce != null) {
+            this.introduce = introduce;
+        }
+    }
 
-  public long getPostCount() {
-    return posts.size();
-  }
+    public void follow(User other) {
+        following.add(Follow.builder()
+                .follower(this)
+                .following(other)
+                .build());
+    }
 
-  public int getFollowerSize() {
-    return follower.size();
-  }
+    public void unfollow(User other) {
+        following.removeIf(follow -> follow.getFollowing().equals(other));
+    }
+
+    public boolean isFollowing(User other) {
+        return following.stream()
+                .anyMatch(follow -> follow.getFollowing().equals(other));
+    }
+
+    public long getPostCount() {
+        return posts.size();
+    }
+
+    public int getFollowerSize() {
+        return follower.size();
+    }
 }

@@ -11,10 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DeleteAccountService {
 
-  private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  @Transactional
-  public void deleteMySelf(User me) {
-    userRepository.delete(me);
-  }
+    @Transactional
+    public void deleteMySelf(User me) {
+        userRepository.delete(me);
+    }
 }

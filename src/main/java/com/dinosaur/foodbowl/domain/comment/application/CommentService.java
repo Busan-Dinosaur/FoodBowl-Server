@@ -21,47 +21,47 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CommentService {
 
-  private final CommentRepository commentRepository;
-  private final CommentFindService commentFindService;
-  private final PostFindService postFindService;
+    private final CommentRepository commentRepository;
+    private final CommentFindService commentFindService;
+    private final PostFindService postFindService;
 
-  @Transactional
-  public void writeComment(User loginUser, CommentWriteRequestDto request) {
-    Post post = postFindService.findById(request.getPostId());
-    Comment comment = request.toEntity(loginUser, post);
+    @Transactional
+    public void writeComment(User loginUser, CommentWriteRequestDto request) {
+        Post post = postFindService.findById(request.getPostId());
+        Comment comment = request.toEntity(loginUser, post);
 
-    commentRepository.save(comment);
-  }
-
-  @Transactional
-  public long updateComment(User user, Long commentId, String message) {
-    Comment comment = commentFindService.findById(commentId);
-
-    if (!comment.getUser().equals(user)) {
-      throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);
+        commentRepository.save(comment);
     }
 
-    comment.updateMessage(message);
-    return comment.getPost().getId();
-  }
+    @Transactional
+    public long updateComment(User user, Long commentId, String message) {
+        Comment comment = commentFindService.findById(commentId);
 
-  @Transactional
-  public void deleteComment(User user, Long commentId) {
-    Comment comment = commentFindService.findById(commentId);
+        if (!comment.getUser().equals(user)) {
+            throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);
+        }
 
-    if (!comment.getUser().equals(user)) {
-      throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);
+        comment.updateMessage(message);
+        return comment.getPost().getId();
     }
 
-    commentRepository.delete(comment);
-  }
+    @Transactional
+    public void deleteComment(User user, Long commentId) {
+        Comment comment = commentFindService.findById(commentId);
 
-  public List<CommentResponseDto> getComments(final long postId) {
-    Post post = postFindService.findById(postId);
-    List<Comment> comments = commentRepository.findUnrestrictedComments(post);
+        if (!comment.getUser().equals(user)) {
+            throw new BusinessException(user.getId(), "userId", COMMENT_NOT_WRITER);
+        }
 
-    return comments.stream()
-        .map(CommentResponseDto::from)
-        .collect(Collectors.toList());
-  }
+        commentRepository.delete(comment);
+    }
+
+    public List<CommentResponseDto> getComments(final long postId) {
+        Post post = postFindService.findById(postId);
+        List<Comment> comments = commentRepository.findUnrestrictedComments(post);
+
+        return comments.stream()
+                .map(CommentResponseDto::from)
+                .collect(Collectors.toList());
+    }
 }

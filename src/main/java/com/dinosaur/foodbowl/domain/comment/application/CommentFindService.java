@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CommentFindService {
 
-  private final CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 
-  public Comment findById(final long id) {
-    return commentRepository.findById(id)
-        .orElseThrow(() -> new BusinessException(id, "commentId", COMMENT_NOT_FOUND));
-  }
+    public Comment findById(final long id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(id, "commentId", COMMENT_NOT_FOUND));
+    }
 }

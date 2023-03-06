@@ -26,30 +26,30 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"user", "targetId", "targetType"}, callSuper = false)
 public class Blame extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false, updatable = false)
-  private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
 
-  @Column(name = "target_id", nullable = false, updatable = false)
-  private Long targetId;
+    @Column(name = "target_id", nullable = false, updatable = false)
+    private Long targetId;
 
-  @Enumerated(value = EnumType.ORDINAL)
-  @Column(name = "target_type", nullable = false, updatable = false)
-  private TargetType targetType;
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(name = "target_type", nullable = false, updatable = false)
+    private TargetType targetType;
 
-  public enum TargetType {
-    USER, POST, COMMENT;
-  }
+    public enum TargetType {
+        USER, POST, COMMENT;
+    }
 
-  @Builder
-  private Blame(User user, Long targetId, TargetType targetType) {
-    this.user = user;
-    this.targetId = targetId;
-    this.targetType = targetType;
-  }
+    @Builder
+    private Blame(User user, Long targetId, TargetType targetType) {
+        this.user = user;
+        this.targetId = targetId;
+        this.targetType = targetType;
+    }
 }

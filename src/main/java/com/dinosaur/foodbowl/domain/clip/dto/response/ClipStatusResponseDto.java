@@ -10,11 +10,11 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClipStatusResponseDto {
 
-  private String status;
+    private String status;
 
-  public static ClipStatusResponseDto from(String status) {
-    return ClipStatusResponseDto.builder()
-        .status(status)
-        .build();
-  }
+    public static ClipStatusResponseDto from(String status) {
+        return ClipStatusResponseDto.builder()
+                .status(status)
+                .build();
+    }
 }

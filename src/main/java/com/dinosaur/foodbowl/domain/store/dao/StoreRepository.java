@@ -8,12 +8,12 @@ import org.springframework.data.repository.Repository;
 
 public interface StoreRepository extends Repository<Store, Long> {
 
-  Store save(Store store);
+    Store save(Store store);
 
-  boolean existsByStoreName(String storeName);
+    boolean existsByStoreName(String storeName);
 
-  Store findByStoreName(String storeName);
+    Store findByStoreName(String storeName);
 
-  @EntityGraph(attributePaths = {"address"})
-  List<Store> findStoresByStoreNameContaining(String storeName, Pageable pageable);
+    @EntityGraph(attributePaths = {"address"})
+    List<Store> findStoresByStoreNameContaining(String storeName, Pageable pageable);
 }

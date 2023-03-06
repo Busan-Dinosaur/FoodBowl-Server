@@ -25,30 +25,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-  private final DeleteAccountService deleteAccountService;
-  private final UpdateProfileService updateProfileService;
-  private final GetProfileService getProfileService;
+    private final DeleteAccountService deleteAccountService;
+    private final UpdateProfileService updateProfileService;
+    private final GetProfileService getProfileService;
 
-  @DeleteMapping
-  public ResponseEntity<Void> deleteAccount(@LoginUser User me) {
-    deleteAccountService.deleteMySelf(me);
-    return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .build();
-  }
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAccount(@LoginUser User me) {
+        deleteAccountService.deleteMySelf(me);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 
-  @PatchMapping
-  public ResponseEntity<Void> updateProfile(
-      @ModelAttribute @Valid UpdateProfileRequestDto requestDto, @LoginUser User me) {
-    long userId = updateProfileService.updateProfile(me, requestDto);
-    return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .location(URI.create("/api/v1/users/" + userId))
-        .build();
-  }
+    @PatchMapping
+    public ResponseEntity<Void> updateProfile(
+            @ModelAttribute @Valid UpdateProfileRequestDto requestDto, @LoginUser User me) {
+        long userId = updateProfileService.updateProfile(me, requestDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .location(URI.create("/api/v1/users/" + userId))
+                .build();
+    }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<ProfileResponseDto> getProfile(@PathVariable long userId) {
-    ProfileResponseDto profile = getProfileService.getProfile(userId);
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(profile);
-  }
+    @GetMapping("/{userId}")
+    public ResponseEntity<ProfileResponseDto> getProfile(@PathVariable long userId) {
+        ProfileResponseDto profile = getProfileService.getProfile(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(profile);
+    }
 }

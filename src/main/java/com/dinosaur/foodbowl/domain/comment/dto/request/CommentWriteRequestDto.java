@@ -18,18 +18,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentWriteRequestDto {
 
-  @NotNull
-  private Long postId;
+    @NotNull
+    private Long postId;
 
-  @NotBlank
-  @Size(max = Comment.MAX_MESSAGE_LENGTH)
-  private String message;
+    @NotBlank
+    @Size(max = Comment.MAX_MESSAGE_LENGTH)
+    private String message;
 
-  public Comment toEntity(User user, Post post) {
-    return Comment.builder()
-        .post(post)
-        .user(user)
-        .message(message)
-        .build();
-  }
+    public Comment toEntity(User user, Post post) {
+        return Comment.builder()
+                .post(post)
+                .user(user)
+                .message(message)
+                .build();
+    }
 }

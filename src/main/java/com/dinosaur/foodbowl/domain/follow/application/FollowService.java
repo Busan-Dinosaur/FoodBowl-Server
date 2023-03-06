@@ -11,27 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FollowService {
 
-  private final UserFindService userFindService;
+    private final UserFindService userFindService;
 
-  @Transactional
-  public void follow(User me, Long otherId) {
-    User other = userFindService.findById(otherId);
+    @Transactional
+    public void follow(User me, Long otherId) {
+        User other = userFindService.findById(otherId);
 
-    if (me.isFollowing(other)) {
-      return;
+        if (me.isFollowing(other)) {
+            return;
+        }
+
+        me.follow(other);
     }
 
-    me.follow(other);
-  }
+    @Transactional
+    public void unfollow(User me, Long otherId) {
+        User other = userFindService.findById(otherId);
 
-  @Transactional
-  public void unfollow(User me, Long otherId) {
-    User other = userFindService.findById(otherId);
+        if (!me.isFollowing(other)) {
+            return;
+        }
 
-    if (!me.isFollowing(other)) {
-      return;
+        me.unfollow(other);
     }
-
-    me.unfollow(other);
-  }
 }

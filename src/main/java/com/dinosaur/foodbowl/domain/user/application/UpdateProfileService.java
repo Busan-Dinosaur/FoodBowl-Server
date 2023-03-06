@@ -14,13 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UpdateProfileService {
 
-  private final ThumbnailUtil thumbnailUtil;
+    private final ThumbnailUtil thumbnailUtil;
 
-  @Transactional
-  public long updateProfile(User me, UpdateProfileRequestDto requestDto) {
-    Optional<Thumbnail> newThumbnail = thumbnailUtil
-        .saveIfExist(requestDto.getThumbnail());
-    me.updateProfile(newThumbnail.orElse(null), requestDto.getIntroduce());
-    return me.getId();
-  }
+    @Transactional
+    public long updateProfile(User me, UpdateProfileRequestDto requestDto) {
+        Optional<Thumbnail> newThumbnail = thumbnailUtil.saveIfExist(requestDto.getThumbnail());
+        me.updateProfile(newThumbnail.orElse(null), requestDto.getIntroduce());
+        return me.getId();
+    }
 }

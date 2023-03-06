@@ -1,6 +1,6 @@
 package com.dinosaur.foodbowl.domain.store.entity;
 
-import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.ALL;
 
 import com.dinosaur.foodbowl.domain.address.entity.Address;
 import com.dinosaur.foodbowl.global.entity.BaseEntity;
@@ -26,25 +26,25 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Store extends BaseEntity {
 
-  public static final int MAX_STORE_NAME_LENGTH = 100;
+    public static final int MAX_STORE_NAME_LENGTH = 100;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @Getter
-  @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
-  @JoinColumn(name = "address_id", nullable = false)
-  private Address address;
+    @Getter
+    @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
 
-  @Getter
-  @Column(name = "store_name", nullable = false, unique = true, length = MAX_STORE_NAME_LENGTH)
-  private String storeName;
+    @Getter
+    @Column(name = "store_name", nullable = false, unique = true, length = MAX_STORE_NAME_LENGTH)
+    private String storeName;
 
-  @Builder
-  private Store(Address address, String storeName) {
-    this.address = address;
-    this.storeName = storeName;
-  }
+    @Builder
+    private Store(Address address, String storeName) {
+        this.address = address;
+        this.storeName = storeName;
+    }
 }

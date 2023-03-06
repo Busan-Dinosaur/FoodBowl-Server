@@ -16,19 +16,20 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final UserFindService userFindService;
+    private final UserFindService userFindService;
 
-  @Override
-  public boolean supportsParameter(MethodParameter parameter) {
-    return parameter.hasParameterAnnotation(LoginUser.class) && parameter.getParameterType()
-        .equals(User.class);
-  }
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(LoginUser.class)
+                && parameter.getParameterType().equals(User.class);
+    }
 
-  @Override
-  public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    long loginUserId = Long.parseLong(authentication.getName());
-    return userFindService.findById(loginUserId);
-  }
+    @Override
+    public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        long loginUserId = Long.parseLong(authentication.getName());
+        return userFindService.findById(loginUserId);
+    }
 }

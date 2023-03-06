@@ -20,27 +20,28 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Thumbnail extends BaseEntity {
 
-  public static final int MAX_PATH_LENGTH = 512;
-  @Getter
-  @Id
-  @GeneratedValue(strategy = IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    public static final int MAX_PATH_LENGTH = 512;
 
-  @Getter
-  @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
-  private String path;
+    @Getter
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @Column(name = "width", nullable = false)
-  private Integer width;
+    @Getter
+    @Column(name = "path", nullable = false, length = MAX_PATH_LENGTH)
+    private String path;
 
-  @Column(name = "height", nullable = false)
-  private Integer height;
+    @Column(name = "width", nullable = false)
+    private Integer width;
 
-  @Builder
-  private Thumbnail(String path, Integer width, Integer height) {
-    this.path = path;
-    this.width = width;
-    this.height = height;
-  }
+    @Column(name = "height", nullable = false)
+    private Integer height;
+
+    @Builder
+    private Thumbnail(String path, Integer width, Integer height) {
+        this.path = path;
+        this.width = width;
+        this.height = height;
+    }
 }

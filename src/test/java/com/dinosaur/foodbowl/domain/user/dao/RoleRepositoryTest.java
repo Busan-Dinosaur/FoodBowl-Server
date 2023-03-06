@@ -13,17 +13,17 @@ import org.junit.jupiter.api.Test;
 
 class RoleRepositoryTest extends IntegrationTest {
 
-  @Nested
-  class 유저_역할 {
+    @Nested
+    class 유저_역할 {
 
-    @Test
-    void 유저_역할_DB_일치한다() {
-      List<Role> allRoles = roleRepository.findAll();
-      List<Role> allRoleTypes = Arrays.stream(RoleType.values())
-          .map(Role::getRoleBy)
-          .collect(Collectors.toList());
+        @Test
+        void 유저_역할_DB_일치한다() {
+            List<Role> allRoles = roleRepository.findAll();
+            List<Role> allRoleTypes = Arrays.stream(RoleType.values())
+                    .map(Role::getRoleBy)
+                    .collect(Collectors.toList());
 
-      assertThat(allRoles).containsAll(allRoleTypes);
+            assertThat(allRoles).containsAll(allRoleTypes);
+        }
     }
-  }
 }

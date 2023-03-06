@@ -15,98 +15,104 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddressTestHelper {
 
-  @Autowired
-  private AddressRepository addressRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
-  private String getRandomUUIDLengthWith(int length) {
-    String randomString = UUID.randomUUID()
-        .toString();
-    length = Math.min(length, randomString.length());
-    return randomString.substring(0, length);
-  }
-
-  public AddressBuilder builder() {
-    return new AddressBuilder();
-  }
-
-  public final class AddressBuilder {
-
-    private String addressName;
-    private String region1depthName;
-    private String region2depthName;
-    private String region3depthName;
-    private String roadName;
-    private String mainBuildingNo;
-    private String subBuildingNo;
-    private BigDecimal longitude;
-    private BigDecimal latitude;
-
-    private AddressBuilder() {
+    private String getRandomUUIDLengthWith(int length) {
+        String randomString = UUID.randomUUID()
+                .toString();
+        length = Math.min(length, randomString.length());
+        return randomString.substring(0, length);
     }
 
-    public AddressBuilder addressName(String addressName) {
-      this.addressName = addressName;
-      return this;
+    public AddressBuilder builder() {
+        return new AddressBuilder();
     }
 
-    public AddressBuilder region1depthName(String region1depthName) {
-      this.region1depthName = region1depthName;
-      return this;
-    }
+    public final class AddressBuilder {
 
-    public AddressBuilder region2depthName(String region2depthName) {
-      this.region2depthName = region2depthName;
-      return this;
-    }
+        private String addressName;
+        private String region1depthName;
+        private String region2depthName;
+        private String region3depthName;
+        private String roadName;
+        private String mainBuildingNo;
+        private String subBuildingNo;
+        private BigDecimal longitude;
+        private BigDecimal latitude;
 
-    public AddressBuilder region3depthName(String region3depthName) {
-      this.region3depthName = region3depthName;
-      return this;
-    }
+        private AddressBuilder() {
+        }
 
-    public AddressBuilder roadName(String roadName) {
-      this.roadName = roadName;
-      return this;
-    }
+        public AddressBuilder addressName(String addressName) {
+            this.addressName = addressName;
+            return this;
+        }
 
-    public AddressBuilder mainBuildingNo(String mainBuildingNo) {
-      this.mainBuildingNo = mainBuildingNo;
-      return this;
-    }
+        public AddressBuilder region1depthName(String region1depthName) {
+            this.region1depthName = region1depthName;
+            return this;
+        }
 
-    public AddressBuilder subBuildingNo(String subBuildingNo) {
-      this.subBuildingNo = subBuildingNo;
-      return this;
-    }
+        public AddressBuilder region2depthName(String region2depthName) {
+            this.region2depthName = region2depthName;
+            return this;
+        }
 
-    public AddressBuilder longitude(BigDecimal longitude) {
-      this.longitude = longitude;
-      return this;
-    }
+        public AddressBuilder region3depthName(String region3depthName) {
+            this.region3depthName = region3depthName;
+            return this;
+        }
 
-    public AddressBuilder latitude(BigDecimal latitude) {
-      this.latitude = latitude;
-      return this;
-    }
+        public AddressBuilder roadName(String roadName) {
+            this.roadName = roadName;
+            return this;
+        }
 
-    public Address build() {
-      return addressRepository.save(Address.builder()
-          .addressName(addressName != null ? addressName :
-              getRandomUUIDLengthWith(MAX_ADDRESS_NAME_LENGTH))
-          .region1depthName(region1depthName != null ? region1depthName
-              : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH))
-          .region2depthName(region2depthName != null ? region2depthName
-              : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH))
-          .region3depthName(region3depthName != null ? region3depthName
-              : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH))
-          .roadName(roadName != null ? roadName
-              : getRandomUUIDLengthWith(MAX_ROAD_NAME_LENGTH))
-          .mainBuildingNo(mainBuildingNo != null ? mainBuildingNo
-              : getRandomUUIDLengthWith(MAX_BUILDING_NO_LENGTH))
-          .subBuildingNo(subBuildingNo)
-          .longitude(longitude)
-          .latitude(latitude)
-          .build());
+        public AddressBuilder mainBuildingNo(String mainBuildingNo) {
+            this.mainBuildingNo = mainBuildingNo;
+            return this;
+        }
+
+        public AddressBuilder subBuildingNo(String subBuildingNo) {
+            this.subBuildingNo = subBuildingNo;
+            return this;
+        }
+
+        public AddressBuilder longitude(BigDecimal longitude) {
+            this.longitude = longitude;
+            return this;
+        }
+
+        public AddressBuilder latitude(BigDecimal latitude) {
+            this.latitude = latitude;
+            return this;
+        }
+
+        public Address build() {
+            return addressRepository.save(Address.builder()
+                    .addressName(addressName != null ?
+                            addressName : getRandomUUIDLengthWith(MAX_ADDRESS_NAME_LENGTH)
+                    )
+                    .region1depthName(region1depthName != null ?
+                            region1depthName : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH)
+                    )
+                    .region2depthName(region2depthName != null ?
+                            region2depthName : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH)
+                    )
+                    .region3depthName(region3depthName != null ?
+                            region3depthName : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH)
+                    )
+                    .roadName(roadName != null ?
+                            roadName : getRandomUUIDLengthWith(MAX_ROAD_NAME_LENGTH)
+                    )
+                    .mainBuildingNo(mainBuildingNo != null ?
+                            mainBuildingNo : getRandomUUIDLengthWith(MAX_BUILDING_NO_LENGTH)
+                    )
+                    .subBuildingNo(subBuildingNo)
+                    .longitude(longitude)
+                    .latitude(latitude)
+                    .build());
+        }
     }
-  }
 }

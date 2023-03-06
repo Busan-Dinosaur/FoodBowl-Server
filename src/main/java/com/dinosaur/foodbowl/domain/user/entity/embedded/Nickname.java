@@ -15,22 +15,22 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"nickname"}, callSuper = false)
 public class Nickname {
 
-  public static final int MAX_NICKNAME_LENGTH = 45;
-  public static final String PATTERN = "^[a-zA-Z0-9가-힣]{1,16}";
-  public static final String NICKNAME_INVALID = "닉네임은 1~16자 한글, 영어, 숫자만 가능합니다.";
+    public static final int MAX_NICKNAME_LENGTH = 45;
+    public static final String PATTERN = "^[a-zA-Z0-9가-힣]{1,16}";
+    public static final String NICKNAME_INVALID = "닉네임은 1~16자 한글, 영어, 숫자만 가능합니다.";
 
-  @Pattern(regexp = PATTERN, message = NICKNAME_INVALID)
-  @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
-  private String nickname;
+    @Pattern(regexp = PATTERN, message = NICKNAME_INVALID)
+    @Column(name = "nickname", nullable = false, unique = true, length = MAX_NICKNAME_LENGTH)
+    private String nickname;
 
-  @Builder
-  private Nickname(String nickname) {
-    this.nickname = nickname;
-  }
+    @Builder
+    private Nickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-  public static Nickname from(String nickname) {
-    return Nickname.builder()
-        .nickname(nickname)
-        .build();
-  }
+    public static Nickname from(String nickname) {
+        return Nickname.builder()
+                .nickname(nickname)
+                .build();
+    }
 }

@@ -18,15 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/stores")
 public class StoreController {
 
-  private final StoreService storeService;
+    private final StoreService storeService;
 
-  @GetMapping
-  public ResponseEntity<List<StoreSearchResponse>> searchStoresByName(
-      @RequestParam("name") String storeName,
-      @PageableDefault(size = 15, sort = "storeName", direction = Direction.ASC) Pageable pageable
-  ) {
-    final List<StoreSearchResponse> response = storeService.searchStoresByName(storeName, pageable);
+    @GetMapping
+    public ResponseEntity<List<StoreSearchResponse>> searchStoresByName(
+            @RequestParam("name") String storeName,
+            @PageableDefault(size = 15, sort = "storeName", direction = Direction.ASC) Pageable pageable
+    ) {
+        final List<StoreSearchResponse> response = storeService.searchStoresByName(
+                storeName, pageable
+        );
 
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.ok(response);
+    }
 }

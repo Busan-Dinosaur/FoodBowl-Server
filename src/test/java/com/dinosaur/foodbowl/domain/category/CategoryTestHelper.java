@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryTestHelper {
 
-  private static final Random random = new Random();
+    private static final Random random = new Random();
 
-  @Autowired
-  private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-  public Category generateRandomCategory() {
-    int choiceIndex = random.nextInt(CategoryType.values().length);
-    long choiceCategoryId = CategoryType.values()[choiceIndex].getId();
-    return categoryRepository.findById(choiceCategoryId).orElseThrow();
-  }
+    public Category generateRandomCategory() {
+        int choiceIndex = random.nextInt(CategoryType.values().length);
+        long choiceCategoryId = CategoryType.values()[choiceIndex].getId();
+        return categoryRepository.findById(choiceCategoryId).orElseThrow();
+    }
 }

@@ -44,121 +44,121 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Post extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false, updatable = false)
-  private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = REMOVE)
-  @JoinColumn(name = "thumbnail_id", nullable = false)
-  private Thumbnail thumbnail;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = REMOVE)
+    @JoinColumn(name = "thumbnail_id", nullable = false)
+    private Thumbnail thumbnail;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
-  @JoinColumn(name = "store_id", nullable = false)
-  private Store store;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = ALL)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
-  @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
-  private String content;
+    @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
+    private String content;
 
-  @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
-  private List<Photo> photos = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
+    private List<Photo> photos = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post", orphanRemoval = true)
-  private List<PostCategory> postCategories = new ArrayList<>();
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<PostCategory> postCategories = new ArrayList<>();
 
-  @OneToMany(cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "post_id")
-  private List<Comment> comments = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "post_id")
+    private List<Comment> comments = new ArrayList<>();
 
-  @LastModifiedDate
-  @Column(name = "updated_at", nullable = false)
-  private LocalDateTime updatedAt;
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final List<PostCategory> categories = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = REMOVE)
+    private final List<PostCategory> categories = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final List<Clip> clips = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = REMOVE)
+    private final List<Clip> clips = new ArrayList<>();
 
-  @Builder
-  private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos,
-      List<PostCategory> postCategories) {
-    this.user = user;
-    this.thumbnail = thumbnail;
-    this.store = store;
-    this.content = content;
-    this.photos = photos;
-    this.postCategories = postCategories;
-  }
+    @Builder
+    private Post(User user, Thumbnail thumbnail, Store store, String content, List<Photo> photos,
+            List<PostCategory> postCategories) {
+        this.user = user;
+        this.thumbnail = thumbnail;
+        this.store = store;
+        this.content = content;
+        this.photos = photos;
+        this.postCategories = postCategories;
+    }
 
-  public Post update(Thumbnail thumbnail, List<Photo> photos, List<Category> categories,
-      Store store, String content) {
-    this.content = content;
-    this.store = store;
-    this.thumbnail = thumbnail;
-    this.postCategories.clear();
-    this.updatePhotos(photos);
-    this.updateCategories(categories);
-    return this;
-  }
+    public Post update(Thumbnail thumbnail, List<Photo> photos, List<Category> categories,
+            Store store, String content) {
+        this.content = content;
+        this.store = store;
+        this.thumbnail = thumbnail;
+        this.postCategories.clear();
+        this.updatePhotos(photos);
+        this.updateCategories(categories);
+        return this;
+    }
 
-  private void updatePhotos(List<Photo> photos) {
-    this.photos.clear();
-    this.photos.addAll(photos);
-  }
+    private void updatePhotos(List<Photo> photos) {
+        this.photos.clear();
+        this.photos.addAll(photos);
+    }
 
-  public void addCategory(Category category) {
-    this.postCategories.add(PostCategory.builder()
-        .post(this)
-        .category(category)
-        .build());
-  }
+    public void addCategory(Category category) {
+        this.postCategories.add(PostCategory.builder()
+                .post(this)
+                .category(category)
+                .build());
+    }
 
-  public void updateCategories(List<Category> categories) {
-    List<PostCategory> postCategories = categories.stream()
-        .map(category -> PostCategory.builder()
-            .post(this)
-            .category(category)
-            .build())
-        .toList();
-    this.postCategories.clear();
-    this.postCategories.addAll(postCategories);
-  }
+    public void updateCategories(List<Category> categories) {
+        List<PostCategory> postCategories = categories.stream()
+                .map(category -> PostCategory.builder()
+                        .post(this)
+                        .category(category)
+                        .build())
+                .toList();
+        this.postCategories.clear();
+        this.postCategories.addAll(postCategories);
+    }
 
-  public boolean isWriter(User user) {
-    return this.user.equals(user);
-  }
+    public boolean isWriter(User user) {
+        return this.user.equals(user);
+    }
 
-  public List<String> getPhotoPaths() {
-    return photos.stream()
-        .map(Photo::getPath)
-        .collect(Collectors.toList());
-  }
+    public List<String> getPhotoPaths() {
+        return photos.stream()
+                .map(Photo::getPath)
+                .collect(Collectors.toList());
+    }
 
-  public List<String> getCategoryNames() {
-    return categories.stream()
-        .map(PostCategory::getCategory)
-        .map(Category::getCategoryType)
-        .map(CategoryType::toString)
-        .collect(Collectors.toList());
-  }
+    public List<String> getCategoryNames() {
+        return categories.stream()
+                .map(PostCategory::getCategory)
+                .map(Category::getCategoryType)
+                .map(CategoryType::toString)
+                .collect(Collectors.toList());
+    }
 
-  public int getClipSize() {
-    return clips.size();
-  }
+    public int getClipSize() {
+        return clips.size();
+    }
 
-  public int getCommentSize() {
-    return comments.size();
-  }
+    public int getCommentSize() {
+        return comments.size();
+    }
 
-  public boolean isCliped(final User user) {
-    return clips.stream()
-        .filter(clip -> clip.getUser().equals(user))
-        .findAny()
-        .isPresent();
-  }
+    public boolean isCliped(final User user) {
+        return clips.stream()
+                .filter(clip -> clip.getUser().equals(user))
+                .findAny()
+                .isPresent();
+    }
 }

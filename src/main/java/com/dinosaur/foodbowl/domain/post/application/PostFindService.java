@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostFindService {
 
-  private final PostRepository postRepository;
+    private final PostRepository postRepository;
 
-  public Post findById(final long id) {
-    return postRepository.findById(id)
-        .orElseThrow(() -> new BusinessException(id, "postId", POST_NOT_FOUND));
-  }
+    public Post findById(final long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(id, "postId", POST_NOT_FOUND));
+    }
 }

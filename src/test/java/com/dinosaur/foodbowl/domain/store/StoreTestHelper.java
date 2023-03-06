@@ -14,49 +14,50 @@ import org.springframework.stereotype.Component;
 @Component
 public class StoreTestHelper {
 
-  @Autowired
-  StoreRepository storeRepository;
+    @Autowired
+    StoreRepository storeRepository;
 
-  @Autowired
-  AddressTestHelper addressTestHelper;
+    @Autowired
+    AddressTestHelper addressTestHelper;
 
-  @Autowired
-  CategoryTestHelper categoryTestHelper;
+    @Autowired
+    CategoryTestHelper categoryTestHelper;
 
-  private String getRandomUUIDLengthWith(int length) {
-    String randomString = UUID.randomUUID()
-        .toString();
-    length = Math.min(length, randomString.length());
-    return randomString.substring(0, length);
-  }
-
-  public StoreBuilder builder() {
-    return new StoreBuilder();
-  }
-
-  public final class StoreBuilder {
-
-    private Address address;
-    private String storeName;
-
-    private StoreBuilder() {
+    private String getRandomUUIDLengthWith(int length) {
+        String randomString = UUID.randomUUID().toString();
+        length = Math.min(length, randomString.length());
+        return randomString.substring(0, length);
     }
 
-    public StoreBuilder address(Address address) {
-      this.address = address;
-      return this;
+    public StoreBuilder builder() {
+        return new StoreBuilder();
     }
 
-    public StoreBuilder storeName(String storeName) {
-      this.storeName = storeName;
-      return this;
-    }
+    public final class StoreBuilder {
 
-    public Store build() {
-      return storeRepository.save(Store.builder()
-          .address(address != null ? address : addressTestHelper.builder().build())
-          .storeName(storeName != null ? storeName : getRandomUUIDLengthWith(MAX_STORE_NAME_LENGTH))
-          .build());
+        private Address address;
+        private String storeName;
+
+        private StoreBuilder() {
+        }
+
+        public StoreBuilder address(Address address) {
+            this.address = address;
+            return this;
+        }
+
+        public StoreBuilder storeName(String storeName) {
+            this.storeName = storeName;
+            return this;
+        }
+
+        public Store build() {
+            return storeRepository.save(Store.builder()
+                    .address(address != null ? address : addressTestHelper.builder().build())
+                    .storeName(storeName != null ?
+                            storeName : getRandomUUIDLengthWith(MAX_STORE_NAME_LENGTH)
+                    )
+                    .build());
+        }
     }
-  }
 }

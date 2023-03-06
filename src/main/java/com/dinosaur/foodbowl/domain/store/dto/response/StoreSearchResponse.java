@@ -6,15 +6,15 @@ import lombok.Builder;
 
 @Builder
 public record StoreSearchResponse(
-    Long storeId, String storeName, long postCount, BigDecimal latitude, BigDecimal longitude) {
+        Long storeId, String storeName, long postCount, BigDecimal latitude, BigDecimal longitude) {
 
-  public static StoreSearchResponse from(final Store store, final long postCount) {
-    return StoreSearchResponse.builder()
-        .storeId(store.getId())
-        .storeName(store.getStoreName())
-        .postCount(postCount)
-        .latitude(store.getAddress().getLatitude())
-        .longitude(store.getAddress().getLongitude())
-        .build();
-  }
+    public static StoreSearchResponse from(final Store store, final long postCount) {
+        return StoreSearchResponse.builder()
+                .storeId(store.getId())
+                .storeName(store.getStoreName())
+                .postCount(postCount)
+                .latitude(store.getAddress().getLatitude())
+                .longitude(store.getAddress().getLongitude())
+                .build();
+    }
 }

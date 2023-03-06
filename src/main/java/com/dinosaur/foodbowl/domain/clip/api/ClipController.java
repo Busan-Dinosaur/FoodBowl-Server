@@ -22,32 +22,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/clips")
 public class ClipController {
 
-  private final ClipService clipService;
+    private final ClipService clipService;
 
-  @PostMapping("/posts/{id}/clip")
-  public ResponseEntity<ClipStatusResponseDto> clip(@PathVariable("id") Long postId,
-      @LoginUser User user) {
-    ClipStatusResponseDto response = clipService.clip(user, postId);
+    @PostMapping("/posts/{id}/clip")
+    public ResponseEntity<ClipStatusResponseDto> clip(
+            @PathVariable("id") Long postId, @LoginUser User user
+    ) {
+        ClipStatusResponseDto response = clipService.clip(user, postId);
 
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.ok(response);
+    }
 
-  @PostMapping("/posts/{id}/unclip")
-  public ResponseEntity<ClipStatusResponseDto> unclip(@PathVariable("id") Long postId,
-      @LoginUser User user) {
-    ClipStatusResponseDto response = clipService.unclip(user, postId);
+    @PostMapping("/posts/{id}/unclip")
+    public ResponseEntity<ClipStatusResponseDto> unclip(
+            @PathVariable("id") Long postId, @LoginUser User user
+    ) {
+        ClipStatusResponseDto response = clipService.unclip(user, postId);
 
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.ok(response);
+    }
 
-  @GetMapping("/thumbnails")
-  public ResponseEntity<List<ClipPostThumbnailResponse>> getClipPostThumbnails(
-      @LoginUser User user,
-      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
-  ) {
-    final List<ClipPostThumbnailResponse> response = clipService.getClipPostThumbnails(user,
-        pageable);
+    @GetMapping("/thumbnails")
+    public ResponseEntity<List<ClipPostThumbnailResponse>> getClipPostThumbnails(
+            @LoginUser User user,
+            @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+    ) {
+        final List<ClipPostThumbnailResponse> response = clipService.getClipPostThumbnails(
+                user, pageable
+        );
 
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.ok(response);
+    }
 }

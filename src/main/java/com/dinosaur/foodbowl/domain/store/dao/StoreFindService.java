@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StoreFindService {
 
-  private final StoreRepository storeRepository;
+    private final StoreRepository storeRepository;
 
-  public Store findStoreByName(StoreRequestDto store, AddressRequestDto address) {
-    if (storeRepository.existsByStoreName(store.getStoreName())) {
-      return storeRepository.findByStoreName(store.getStoreName());
+    public Store findStoreByName(StoreRequestDto store, AddressRequestDto address) {
+        if (storeRepository.existsByStoreName(store.getStoreName())) {
+            return storeRepository.findByStoreName(store.getStoreName());
+        }
+        return store.toEntity(address);
     }
-    return store.toEntity(address);
-  }
 }

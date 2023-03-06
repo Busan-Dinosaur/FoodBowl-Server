@@ -14,18 +14,18 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponseDto {
 
-  private String nickname;
-  private String userThumbnailPath;
-  private String message;
-  @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-  private LocalDateTime createdAt;
+    private String nickname;
+    private String userThumbnailPath;
+    private String message;
+    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdAt;
 
-  public static CommentResponseDto from(Comment comment) {
-    return CommentResponseDto.builder()
-        .nickname(comment.getUser().getNickname().getNickname())
-        .userThumbnailPath(comment.getUser().getThumbnailURL().orElseGet(() -> null))
-        .message(comment.getMessage())
-        .createdAt(comment.getCreatedAt())
-        .build();
-  }
+    public static CommentResponseDto from(Comment comment) {
+        return CommentResponseDto.builder()
+                .nickname(comment.getUser().getNickname().getNickname())
+                .userThumbnailPath(comment.getUser().getThumbnailURL().orElseGet(() -> null))
+                .message(comment.getMessage())
+                .createdAt(comment.getCreatedAt())
+                .build();
+    }
 }

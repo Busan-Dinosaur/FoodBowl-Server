@@ -11,43 +11,43 @@ import org.springframework.stereotype.Component;
 @Component
 public class BlameTestHelper {
 
-  @Autowired
-  private BlameRepository blameRepository;
+    @Autowired
+    private BlameRepository blameRepository;
 
-  @Autowired
-  private UserTestHelper userTestHelper;
+    @Autowired
+    private UserTestHelper userTestHelper;
 
-  public BlameBuilder builder() {
-    return new BlameBuilder();
-  }
-
-  public final class BlameBuilder {
-
-    private User user;
-    private Long targetId;
-    private TargetType targetType;
-
-    public BlameBuilder user(User user) {
-      this.user = user;
-      return this;
+    public BlameBuilder builder() {
+        return new BlameBuilder();
     }
 
-    public BlameBuilder targetId(Long targetId) {
-      this.targetId = targetId;
-      return this;
-    }
+    public final class BlameBuilder {
 
-    public BlameBuilder targetType(TargetType targetType) {
-      this.targetType = targetType;
-      return this;
-    }
+        private User user;
+        private Long targetId;
+        private TargetType targetType;
 
-    public Blame build() {
-      return blameRepository.save(Blame.builder()
-          .user(user != null ? user : userTestHelper.builder().build())
-          .targetId(targetId != null ? targetId : 1L)
-          .targetType(targetType != null ? targetType : TargetType.USER)
-          .build());
+        public BlameBuilder user(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public BlameBuilder targetId(Long targetId) {
+            this.targetId = targetId;
+            return this;
+        }
+
+        public BlameBuilder targetType(TargetType targetType) {
+            this.targetType = targetType;
+            return this;
+        }
+
+        public Blame build() {
+            return blameRepository.save(Blame.builder()
+                    .user(user != null ? user : userTestHelper.builder().build())
+                    .targetId(targetId != null ? targetId : 1L)
+                    .targetType(targetType != null ? targetType : TargetType.USER)
+                    .build());
+        }
     }
-  }
 }

@@ -30,58 +30,69 @@ import org.springframework.web.filter.GenericFilterBean;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-  private final JwtTokenProvider jwtTokenProvider;
-  private final TokenService tokenService;
-  private final CookieUtils cookieUtils;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
+    private final CookieUtils cookieUtils;
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-      throws IOException, ServletException {
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-    HttpServletResponse httpResponse = (HttpServletResponse) response;
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-    var accessTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, ACCESS_TOKEN);
+        var accessTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, ACCESS_TOKEN);
 
-    if (accessTokenValidation.isValid()) {
-      setAuth(accessTokenValidation.getToken());
-    } else if (accessTokenValidation.getTokenType() == JwtValidationType.EXPIRED) {
-      var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, REFRESH_TOKEN);
-      String accessToken = jwtTokenProvider.extractToken(httpRequest, ACCESS_TOKEN);
-      Long userId = Long.parseLong(
-          jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString());
-      RoleType[] roles = getRoleTypes(
-          jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName()).toString());
+        if (accessTokenValidation.isValid()) {
+            setAuth(accessTokenValidation.getToken());
+        } else if (accessTokenValidation.getTokenType() == JwtValidationType.EXPIRED) {
+            var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(
+                    httpRequest, REFRESH_TOKEN
+            );
+            String accessToken = jwtTokenProvider.extractToken(httpRequest, ACCESS_TOKEN);
+            Long userId = Long.parseLong(
+                    jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString()
+            );
+            RoleType[] roles = getRoleTypes(
+                    jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName()).toString()
+            );
 
-      if (refreshTokenValidation.isValid() && tokenService.isValid(userId,
-          refreshTokenValidation.getToken())) {
-        String renewedAccessToken = tokenService.createAccessToken(userId, roles);
-        String renewedRefreshToken = tokenService.createRefreshToken(userId);
+            if (refreshTokenValidation.isValid() &&
+                    tokenService.isValid(userId, refreshTokenValidation.getToken())
+            ) {
+                String renewedAccessToken = tokenService.createAccessToken(userId, roles);
+                String renewedRefreshToken = tokenService.createRefreshToken(userId);
 
-        Cookie accessCookie = cookieUtils.generateCookie(ACCESS_TOKEN.getName(), renewedAccessToken,
-            (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
-        Cookie refreshCookie = cookieUtils.generateCookie(REFRESH_TOKEN.getName(),
-            renewedRefreshToken, (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
+                Cookie accessCookie = cookieUtils.generateCookie(
+                        ACCESS_TOKEN.getName(),
+                        renewedAccessToken,
+                        (int) ACCESS_TOKEN.getValidMilliSecond() / 1000
+                );
+                Cookie refreshCookie = cookieUtils.generateCookie(
+                        REFRESH_TOKEN.getName(),
+                        renewedRefreshToken,
+                        (int) REFRESH_TOKEN.getValidMilliSecond() / 1000
+                );
 
-        httpResponse.addCookie(accessCookie);
-        httpResponse.addCookie(refreshCookie);
+                httpResponse.addCookie(accessCookie);
+                httpResponse.addCookie(refreshCookie);
 
-        setAuth(renewedAccessToken);
-      }
-    } else {
-      log.info(accessTokenValidation.getTokenType().getMsg());
+                setAuth(renewedAccessToken);
+            }
+        } else {
+            log.info(accessTokenValidation.getTokenType().getMsg());
+        }
+
+        filterChain.doFilter(request, response);
     }
 
-    filterChain.doFilter(request, response);
-  }
+    private void setAuth(String token) {
+        Authentication auth = jwtTokenProvider.getAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
 
-  private void setAuth(String token) {
-    Authentication auth = jwtTokenProvider.getAuthentication(token);
-    SecurityContextHolder.getContext().setAuthentication(auth);
-  }
-
-  private RoleType[] getRoleTypes(String jsonRoles) {
-    return Arrays.stream(jsonRoles.split(DELIMITER.getName()))
-        .map(RoleType::from)
-        .toArray(RoleType[]::new);
-  }
+    private RoleType[] getRoleTypes(String jsonRoles) {
+        return Arrays.stream(jsonRoles.split(DELIMITER.getName()))
+                .map(RoleType::from)
+                .toArray(RoleType[]::new);
+    }
 }

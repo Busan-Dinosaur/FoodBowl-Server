@@ -12,9 +12,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = {ImageFileValidator.class})
 public @interface ImageOrNull {
 
-  String message() default "Invalid image file";
+    String message() default "Invalid image file";
 
-  Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-  Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

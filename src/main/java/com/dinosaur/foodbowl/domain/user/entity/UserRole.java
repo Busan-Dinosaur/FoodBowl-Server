@@ -24,22 +24,22 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"user", "role"}, callSuper = false)
 public class UserRole extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false, updatable = false)
-  private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "role_id", nullable = false, updatable = false)
-  private Role role;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false, updatable = false)
+    private Role role;
 
-  @Builder
-  public UserRole(User user, Role role) {
-    this.user = user;
-    this.role = role;
-  }
+    @Builder
+    public UserRole(User user, Role role) {
+        this.user = user;
+        this.role = role;
+    }
 }

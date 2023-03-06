@@ -29,67 +29,68 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/posts")
 public class PostController {
 
-  private final PostService postService;
+    private final PostService postService;
 
-  @PostMapping
-  public ResponseEntity<Void> createPost(
-      @LoginUser User me,
-      @RequestPart(name = "images", required = true) List<MultipartFile> images,
-      @Valid @RequestPart("request") PostCreateRequestDto request) {
+    @PostMapping
+    public ResponseEntity<Void> createPost(
+            @LoginUser User me,
+            @RequestPart(name = "images", required = true) List<MultipartFile> images,
+            @Valid @RequestPart("request") PostCreateRequestDto request
+    ) {
+        Long postId = postService.createPost(me, request, images);
 
-    Long postId = postService.createPost(me, request, images);
+        return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
+                .build();
+    }
 
-    return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
-        .build();
-  }
+    @PostMapping("/{id}")
+    public ResponseEntity<Long> updatePost(
+            @LoginUser User me,
+            @PathVariable("id") Long postId,
+            @RequestPart(name = "images", required = true) List<MultipartFile> images,
+            @Valid @RequestPart("request") PostUpdateRequestDto request
+    ) {
+        Long updatedPostId = postService.updatePost(me, postId, request, images);
 
-  @PostMapping("/{id}")
-  public ResponseEntity<Long> updatePost(
-      @LoginUser User me,
-      @PathVariable("id") Long postId,
-      @RequestPart(name = "images", required = true) List<MultipartFile> images,
-      @Valid @RequestPart("request") PostUpdateRequestDto request) {
+        return ResponseEntity.ok(updatedPostId);
+    }
 
-    Long updatedPostId = postService.updatePost(me, postId, request, images);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@LoginUser User user, @PathVariable("id") Long postId) {
+        postService.deletePost(user, postId);
 
-    return ResponseEntity.ok(updatedPostId);
-  }
+        return ResponseEntity.noContent().build();
+    }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deletePost(@LoginUser User user, @PathVariable("id") Long postId) {
+    @GetMapping("/users/{id}/thumbnails")
+    public ResponseEntity<List<PostThumbnailResponse>> getThumbnails(
+            @PathVariable("id") Long userId,
+            @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+    ) {
+        List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(
+                userId, pageable
+        );
 
-    postService.deletePost(user, postId);
+        return ResponseEntity.ok(response);
+    }
 
-    return ResponseEntity.noContent().build();
-  }
+    @GetMapping("/feed")
+    public ResponseEntity<List<PostFeedResponseDto>> getFeed(
+            @LoginUser User user,
+            @PageableDefault(size = 4, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+    ) {
+        List<PostFeedResponseDto> response = postService.getFeed(user, pageable);
 
-  @GetMapping("/users/{id}/thumbnails")
-  public ResponseEntity<List<PostThumbnailResponse>> getThumbnails(
-      @PathVariable("id") Long userId,
-      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
-  ) {
-    List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(userId, pageable);
+        return ResponseEntity.ok(response);
+    }
 
-    return ResponseEntity.ok(response);
-  }
+    @GetMapping("/thumbnails")
+    public ResponseEntity<List<PostThumbnailResponse>> getPostThumbnails(
+            @LoginUser User user,
+            @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+    ) {
+        List<PostThumbnailResponse> response = postService.getPostThumbnails(user, pageable);
 
-  @GetMapping("/feed")
-  public ResponseEntity<List<PostFeedResponseDto>> getFeed(
-      @LoginUser User user,
-      @PageableDefault(size = 4, sort = "createdAt", direction = Direction.DESC) Pageable pageable
-  ) {
-    List<PostFeedResponseDto> response = postService.getFeed(user, pageable);
-
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/thumbnails")
-  public ResponseEntity<List<PostThumbnailResponse>> getPostThumbnails(
-      @LoginUser User user,
-      @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
-  ) {
-    List<PostThumbnailResponse> response = postService.getPostThumbnails(user, pageable);
-
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.ok(response);
+    }
 }

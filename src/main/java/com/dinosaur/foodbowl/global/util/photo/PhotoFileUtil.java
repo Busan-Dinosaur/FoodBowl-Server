@@ -11,8 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PhotoFileUtil extends PhotoUtil {
 
-  @Override
-  public List<Photo> save(List<MultipartFile> files) {
-    return Collections.emptyList();
-  }
+    @Override
+    public List<Photo> save(List<MultipartFile> files) {
+        return Collections.emptyList();
+    }
 }

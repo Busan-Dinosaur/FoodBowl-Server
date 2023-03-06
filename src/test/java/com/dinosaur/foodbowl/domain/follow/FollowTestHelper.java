@@ -10,39 +10,39 @@ import org.springframework.stereotype.Component;
 @Component
 public class FollowTestHelper {
 
-  @Autowired
-  private FollowRepository followRepository;
+    @Autowired
+    private FollowRepository followRepository;
 
-  @Autowired
-  private UserTestHelper userTestHelper;
+    @Autowired
+    private UserTestHelper userTestHelper;
 
-  public FollowBuilder builder() {
-    return new FollowBuilder();
-  }
-
-  public final class FollowBuilder {
-
-    private User following;
-    private User follower;
-
-    private FollowBuilder() {
+    public FollowBuilder builder() {
+        return new FollowBuilder();
     }
 
-    public FollowBuilder following(User user) {
-      this.following = user;
-      return this;
-    }
+    public final class FollowBuilder {
 
-    public FollowBuilder follower(User user) {
-      this.follower = user;
-      return this;
-    }
+        private User following;
+        private User follower;
 
-    public Follow build() {
-      return followRepository.save(Follow.builder()
-          .following(following != null ? following : userTestHelper.builder().build())
-          .follower(follower != null ? follower : userTestHelper.builder().build())
-          .build());
+        private FollowBuilder() {
+        }
+
+        public FollowBuilder following(User user) {
+            this.following = user;
+            return this;
+        }
+
+        public FollowBuilder follower(User user) {
+            this.follower = user;
+            return this;
+        }
+
+        public Follow build() {
+            return followRepository.save(Follow.builder()
+                    .following(following != null ? following : userTestHelper.builder().build())
+                    .follower(follower != null ? follower : userTestHelper.builder().build())
+                    .build());
+        }
     }
-  }
 }

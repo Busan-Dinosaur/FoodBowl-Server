@@ -27,52 +27,56 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-  private final UserFindService userFindService;
-  private final UserRepository userRepository;
-  private final ThumbnailUtil thumbnailUtil;
-  private final PasswordEncoder passwordEncoder;
+    private final UserFindService userFindService;
+    private final UserRepository userRepository;
+    private final ThumbnailUtil thumbnailUtil;
+    private final PasswordEncoder passwordEncoder;
 
-  @Transactional
-  public SignUpResponseDto signUp(SignUpRequestDto request) {
-    checkDuplicateLoginId(request.getLoginId());
-    checkDuplicateNickname(request.getNickname().getNickname());
+    @Transactional
+    public SignUpResponseDto signUp(SignUpRequestDto request) {
+        checkDuplicateLoginId(request.getLoginId());
+        checkDuplicateNickname(request.getNickname().getNickname());
 
-    Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
-    User user = userRepository.save(request.toEntity(userThumbnail.orElse(null), passwordEncoder));
-    return SignUpResponseDto.of(user);
-  }
-
-  private void checkDuplicateLoginId(String loginId) {
-    if (userRepository.existsByLoginId(loginId)) {
-      throw new BusinessException(loginId, "loginId", LOGIN_ID_DUPLICATE);
-    }
-  }
-
-  private void checkDuplicateNickname(String nickname) {
-    if (userRepository.existsByNickname(Nickname.from(nickname))) {
-      throw new BusinessException(nickname, "nickname", NICKNAME_DUPLICATE);
-    }
-  }
-
-  public long login(LoginRequestDto loginRequestDto) {
-    User user = userFindService.findByLoginId(loginRequestDto.getLoginId());
-
-    if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-      throw new BusinessException(loginRequestDto.getPassword(), "password", PASSWORD_NOT_MATCH);
+        Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
+        User user = userRepository.save(
+                request.toEntity(userThumbnail.orElse(null), passwordEncoder)
+        );
+        return SignUpResponseDto.of(user);
     }
 
-    return user.getId();
-  }
-
-  public CheckResponseDto checkNickname(final String nickname) {
-    if (!Pattern.matches(Nickname.PATTERN, nickname)) {
-      return CheckResponseDto.of(false, Nickname.NICKNAME_INVALID);
+    private void checkDuplicateLoginId(String loginId) {
+        if (userRepository.existsByLoginId(loginId)) {
+            throw new BusinessException(loginId, "loginId", LOGIN_ID_DUPLICATE);
+        }
     }
 
-    if (userRepository.existsByNickname(Nickname.from(nickname))) {
-      return CheckResponseDto.of(false, NICKNAME_DUPLICATE.getMessage());
+    private void checkDuplicateNickname(String nickname) {
+        if (userRepository.existsByNickname(Nickname.from(nickname))) {
+            throw new BusinessException(nickname, "nickname", NICKNAME_DUPLICATE);
+        }
     }
 
-    return CheckResponseDto.of(true, "사용 가능한 닉네임입니다.");
-  }
+    public long login(LoginRequestDto loginRequestDto) {
+        User user = userFindService.findByLoginId(loginRequestDto.getLoginId());
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new BusinessException(
+                    loginRequestDto.getPassword(), "password", PASSWORD_NOT_MATCH
+            );
+        }
+
+        return user.getId();
+    }
+
+    public CheckResponseDto checkNickname(final String nickname) {
+        if (!Pattern.matches(Nickname.PATTERN, nickname)) {
+            return CheckResponseDto.of(false, Nickname.NICKNAME_INVALID);
+        }
+
+        if (userRepository.existsByNickname(Nickname.from(nickname))) {
+            return CheckResponseDto.of(false, NICKNAME_DUPLICATE.getMessage());
+        }
+
+        return CheckResponseDto.of(true, "사용 가능한 닉네임입니다.");
+    }
 }

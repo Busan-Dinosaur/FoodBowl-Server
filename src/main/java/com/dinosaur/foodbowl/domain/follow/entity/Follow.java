@@ -23,23 +23,23 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"following", "follower"}, callSuper = false)
 public class Follow extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @Getter
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "following_id", nullable = false, updatable = false)
-  private User following;
+    @Getter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "following_id", nullable = false, updatable = false)
+    private User following;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "follower_id", nullable = false, updatable = false)
-  private User follower;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "follower_id", nullable = false, updatable = false)
+    private User follower;
 
-  @Builder
-  private Follow(User following, User follower) {
-    this.following = following;
-    this.follower = follower;
-  }
+    @Builder
+    private Follow(User following, User follower) {
+        this.following = following;
+        this.follower = follower;
+    }
 }

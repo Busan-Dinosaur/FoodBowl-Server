@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserFindService {
 
-  private final UserRepository memberRepository;
+    private final UserRepository memberRepository;
 
-  public User findById(final Long id) {
-    return memberRepository.findById(id)
-        .orElseThrow(() -> new BusinessException(id, "userId", USER_NOT_FOUND));
-  }
+    public User findById(final Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(id, "userId", USER_NOT_FOUND));
+    }
 
-  public User findByLoginId(final String loginId) {
-    return memberRepository.findByLoginId(loginId)
-        .orElseThrow(() -> new BusinessException(loginId, "loginId", USER_NOT_FOUND));
-  }
+    public User findByLoginId(final String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new BusinessException(loginId, "loginId", USER_NOT_FOUND));
+    }
 }

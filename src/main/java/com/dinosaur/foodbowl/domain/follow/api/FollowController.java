@@ -20,21 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/follows")
 public class FollowController {
 
-  private final FollowService followService;
+    private final FollowService followService;
 
-  @PostMapping("/{userId}")
-  public ResponseEntity<Void> follow(@PathVariable("userId") @NotMe Long userId,
-      @LoginUser User me) {
-    followService.follow(me, userId);
+    @PostMapping("/{userId}")
+    public ResponseEntity<Void> follow(
+            @PathVariable("userId") @NotMe Long userId, @LoginUser User me
+    ) {
+        followService.follow(me, userId);
 
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-  }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
-  @DeleteMapping("/{userId}")
-  public ResponseEntity<Void> unFollow(@PathVariable("userId") @NotMe Long userId,
-      @LoginUser User me) {
-    followService.unfollow(me, userId);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> unFollow(
+            @PathVariable("userId") @NotMe Long userId, @LoginUser User me
+    ) {
+        followService.unfollow(me, userId);
 
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-  }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

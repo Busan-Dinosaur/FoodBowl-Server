@@ -14,29 +14,29 @@ import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends Repository<Post, Long> {
 
-  Post save(Post post);
+    Post save(Post post);
 
-  void delete(Post post);
+    void delete(Post post);
 
-  boolean existsById(Long id);
+    boolean existsById(Long id);
 
-  Optional<Post> findById(Long id);
+    Optional<Post> findById(Long id);
 
-  Post getReferenceById(Long id);
+    Post getReferenceById(Long id);
 
-  @Query("select p from Post p left join fetch p.thumbnail where p.user = :user")
-  List<Post> findThumbnailsByUser(@Param("user") User user, Pageable pageable);
+    @Query("select p from Post p left join fetch p.thumbnail where p.user = :user")
+    List<Post> findThumbnailsByUser(@Param("user") User user, Pageable pageable);
 
-  @Query("select p from Post p"
-      + " left join fetch p.user"
-      + " left join fetch p.store"
-      + " left join fetch p.store.address"
-      + " where p.user in (select f.following from Follow f where f.follower = :user)"
-      + " or p.user = :user")
-  List<Post> findFeed(@Param("user") User user, Pageable pageable);
+    @Query("select p from Post p"
+            + " left join fetch p.user"
+            + " left join fetch p.store"
+            + " left join fetch p.store.address"
+            + " where p.user in (select f.following from Follow f where f.follower = :user)"
+            + " or p.user = :user")
+    List<Post> findFeed(@Param("user") User user, Pageable pageable);
 
-  @EntityGraph(attributePaths = {"thumbnail"}, type = EntityGraphType.LOAD)
-  List<Post> findAllByUserNot(User user, Pageable pageable);
+    @EntityGraph(attributePaths = {"thumbnail"}, type = EntityGraphType.LOAD)
+    List<Post> findAllByUserNot(User user, Pageable pageable);
 
-  long countByStore(Store store);
+    long countByStore(Store store);
 }

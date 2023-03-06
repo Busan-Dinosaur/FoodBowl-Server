@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GetProfileService {
 
-  private final UserFindService userFindService;
-  private final FollowRepository followRepository;
+    private final UserFindService userFindService;
+    private final FollowRepository followRepository;
 
-  public ProfileResponseDto getProfile(long userId) {
-    User user = userFindService.findById(userId);
-    long followerCount = followRepository.countByFollowing(user);
-    long followingCount = followRepository.countByFollower(user);
-    long postCount = user.getPostCount();
-    return ProfileResponseDto.of(user, followerCount, followingCount, postCount);
-  }
+    public ProfileResponseDto getProfile(long userId) {
+        User user = userFindService.findById(userId);
+        long followerCount = followRepository.countByFollowing(user);
+        long followingCount = followRepository.countByFollower(user);
+        long postCount = user.getPostCount();
+        return ProfileResponseDto.of(user, followerCount, followingCount, postCount);
+    }
 }

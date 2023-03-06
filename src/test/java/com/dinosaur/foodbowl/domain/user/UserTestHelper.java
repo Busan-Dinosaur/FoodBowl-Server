@@ -15,68 +15,73 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserTestHelper {
 
-  @Autowired
-  UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-  @Autowired
-  ThumbnailTestHelper thumbnailTestHelper;
+    @Autowired
+    ThumbnailTestHelper thumbnailTestHelper;
 
-  private String getRandomUUIDLengthWith(int length) {
-    String randomString = UUID.randomUUID()
-        .toString();
-    length = Math.min(length, randomString.length());
-    return randomString.substring(0, length);
-  }
-
-  public UserBuilder builder() {
-    return new UserBuilder();
-  }
-
-  public final class UserBuilder {
-
-    private Thumbnail thumbnail;
-    private String loginId;
-    private String password;
-    private String nickname;
-    private String introduce;
-
-    private UserBuilder() {
+    private String getRandomUUIDLengthWith(int length) {
+        String randomString = UUID.randomUUID().toString();
+        length = Math.min(length, randomString.length());
+        return randomString.substring(0, length);
     }
 
-    public UserBuilder thumbnail(Thumbnail thumbnail) {
-      this.thumbnail = thumbnail;
-      return this;
+    public UserBuilder builder() {
+        return new UserBuilder();
     }
 
-    public UserBuilder loginId(String loginId) {
-      this.loginId = loginId;
-      return this;
-    }
+    public final class UserBuilder {
 
-    public UserBuilder password(String password) {
-      this.password = password;
-      return this;
-    }
+        private Thumbnail thumbnail;
+        private String loginId;
+        private String password;
+        private String nickname;
+        private String introduce;
 
-    public UserBuilder nickname(String nickname) {
-      this.nickname = nickname;
-      return this;
-    }
+        private UserBuilder() {
+        }
 
-    public UserBuilder introduce(String introduce) {
-      this.introduce = introduce;
-      return this;
-    }
+        public UserBuilder thumbnail(Thumbnail thumbnail) {
+            this.thumbnail = thumbnail;
+            return this;
+        }
 
-    public User build() {
-      return userRepository.save(User.builder()
-          .thumbnail(thumbnail)
-          .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .password(password != null ? password : getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
-          .nickname(nickname != null ? Nickname.from(nickname)
-              : Nickname.from(getRandomUUIDLengthWith(Nickname.MAX_NICKNAME_LENGTH)))
-          .introduce(introduce)
-          .build());
+        public UserBuilder loginId(String loginId) {
+            this.loginId = loginId;
+            return this;
+        }
+
+        public UserBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public UserBuilder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public UserBuilder introduce(String introduce) {
+            this.introduce = introduce;
+            return this;
+        }
+
+        public User build() {
+            return userRepository.save(User.builder()
+                    .thumbnail(thumbnail)
+                    .loginId(loginId != null ?
+                            loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH)
+                    )
+                    .password(password != null ?
+                            password : getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH)
+                    )
+                    .nickname(nickname != null ?
+                            Nickname.from(nickname)
+                            : Nickname.from(getRandomUUIDLengthWith(Nickname.MAX_NICKNAME_LENGTH))
+                    )
+                    .introduce(introduce)
+                    .build());
+        }
     }
-  }
 }

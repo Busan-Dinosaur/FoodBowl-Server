@@ -18,14 +18,14 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoreRequestDto {
 
-  @NotNull
-  @Length(max = MAX_STORE_NAME_LENGTH)
-  private String storeName;
+    @NotNull
+    @Length(max = MAX_STORE_NAME_LENGTH)
+    private String storeName;
 
-  public Store toEntity(AddressRequestDto addressRequestDto) {
-    return Store.builder()
-        .address(addressRequestDto.toEntity())
-        .storeName(storeName)
-        .build();
-  }
+    public Store toEntity(AddressRequestDto addressRequestDto) {
+        return Store.builder()
+                .address(addressRequestDto.toEntity())
+                .storeName(storeName)
+                .build();
+    }
 }

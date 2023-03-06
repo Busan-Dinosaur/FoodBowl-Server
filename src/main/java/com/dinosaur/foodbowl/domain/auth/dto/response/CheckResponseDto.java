@@ -9,19 +9,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CheckResponseDto {
 
-  private boolean available;
-  private String message;
+    private boolean available;
+    private String message;
 
-  @Builder
-  private CheckResponseDto(boolean available, String message) {
-    this.available = available;
-    this.message = message;
-  }
+    @Builder
+    private CheckResponseDto(boolean available, String message) {
+        this.available = available;
+        this.message = message;
+    }
 
-  public static CheckResponseDto of(boolean available, String message) {
-    return CheckResponseDto.builder()
-        .available(available)
-        .message(message)
-        .build();
-  }
+    public static CheckResponseDto of(boolean available, String message) {
+        return CheckResponseDto.builder()
+                .available(available)
+                .message(message)
+                .build();
+    }
 }

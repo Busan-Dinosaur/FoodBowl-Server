@@ -13,32 +13,35 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TokenService {
 
-  private final RedisTemplate redisTemplate;
-  private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
+    private final JwtTokenProvider jwtTokenProvider;
 
-  public String createAccessToken(long userId, RoleType... roleType) {
-    return jwtTokenProvider.createAccessToken(userId, roleType);
-  }
-
-  public String createRefreshToken(long userId) {
-    String refreshToken = jwtTokenProvider.createRefreshToken();
-    redisTemplate.opsForValue()
-        .set(String.valueOf(userId), refreshToken, REFRESH_TOKEN.getValidMilliSecond(),
-            TimeUnit.MILLISECONDS);
-    return refreshToken;
-  }
-
-  public void deleteToken(long userId) {
-    redisTemplate.delete(String.valueOf(userId));
-  }
-
-  public boolean isValid(long userId, String token) {
-    String refreshToken = (String) redisTemplate.opsForValue().get(String.valueOf(userId));
-
-    if (refreshToken == null || !refreshToken.equals(token)) {
-      return false;
+    public String createAccessToken(long userId, RoleType... roleType) {
+        return jwtTokenProvider.createAccessToken(userId, roleType);
     }
 
-    return true;
-  }
+    public String createRefreshToken(long userId) {
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        redisTemplate.opsForValue().set(
+                String.valueOf(userId),
+                refreshToken,
+                REFRESH_TOKEN.getValidMilliSecond(),
+                TimeUnit.MILLISECONDS
+        );
+        return refreshToken;
+    }
+
+    public void deleteToken(long userId) {
+        redisTemplate.delete(String.valueOf(userId));
+    }
+
+    public boolean isValid(long userId, String token) {
+        String refreshToken = (String) redisTemplate.opsForValue().get(String.valueOf(userId));
+
+        if (refreshToken == null || !refreshToken.equals(token)) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -20,37 +20,37 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Category {
 
-  private static final int MAX_NAME_LENGTH = 45;
+    private static final int MAX_NAME_LENGTH = 45;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false, updatable = false)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
-  @Enumerated(value = EnumType.STRING)
-  @Column(name = "name", nullable = false, updatable = false, unique = true, length = MAX_NAME_LENGTH)
-  private CategoryType categoryType;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "name", nullable = false, updatable = false, unique = true, length = MAX_NAME_LENGTH)
+    private CategoryType categoryType;
 
-  public enum CategoryType {
-    전체(1L),
-    카페(2L),
-    한식(3L),
-    양식(4L),
-    일식(5L),
-    중식(6L),
-    치킨(7L),
-    분식(8L),
-    해산물(9L),
-    샐러드(10L);
+    public enum CategoryType {
+        전체(1L),
+        카페(2L),
+        한식(3L),
+        양식(4L),
+        일식(5L),
+        중식(6L),
+        치킨(7L),
+        분식(8L),
+        해산물(9L),
+        샐러드(10L);
 
-    private final long id;
+        private final long id;
 
-    CategoryType(long id) {
-      this.id = id;
+        CategoryType(long id) {
+            this.id = id;
+        }
+
+        public long getId() {
+            return id;
+        }
     }
-
-    public long getId() {
-      return id;
-    }
-  }
 }
