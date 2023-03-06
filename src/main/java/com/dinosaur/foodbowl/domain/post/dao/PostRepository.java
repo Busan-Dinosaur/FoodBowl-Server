@@ -1,6 +1,7 @@
 package com.dinosaur.foodbowl.domain.post.dao;
 
 import com.dinosaur.foodbowl.domain.post.entity.Post;
+import com.dinosaur.foodbowl.domain.store.entity.Store;
 import com.dinosaur.foodbowl.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
@@ -36,4 +37,6 @@ public interface PostRepository extends Repository<Post, Long> {
 
   @EntityGraph(attributePaths = {"thumbnail"}, type = EntityGraphType.LOAD)
   List<Post> findAllByUserNot(User user, Pageable pageable);
+
+  long countByStore(Store store);
 }
