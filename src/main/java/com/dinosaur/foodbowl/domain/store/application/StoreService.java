@@ -19,10 +19,12 @@ public class StoreService {
     private final StoreRepository storeRepository;
 
     public List<StoreSearchResponse> searchStoresByName(
-            final String storeName, final Pageable pageable
+            final String storeName,
+            final Pageable pageable
     ) {
         final List<Store> stores = storeRepository.findStoresByStoreNameContaining(
-                storeName, pageable
+                storeName,
+                pageable
         );
 
         return stores.stream()
