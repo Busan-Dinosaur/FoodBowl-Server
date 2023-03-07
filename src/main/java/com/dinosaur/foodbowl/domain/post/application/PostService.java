@@ -63,8 +63,7 @@ public class PostService {
     }
 
     @Transactional
-    public Long updatePost(User user, Long postId, PostUpdateRequestDto request,
-            List<MultipartFile> images) {
+    public Long updatePost(User user, Long postId, PostUpdateRequestDto request, List<MultipartFile> images) {
         Post post = postFindService.findById(postId);
         checkWriter(user, post);
         checkImagesEmpty(images);
@@ -110,9 +109,7 @@ public class PostService {
         }
     }
 
-    public List<PostThumbnailResponse> getWrittenPostThumbnails(
-            final Long userId, final Pageable pageable
-    ) {
+    public List<PostThumbnailResponse> getWrittenPostThumbnails(final Long userId, final Pageable pageable) {
         final User user = userFindService.findById(userId);
         final List<Post> posts = postRepository.findThumbnailsByUser(user, pageable);
         final List<PostThumbnailResponse> results = getPostThumbnailResponses(posts);

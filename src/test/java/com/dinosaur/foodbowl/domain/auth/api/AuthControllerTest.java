@@ -83,16 +83,14 @@ class AuthControllerTest extends IntegrationTest {
 
         @Test
         void 엑세스_토큰이_유효하면_값을_반환한다() throws Exception {
-            mockMvc.perform(get("/api/v1/health-check")
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), validAccessToken)))
+            mockMvc.perform(get("/api/v1/health-check").cookie(new Cookie(ACCESS_TOKEN.getName(), validAccessToken)))
                     .andDo(print())
                     .andExpect(status().isOk());
         }
 
         @Test
         void 엑세스_토큰이_유효하지_않으면_401_예외가_발생한다() throws Exception {
-            mockMvc.perform(get("/api/v1/health-check")
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), "invalid-token")))
+            mockMvc.perform(get("/api/v1/health-check").cookie(new Cookie(ACCESS_TOKEN.getName(), "invalid-token")))
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
@@ -108,15 +106,16 @@ class AuthControllerTest extends IntegrationTest {
 
             mockMvc.perform(get("/api/v1/health-check")
                             .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
-                                    new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
+                                    new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)
+                            )
+                    )
                     .andDo(print())
                     .andExpect(status().isOk());
         }
 
         @Test
         void 엑세스_토큰이_만료되고_리프세쉬_토큰이_존재하지_않으면_401_예외가_발생한다() throws Exception {
-            mockMvc.perform(get("/api/v1/health-check")
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken)))
+            mockMvc.perform(get("/api/v1/health-check").cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken)))
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
@@ -125,7 +124,9 @@ class AuthControllerTest extends IntegrationTest {
         void 엑세스_토큰이_만료되고_리프레쉬_토큰이_유효하지_않으면_401_예외가_발생한다() throws Exception {
             mockMvc.perform(get("/api/v1/health-check")
                             .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
-                                    new Cookie(REFRESH_TOKEN.getName(), "invalid-token")))
+                                    new Cookie(REFRESH_TOKEN.getName(), "invalid-token")
+                            )
+                    )
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
@@ -134,7 +135,9 @@ class AuthControllerTest extends IntegrationTest {
         void 엑세스_토큰이_만료되고_리프레쉬_토큰이_만료되면_401_예외가_발생한다() throws Exception {
             mockMvc.perform(get("/api/v1/health-check")
                             .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
-                                    new Cookie(REFRESH_TOKEN.getName(), expiredRefreshToken)))
+                                    new Cookie(REFRESH_TOKEN.getName(), expiredRefreshToken)
+                            )
+                    )
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
@@ -150,7 +153,9 @@ class AuthControllerTest extends IntegrationTest {
 
             mockMvc.perform(get("/api/v1/health-check")
                             .cookie(new Cookie(ACCESS_TOKEN.getName(), expiredAccessToken),
-                                    new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)))
+                                    new Cookie(REFRESH_TOKEN.getName(), validRefreshToken)
+                            )
+                    )
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
@@ -181,7 +186,8 @@ class AuthControllerTest extends IntegrationTest {
         private ResultActions callSignUpApiWithoutThumbnail() throws Exception {
             return mockMvc.perform(multipart(HttpMethod.POST, "/api/v1/sign-up")
                             .queryParams(params)
-                            .contentType(MediaType.MULTIPART_FORM_DATA))
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                    )
                     .andDo(print());
         }
 
@@ -189,7 +195,8 @@ class AuthControllerTest extends IntegrationTest {
             return mockMvc.perform(multipart(HttpMethod.POST, "/api/v1/sign-up")
                             .file(thumbnail)
                             .queryParams(params)
-                            .contentType(MediaType.MULTIPART_FORM_DATA))
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                    )
                     .andDo(print());
         }
 
@@ -201,29 +208,27 @@ class AuthControllerTest extends IntegrationTest {
                             .nickname(Nickname.from(validNickname))
                             .introduce(validIntroduce)
                             .thumbnail(thumbnail)
-                            .build());
+                            .build()
+            );
             ReflectionTestUtils.setField(responseDto, "userId", userId);
 
             String accessToken = "accessToken";
             String refreshToken = "refreshToken";
             doReturn(responseDto).when(authService).signUp(any(SignUpRequestDto.class));
-            doReturn(accessToken).when(tokenService)
-                    .createAccessToken(anyLong(), any(RoleType.class));
+            doReturn(accessToken).when(tokenService).createAccessToken(anyLong(), any(RoleType.class));
             doReturn(refreshToken).when(tokenService).createRefreshToken(anyLong());
             doReturn(new Cookie(ACCESS_TOKEN.getName(), accessToken))
                     .when(cookieUtils)
                     .generateCookie(
                             ACCESS_TOKEN.getName(),
                             accessToken,
-                            (int) ACCESS_TOKEN.getValidMilliSecond() / 1000
-                    );
+                            (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
             doReturn(new Cookie(REFRESH_TOKEN.getName(), refreshToken))
                     .when(cookieUtils)
                     .generateCookie(
                             REFRESH_TOKEN.getName(),
                             refreshToken,
-                            (int) REFRESH_TOKEN.getValidMilliSecond() / 1000
-                    );
+                            (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
         }
 
         @Nested
@@ -246,42 +251,38 @@ class AuthControllerTest extends IntegrationTest {
                         .andExpect(jsonPath("$.thumbnailURL").exists())
                         .andDo(document("sign-up",
                                 queryParameters(
-                                        parameterWithName("loginId").description(
-                                                "로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH
-                                        ),
-                                        parameterWithName("password").description(
-                                                "비밀번호 (최대 가능 길이 : 해싱해서 사용하기 때문에 없음"
-                                        ),
-                                        parameterWithName("nickname").description(
-                                                "유저 닉네임 (최대 가능 길이 :" + MAX_NICKNAME_LENGTH
-                                        ),
-                                        parameterWithName("introduce").description(
-                                                "유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH
-                                        )
+                                        parameterWithName("loginId")
+                                                .description("로그인 아이디 (최대 가능 길이 :" + MAX_LOGIN_ID_LENGTH),
+                                        parameterWithName("password")
+                                                .description("비밀번호 (최대 가능 길이 : 해싱해서 사용하기 때문에 없음"),
+                                        parameterWithName("nickname")
+                                                .description("유저 닉네임 (최대 가능 길이 :" + MAX_NICKNAME_LENGTH),
+                                        parameterWithName("introduce")
+                                                .description("유저 소개 (최대 가능 길이 :" + MAX_INTRODUCE_LENGTH)
                                 ),
                                 requestParts(
                                         partWithName("thumbnail").optional()
                                                 .description("유저가 등록할 썸네일")
                                 ),
                                 responseCookies(
-                                        cookieWithName(ACCESS_TOKEN.getName()).description(
-                                                "사용자 인증에 필요한 access token"
-                                        ),
-                                        cookieWithName(REFRESH_TOKEN.getName()).description(
-                                                "인증 토큰 갱신에 필요한 refresh token"
-                                        )
+                                        cookieWithName(ACCESS_TOKEN.getName())
+                                                .description("사용자 인증에 필요한 access token"),
+                                        cookieWithName(REFRESH_TOKEN.getName())
+                                                .description("인증 토큰 갱신에 필요한 refresh token")
                                 ),
                                 responseFields(
-                                        fieldWithPath("userId").description(
-                                                "DB에 저장된 user의 고유 ID 값"
-                                        ),
-                                        fieldWithPath("loginId").description("저장된 로그인 아이디"),
-                                        fieldWithPath("nickname").description("저장된 닉네임"),
-                                        fieldWithPath("introduce").description("저장된 소개글"),
-                                        fieldWithPath("thumbnailURL").description(
-                                                "썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음."
-                                        )
-                                )));
+                                        fieldWithPath("userId")
+                                                .description("DB에 저장된 user의 고유 ID 값"),
+                                        fieldWithPath("loginId")
+                                                .description("저장된 로그인 아이디"),
+                                        fieldWithPath("nickname")
+                                                .description("저장된 닉네임"),
+                                        fieldWithPath("introduce")
+                                                .description("저장된 소개글"),
+                                        fieldWithPath("thumbnailURL")
+                                                .description("썸네일 URL. 서버 URL 뒤에 그대로 붙이면 파일을 얻을 수 있음.")
+                                )
+                        ));
             }
 
             @Test
@@ -320,13 +321,13 @@ class AuthControllerTest extends IntegrationTest {
                 params.set("loginId", invalidLoginId);
                 callSignUpApi(thumbnail)
                         .andExpect(status().isBadRequest())
-                        .andExpect(jsonPath("$.message").value(
-                                ExceptionAdvice.getErrorMessage(
+                        .andExpect(jsonPath("$.message")
+                                .value(ExceptionAdvice.getErrorMessage(
                                         invalidLoginId,
                                         "loginId",
-                                        AuthFieldError.LOGIN_ID_INVALID.getMessage()
+                                        AuthFieldError.LOGIN_ID_INVALID.getMessage())
                                 )
-                        ));
+                        );
             }
 
             @ParameterizedTest
@@ -338,13 +339,13 @@ class AuthControllerTest extends IntegrationTest {
                 params.set("password", invalidPassword);
                 callSignUpApi(thumbnail)
                         .andExpect(status().isBadRequest())
-                        .andExpect(jsonPath("$.message").value(
-                                ExceptionAdvice.getErrorMessage(
+                        .andExpect(jsonPath("$.message")
+                                .value(ExceptionAdvice.getErrorMessage(
                                         invalidPassword,
                                         "password",
-                                        AuthFieldError.PASSWORD_INVALID.getMessage()
+                                        AuthFieldError.PASSWORD_INVALID.getMessage())
                                 )
-                        ));
+                        );
             }
 
             @ParameterizedTest
@@ -356,13 +357,13 @@ class AuthControllerTest extends IntegrationTest {
                 params.set("nickname", invalidNickname);
                 callSignUpApi(thumbnail)
                         .andExpect(status().isBadRequest())
-                        .andExpect(jsonPath("$.message").value(
-                                ExceptionAdvice.getErrorMessage(
+                        .andExpect(jsonPath("$.message")
+                                .value(ExceptionAdvice.getErrorMessage(
                                         invalidNickname,
                                         "nickname",
-                                        Nickname.NICKNAME_INVALID
+                                        Nickname.NICKNAME_INVALID)
                                 )
-                        ));
+                        );
             }
 
             @Test
@@ -371,13 +372,13 @@ class AuthControllerTest extends IntegrationTest {
                         .when(authService).signUp(any());
                 callSignUpApi(thumbnail)
                         .andExpect(status().isConflict())
-                        .andExpect(jsonPath("$.message").value(
-                                ExceptionAdvice.getErrorMessage(
+                        .andExpect(jsonPath("$.message")
+                                .value(ExceptionAdvice.getErrorMessage(
                                         validLoginId,
                                         "loginId",
-                                        LOGIN_ID_DUPLICATE.getMessage()
+                                        LOGIN_ID_DUPLICATE.getMessage())
                                 )
-                        ));
+                        );
             }
 
             @Test
@@ -386,13 +387,13 @@ class AuthControllerTest extends IntegrationTest {
                         .when(authService).signUp(any());
                 callSignUpApi(thumbnail)
                         .andExpect(status().isConflict())
-                        .andExpect(jsonPath("$.message").value(
-                                ExceptionAdvice.getErrorMessage(
+                        .andExpect(jsonPath("$.message")
+                                .value(ExceptionAdvice.getErrorMessage(
                                         validNickname,
                                         "nickname",
-                                        NICKNAME_DUPLICATE.getMessage()
+                                        NICKNAME_DUPLICATE.getMessage())
                                 )
-                        ));
+                        );
             }
 
             @Test
@@ -426,39 +427,37 @@ class AuthControllerTest extends IntegrationTest {
             String accessToken = "accessToken";
             String refreshToken = "refreshToken";
             doReturn(userId).when(authService).login(any(LoginRequestDto.class));
-            doReturn(accessToken).when(tokenService)
-                    .createAccessToken(anyLong(), any(RoleType.class));
+            doReturn(accessToken).when(tokenService).createAccessToken(anyLong(), any(RoleType.class));
             doReturn(refreshToken).when(tokenService).createRefreshToken(anyLong());
             doReturn(new Cookie(ACCESS_TOKEN.getName(), accessToken))
                     .when(cookieUtils)
                     .generateCookie(
                             ACCESS_TOKEN.getName(),
                             accessToken,
-                            (int) ACCESS_TOKEN.getValidMilliSecond() / 1000
-                    );
+                            (int) ACCESS_TOKEN.getValidMilliSecond() / 1000);
             doReturn(new Cookie(REFRESH_TOKEN.getName(), refreshToken))
                     .when(cookieUtils)
                     .generateCookie(
                             REFRESH_TOKEN.getName(),
                             refreshToken,
-                            (int) REFRESH_TOKEN.getValidMilliSecond() / 1000
-                    );
+                            (int) REFRESH_TOKEN.getValidMilliSecond() / 1000);
 
             callLoginApi(loginRequestDto)
                     .andExpect(status().isOk())
                     .andDo(document("log-in",
                             requestFields(
-                                    fieldWithPath("loginId").description("로그인 아이디"),
-                                    fieldWithPath("password").description("비밀번호")
+                                    fieldWithPath("loginId")
+                                            .description("로그인 아이디"),
+                                    fieldWithPath("password")
+                                            .description("비밀번호")
                             ),
                             responseCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "사용자 인증에 필요한 access token"
-                                    ),
-                                    cookieWithName(REFRESH_TOKEN.getName()).description(
-                                            "인증 토큰 갱신에 필요한 refresh token"
-                                    )
-                            )));
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description("사용자 인증에 필요한 access token"),
+                                    cookieWithName(REFRESH_TOKEN.getName())
+                                            .description("인증 토큰 갱신에 필요한 refresh token")
+                            )
+                    ));
         }
 
         @Test
@@ -475,13 +474,13 @@ class AuthControllerTest extends IntegrationTest {
 
             callLoginApi(loginRequestDto)
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message").value(
-                            ExceptionAdvice.getErrorMessage(
+                    .andExpect(jsonPath("$.message")
+                            .value(ExceptionAdvice.getErrorMessage(
                                     loginId,
                                     "loginId",
-                                    USER_NOT_FOUND.getMessage()
+                                    USER_NOT_FOUND.getMessage())
                             )
-                    ));
+                    );
         }
 
         @Test
@@ -498,19 +497,20 @@ class AuthControllerTest extends IntegrationTest {
 
             callLoginApi(loginRequestDto)
                     .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.message").value(
-                            ExceptionAdvice.getErrorMessage(
+                    .andExpect(jsonPath("$.message")
+                            .value(ExceptionAdvice.getErrorMessage(
                                     wrongPassword,
                                     "password",
-                                    PASSWORD_NOT_MATCH.getMessage()
+                                    PASSWORD_NOT_MATCH.getMessage())
                             )
-                    ));
+                    );
         }
 
         private ResultActions callLoginApi(LoginRequestDto loginRequestDto) throws Exception {
             return mockMvc.perform(post("/api/v1/log-in")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(asJsonString(loginRequestDto)))
+                            .content(asJsonString(loginRequestDto))
+                    )
                     .andDo(print());
         }
     }
@@ -530,10 +530,10 @@ class AuthControllerTest extends IntegrationTest {
                     .andExpect(status().isNoContent())
                     .andDo(document("log-out",
                             requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "사용자 인증에 필요한 access token"
-                                    )
-                            )));
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description("사용자 인증에 필요한 access token")
+                            )
+                    ));
         }
 
         @Test
@@ -544,8 +544,7 @@ class AuthControllerTest extends IntegrationTest {
         }
 
         private ResultActions callLogoutApi() throws Exception {
-            return mockMvc.perform(post("/api/v1/log-out")
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
+            return mockMvc.perform(post("/api/v1/log-out").cookie(new Cookie(ACCESS_TOKEN.getName(), userToken)))
                     .andDo(print());
         }
     }
@@ -565,14 +564,16 @@ class AuthControllerTest extends IntegrationTest {
                     .andExpect(jsonPath("$.message").value("사용 가능한 닉네임입니다."))
                     .andDo(document("nickname-check",
                             queryParameters(
-                                    parameterWithName("nickname").description("유저가 입력한 닉네임")
+                                    parameterWithName("nickname")
+                                            .description("유저가 입력한 닉네임")
                             ),
                             responseFields(
-                                    fieldWithPath("available").description(
-                                            "true: 사용 가능 +\nfalse: 사용 불가능"
-                                    ),
-                                    fieldWithPath("message").description("사용 불가능한 이유")
-                            )));
+                                    fieldWithPath("available")
+                                            .description("true: 사용 가능 +\nfalse: 사용 불가능"),
+                                    fieldWithPath("message")
+                                            .description("사용 불가능한 이유")
+                            )
+                    ));
         }
 
         private ResultActions callCheckNicknameApi(String nickname) throws Exception {

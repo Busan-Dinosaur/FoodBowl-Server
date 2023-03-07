@@ -36,10 +36,7 @@ public abstract class ThumbnailUtil {
         return Optional.of(this.save(thumbnail, type));
     }
 
-    protected abstract Thumbnail save(
-            @NonNull MultipartFile thumbnail,
-            @NonNull ThumbnailType type
-    );
+    protected abstract Thumbnail save(@NonNull MultipartFile thumbnail, @NonNull ThumbnailType type);
 
     /**
      * @param thumbnail {@code @NotNull}

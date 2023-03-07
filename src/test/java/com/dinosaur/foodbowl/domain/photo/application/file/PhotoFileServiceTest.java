@@ -33,16 +33,14 @@ class PhotoFileServiceTest extends IntegrationTest {
         void 사진_파일이_유효하지_않으면_예외가_발생한다() throws IOException {
             Post post = postTestHelper.builder().build();
 
-            assertThatThrownBy(
-                    () -> photoFileService.save(photoTestHelper.getFakeImageFile(), post)
-            ).isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> photoFileService.save(photoTestHelper.getFakeImageFile(), post))
+                    .isInstanceOf(BusinessException.class);
 
             assertThatThrownBy(() -> photoFileService.save(null, post))
                     .isInstanceOf(BusinessException.class);
 
-            assertThatThrownBy(
-                    () -> photoFileService.save(photoTestHelper.getTooLongNameImageFile(448), post)
-            ).isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> photoFileService.save(photoTestHelper.getTooLongNameImageFile(448), post))
+                    .isInstanceOf(BusinessException.class);
         }
 
         @Test
@@ -52,9 +50,8 @@ class PhotoFileServiceTest extends IntegrationTest {
             em.flush();
             em.clear();
 
-            assertThatThrownBy(
-                    () -> photoFileService.save(photoTestHelper.getImageFile(), deleted)
-            ).isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> photoFileService.save(photoTestHelper.getImageFile(), deleted))
+                    .isInstanceOf(BusinessException.class);
         }
 
         private void deleteTestFile(Photo photo) {
@@ -69,10 +66,7 @@ class PhotoFileServiceTest extends IntegrationTest {
 
         @Test
         void 사진_파일이_존재하면_삭제에_성공한다() throws IOException {
-            Photo saved = photoFileService.save(
-                    photoTestHelper.getImageFile(),
-                    postTestHelper.builder().build()
-            );
+            Photo saved = photoFileService.save(photoTestHelper.getImageFile(), postTestHelper.builder().build());
 
             photoFileService.delete(saved);
 

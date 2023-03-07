@@ -54,9 +54,7 @@ public class StoreTestHelper {
         public Store build() {
             return storeRepository.save(Store.builder()
                     .address(address != null ? address : addressTestHelper.builder().build())
-                    .storeName(storeName != null ?
-                            storeName : getRandomUUIDLengthWith(MAX_STORE_NAME_LENGTH)
-                    )
+                    .storeName(storeName != null ? storeName : getRandomUUIDLengthWith(MAX_STORE_NAME_LENGTH))
                     .build());
         }
     }

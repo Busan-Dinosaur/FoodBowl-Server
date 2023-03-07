@@ -48,16 +48,19 @@ public class FollowControllerTest extends IntegrationTest {
                     .andDo(print())
                     .andDo(document("follow",
                             requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                                                    + "만료 시간: "
-                                                    + ACCESS_TOKEN.getValidMilliSecond() / 1000
-                                                    + "초"
-                                    )
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description(
+                                                    "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                                                            + "만료 시간: "
+                                                            + ACCESS_TOKEN.getValidMilliSecond() / 1000
+                                                            + "초"
+                                            )
                             ),
                             pathParameters(
-                                    parameterWithName("userId").description("팔로우할 유저의 아이디")
-                            )));
+                                    parameterWithName("userId")
+                                            .description("팔로우할 유저의 아이디")
+                            )
+                    ));
         }
 
         @Test
@@ -66,42 +69,39 @@ public class FollowControllerTest extends IntegrationTest {
                     .andDo(print())
                     .andDo(document("unfollow",
                             requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
-                                                    + "만료 시간: "
-                                                    + ACCESS_TOKEN.getValidMilliSecond() / 1000
-                                                    + "초"
-                                    )
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description(
+                                                    "로그인이나 회원가입 시 얻을 수 있는 접근 토큰입니다. \n\n"
+                                                            + "만료 시간: "
+                                                            + ACCESS_TOKEN.getValidMilliSecond() / 1000
+                                                            + "초"
+                                            )
                             ),
                             pathParameters(
-                                    parameterWithName("userId").description("팔로우를 취소할 유저의 아이디")
-                            )));
+                                    parameterWithName("userId")
+                                            .description("팔로우를 취소할 유저의 아이디")
+                            )
+                    ));
         }
 
         @Test
         void 본인_팔로우는_400_반환한다() throws Exception {
-            callFollowApi(myId).andExpect(status().isBadRequest())
-                    .andDo(print());
+            callFollowApi(myId).andExpect(status().isBadRequest()).andDo(print());
         }
 
         @Test
         void 본인_팔로우_취소는_400_반환한다() throws Exception {
-            callUnfollowApi(myId).andExpect(status().isBadRequest())
-                    .andDo(print());
-
+            callUnfollowApi(myId).andExpect(status().isBadRequest()).andDo(print());
         }
-
 
         @Test
         void 토큰이_없으면_팔로우는_실패한다() throws Exception {
-            mockMvc.perform(post("/api/v1/follows/{userId}", otherId))
-                    .andExpect(status().isUnauthorized());
+            mockMvc.perform(post("/api/v1/follows/{userId}", otherId)).andExpect(status().isUnauthorized());
         }
 
         @Test
         void 토큰이_없으면_팔로우_취소는_실패한다() throws Exception {
-            mockMvc.perform(delete("/api/v1/follows/{userId}", otherId))
-                    .andExpect(status().isUnauthorized());
+            mockMvc.perform(delete("/api/v1/follows/{userId}", otherId)).andExpect(status().isUnauthorized());
         }
 
 

@@ -26,7 +26,8 @@ public class ClipController {
 
     @PostMapping("/posts/{id}/clip")
     public ResponseEntity<ClipStatusResponseDto> clip(
-            @PathVariable("id") Long postId, @LoginUser User user
+            @PathVariable("id") Long postId,
+            @LoginUser User user
     ) {
         ClipStatusResponseDto response = clipService.clip(user, postId);
 
@@ -35,7 +36,8 @@ public class ClipController {
 
     @PostMapping("/posts/{id}/unclip")
     public ResponseEntity<ClipStatusResponseDto> unclip(
-            @PathVariable("id") Long postId, @LoginUser User user
+            @PathVariable("id") Long postId,
+            @LoginUser User user
     ) {
         ClipStatusResponseDto response = clipService.unclip(user, postId);
 
@@ -47,9 +49,7 @@ public class ClipController {
             @LoginUser User user,
             @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
     ) {
-        final List<ClipPostThumbnailResponse> response = clipService.getClipPostThumbnails(
-                user, pageable
-        );
+        final List<ClipPostThumbnailResponse> response = clipService.getClipPostThumbnails(user, pageable);
 
         return ResponseEntity.ok(response);
     }

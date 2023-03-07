@@ -18,8 +18,7 @@ public class NotMeValidator implements ConstraintValidator<NotMe, Long> {
 
         if (userId.equals(loginUserId)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("자신에 대한 요청은 불가능합니다.")
-                    .addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("자신에 대한 요청은 불가능합니다.").addConstraintViolation();
             return false;
         }
         return true;

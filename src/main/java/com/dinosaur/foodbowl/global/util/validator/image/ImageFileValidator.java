@@ -21,8 +21,7 @@ public class ImageFileValidator implements ConstraintValidator<ImageOrNull, Mult
         }
         if (isNotImageFile(multipartFile)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("이미지 파일이 아닙니다.")
-                    .addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("이미지 파일이 아닙니다.").addConstraintViolation();
 
             return false;
         }

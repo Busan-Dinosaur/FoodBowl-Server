@@ -28,11 +28,7 @@ public class ClipService {
         Post post = postFindService.findById(postId);
 
         if (!clipRepository.existsClipByUserAndPost(user, post)) {
-            clipRepository.save(Clip.builder()
-                    .user(user)
-                    .post(post)
-                    .build()
-            );
+            clipRepository.save(Clip.builder().user(user).post(post).build());
         }
 
         return ClipStatusResponseDto.from("ok");
@@ -50,9 +46,7 @@ public class ClipService {
         return ClipStatusResponseDto.from("ok");
     }
 
-    public List<ClipPostThumbnailResponse> getClipPostThumbnails(
-            final User user, final Pageable pageable
-    ) {
+    public List<ClipPostThumbnailResponse> getClipPostThumbnails(final User user, final Pageable pageable) {
         final List<Clip> clips = clipRepository.findClipByUser(user, pageable);
 
         final List<ClipPostThumbnailResponse> response = new ArrayList<>();

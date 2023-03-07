@@ -59,10 +59,8 @@ public class Address extends BaseEntity {
     private BigDecimal latitude;
 
     @Builder
-    private Address(String addressName, String region1depthName, String region2depthName,
-            String region3depthName, String roadName, String mainBuildingNo, String subBuildingNo,
-            BigDecimal longitude, BigDecimal latitude
-    ) {
+    private Address(String addressName, String region1depthName, String region2depthName, String region3depthName,
+            String roadName, String mainBuildingNo, String subBuildingNo, BigDecimal longitude, BigDecimal latitude) {
         this.addressName = addressName;
         this.region1depthName = region1depthName;
         this.region2depthName = region2depthName;

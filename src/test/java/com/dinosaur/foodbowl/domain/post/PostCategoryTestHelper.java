@@ -45,9 +45,7 @@ public class PostCategoryTestHelper {
         public PostCategory build() {
             return postCategoryRepository.save(PostCategory.builder()
                     .post(post != null ? post : postTestHelper.builder().build())
-                    .category(category != null ?
-                            category : categoryTestHelper.generateRandomCategory()
-                    )
+                    .category(category != null ? category : categoryTestHelper.generateRandomCategory())
                     .build());
         }
     }

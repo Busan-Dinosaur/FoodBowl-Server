@@ -32,19 +32,13 @@ class UserRepositoryTest extends IntegrationTest {
         @Test
         void 중복이_발생하면_예외가_발생한다() {
             assertThatThrownBy(() -> userBuilder.loginId(user.getLoginId()).build());
-            assertThatThrownBy(
-                    () -> userBuilder.nickname((user.getNickname()).getNickname()).build()
-            );
+            assertThatThrownBy(() -> userBuilder.nickname((user.getNickname()).getNickname()).build());
         }
 
         @Test
         void 중복이_허용되어_있으면_예외가_발생하지_않는다() {
-            assertThatNoException().isThrownBy(
-                    () -> userBuilder.password(user.getPassword()).build()
-            );
-            assertThatNoException().isThrownBy(
-                    () -> userBuilder.introduce(user.getIntroduce()).build()
-            );
+            assertThatNoException().isThrownBy(() -> userBuilder.password(user.getPassword()).build());
+            assertThatNoException().isThrownBy(() -> userBuilder.introduce(user.getIntroduce()).build());
         }
     }
 
@@ -120,16 +114,13 @@ class UserRepositoryTest extends IntegrationTest {
 
         @Test
         void 회원을_삭제하면_회원과_관련된_모든_정보가_삭제된다() {
-            User userWithThumbnail = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail())
-                    .build();
+            User userWithThumbnail = userBuilder.thumbnail(thumbnailTestHelper.generateThumbnail()).build();
 
             whenDeleteUser(userWithThumbnail);
 
             assertThat(userRepository.findById(userWithThumbnail.getId())).isEmpty();
             assertThat(userRoleRepository.findByUser(userWithThumbnail)).isEmpty();
-            assertThat(thumbnailRepository.findByPath(
-                    getUserThumbnailPath(userWithThumbnail))
-            ).isEmpty();
+            assertThat(thumbnailRepository.findByPath(getUserThumbnailPath(userWithThumbnail))).isEmpty();
         }
 
         private void whenDeleteUser(User userWithThumbnail) {
@@ -168,9 +159,7 @@ class UserRepositoryTest extends IntegrationTest {
 
             whenUpdateUser(beforeUser, newThumbnail, null);
 
-            checkUserUpdated(
-                    beforeUser, Optional.of(newThumbnail.getPath()), beforeUser.getIntroduce()
-            );
+            checkUserUpdated(beforeUser, Optional.of(newThumbnail.getPath()), beforeUser.getIntroduce());
             checkThumbnailUpdated(beforeUser);
         }
 
@@ -186,9 +175,7 @@ class UserRepositoryTest extends IntegrationTest {
             checkThumbnailUpdated(beforeUser);
         }
 
-        private void checkUserUpdated(User beforeUser, Optional<String> newThumbnailPath,
-                String newIntroduce
-        ) {
+        private void checkUserUpdated(User beforeUser, Optional<String> newThumbnailPath, String newIntroduce) {
             User findUser = userRepository.findById(beforeUser.getId()).orElseThrow();
             assertThat(findUser).isEqualTo(beforeUser);
             assertThat(findUser.getIntroduce()).isEqualTo(newIntroduce);

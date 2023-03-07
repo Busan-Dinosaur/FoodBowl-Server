@@ -69,9 +69,7 @@ public class CommentTestHelper {
                     .comment(comment)
                     .post(post != null ? post : postTestHelper.builder().build())
                     .user(user != null ? user : userTestHelper.builder().build())
-                    .message(message != null ?
-                            message : getRandomUUIDLengthWith(MAX_MESSAGE_LENGTH)
-                    )
+                    .message(message != null ? message : getRandomUUIDLengthWith(MAX_MESSAGE_LENGTH))
                     .build());
         }
     }

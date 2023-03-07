@@ -38,9 +38,7 @@ public class AuthService {
         checkDuplicateNickname(request.getNickname().getNickname());
 
         Optional<Thumbnail> userThumbnail = thumbnailUtil.saveIfExist(request.getThumbnail());
-        User user = userRepository.save(
-                request.toEntity(userThumbnail.orElse(null), passwordEncoder)
-        );
+        User user = userRepository.save(request.toEntity(userThumbnail.orElse(null), passwordEncoder));
         return SignUpResponseDto.of(user);
     }
 
@@ -60,9 +58,7 @@ public class AuthService {
         User user = userFindService.findByLoginId(loginRequestDto.getLoginId());
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            throw new BusinessException(
-                    loginRequestDto.getPassword(), "password", PASSWORD_NOT_MATCH
-            );
+            throw new BusinessException(loginRequestDto.getPassword(), "password", PASSWORD_NOT_MATCH);
         }
 
         return user.getId();

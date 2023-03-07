@@ -6,9 +6,14 @@ import lombok.Builder;
 
 @Builder
 public record StoreSearchResponse(
-        Long storeId, String storeName, long postCount, BigDecimal latitude, BigDecimal longitude) {
+        Long storeId,
+        String storeName,
+        long postCount,
+        BigDecimal latitude,
+        BigDecimal longitude
+) {
 
-    public static StoreSearchResponse from(final Store store, final long postCount) {
+    public static StoreSearchResponse of(final Store store, final long postCount) {
         return StoreSearchResponse.builder()
                 .storeId(store.getId())
                 .storeName(store.getStoreName())

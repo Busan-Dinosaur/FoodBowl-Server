@@ -26,9 +26,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .requestMatchers(
-                        "/docs/**", "/api/v1/sign-up/**", "/api/v1/log-in", "/thumbnail/**"
-                ).permitAll()
+                .requestMatchers("/docs/**", "/api/v1/sign-up/**", "/api/v1/log-in", "/thumbnail/**").permitAll()
                 .anyRequest().hasRole("회원")
                 .and()
                 .httpBasic().disable()
@@ -42,9 +40,7 @@ public class SecurityConfiguration {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
-                );
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

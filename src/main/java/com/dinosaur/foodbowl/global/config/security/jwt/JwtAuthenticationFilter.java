@@ -45,20 +45,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (accessTokenValidation.isValid()) {
             setAuth(accessTokenValidation.getToken());
         } else if (accessTokenValidation.getTokenType() == JwtValidationType.EXPIRED) {
-            var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(
-                    httpRequest, REFRESH_TOKEN
-            );
+            var refreshTokenValidation = jwtTokenProvider.tryCheckTokenValid(httpRequest, REFRESH_TOKEN);
             String accessToken = jwtTokenProvider.extractToken(httpRequest, ACCESS_TOKEN);
-            Long userId = Long.parseLong(
-                    jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString()
-            );
+            Long userId = Long.parseLong(jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString());
             RoleType[] roles = getRoleTypes(
-                    jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName()).toString()
-            );
+                    jwtTokenProvider.extractPayload(accessToken, CLAIMS_ROLES.getName()).toString());
 
-            if (refreshTokenValidation.isValid() &&
-                    tokenService.isValid(userId, refreshTokenValidation.getToken())
-            ) {
+            if (refreshTokenValidation.isValid() && tokenService.isValid(userId, refreshTokenValidation.getToken())) {
                 String renewedAccessToken = tokenService.createAccessToken(userId, roles);
                 String renewedRefreshToken = tokenService.createRefreshToken(userId);
 

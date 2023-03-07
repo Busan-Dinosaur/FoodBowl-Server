@@ -89,8 +89,7 @@ class ClipServiceTest extends IntegrationTest {
             Pageable pageable = PageRequest.of(0, 100, Sort.by("id").descending());
 
             //when
-            List<ClipPostThumbnailResponse> result = clipService.getClipPostThumbnails(user,
-                    pageable);
+            List<ClipPostThumbnailResponse> result = clipService.getClipPostThumbnails(user, pageable);
 
             //then
             assertThat(result).hasSize(1);

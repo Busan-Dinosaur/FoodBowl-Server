@@ -88,8 +88,7 @@ public class JwtTokenProvider {
         Claims claims = getClaim(token);
         List<String> roles = getRoles(claims);
         UserDetails userDetails = new JwtUserEntity(claims.getSubject(), roles);
-        return new UsernamePasswordAuthenticationToken(userDetails, "",
-                userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     private List<String> getRoles(Claims claims) {

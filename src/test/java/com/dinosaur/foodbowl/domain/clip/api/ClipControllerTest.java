@@ -47,23 +47,24 @@ class ClipControllerTest extends IntegrationTest {
                     .andExpect(jsonPath("$.status").value("ok"))
                     .andDo(document("clip",
                             requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "사용자 인증에 필요한 access token"
-                                    )
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description("사용자 인증에 필요한 access token")
                             ),
                             pathParameters(
-                                    parameterWithName("id").description("북마크하고자 하는 게시글 ID")
+                                    parameterWithName("id")
+                                            .description("북마크하고자 하는 게시글 ID")
                             ),
                             responseFields(
-                                    fieldWithPath("status").description(
-                                            "수행 상태 +\n(북마크한 것으로 변경하고 ok 반환)"
-                                    )
-                            )));
+                                    fieldWithPath("status")
+                                            .description("수행 상태 +\n(북마크한 것으로 변경하고 ok 반환)")
+                            )
+                    ));
         }
 
         private ResultActions callClipApi(String id) throws Exception {
             return mockMvc.perform(post("/api/v1/clips/posts/{id}/clip", id)
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
+                            .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
+                    )
                     .andDo(print());
         }
     }
@@ -84,23 +85,24 @@ class ClipControllerTest extends IntegrationTest {
                     .andExpect(jsonPath("$.status").value("ok"))
                     .andDo(document("unclip",
                             requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "사용자 인증에 필요한 access token"
-                                    )
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description("사용자 인증에 필요한 access token")
                             ),
                             pathParameters(
-                                    parameterWithName("id").description("북마크 해제하고자 하는 게시글 ID")
+                                    parameterWithName("id")
+                                            .description("북마크 해제하고자 하는 게시글 ID")
                             ),
                             responseFields(
-                                    fieldWithPath("status").description(
-                                            "수행 상태 +\n(북마크 해제한 것으로 변경하고 ok 반환)"
-                                    )
-                            )));
+                                    fieldWithPath("status")
+                                            .description("수행 상태 +\n(북마크 해제한 것으로 변경하고 ok 반환)")
+                            )
+                    ));
         }
 
         private ResultActions callUnclipApi(String id) throws Exception {
             return mockMvc.perform(post("/api/v1/clips/posts/{id}/unclip", id)
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
+                            .cookie(new Cookie(ACCESS_TOKEN.getName(), "token"))
+                    )
                     .andDo(print());
         }
     }
@@ -117,8 +119,7 @@ class ClipControllerTest extends IntegrationTest {
                     new ClipPostThumbnailResponse(2L, "path2")
             );
 
-            doReturn(response).when(clipService)
-                    .getClipPostThumbnails(any(User.class), any(Pageable.class));
+            doReturn(response).when(clipService).getClipPostThumbnails(any(User.class), any(Pageable.class));
 
             callGetClipPostThumbnailsApi()
                     .andExpect(status().isOk())
@@ -128,27 +129,26 @@ class ClipControllerTest extends IntegrationTest {
                     .andExpect(jsonPath("$[1].thumbnailPath").value("path2"))
                     .andDo(document("clip-post-thumbnail-list",
                             requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getName()).description(
-                                            "사용자 인증에 필요한 access token"
-                                    )
+                                    cookieWithName(ACCESS_TOKEN.getName())
+                                            .description("사용자 인증에 필요한 access token")
                             ),
                             queryParameters(
-                                    parameterWithName("page").optional().description(
-                                            "북마크한 게시글 썸네일 목록 페이지 +\n(default: 0)"
-                                    ),
-                                    parameterWithName("size").optional().description(
-                                            "북마크한 게시글 썸네일 목록 크기 +\n(default: 18)"
-                                    )
+                                    parameterWithName("page").optional()
+                                            .description("북마크한 게시글 썸네일 목록 페이지 +\n(default: 0)"),
+                                    parameterWithName("size").optional()
+                                            .description("북마크한 게시글 썸네일 목록 크기 +\n(default: 18)")
                             ),
                             responseFields(
-                                    fieldWithPath("[].clipId").description("북마크 ID"),
-                                    fieldWithPath("[].thumbnailPath").description("북마크한 게시글 썸네일 경로")
-                            )));
+                                    fieldWithPath("[].clipId")
+                                            .description("북마크 ID"),
+                                    fieldWithPath("[].thumbnailPath")
+                                            .description("북마크한 게시글 썸네일 경로")
+                            )
+                    ));
         }
 
         private ResultActions callGetClipPostThumbnailsApi() throws Exception {
-            return mockMvc.perform(get("/api/v1/clips/thumbnails")
-                            .cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
+            return mockMvc.perform(get("/api/v1/clips/thumbnails").cookie(new Cookie(ACCESS_TOKEN.getName(), "token")))
                     .andDo(print());
         }
     }

@@ -25,7 +25,7 @@ public class StoreController {
             @RequestParam("name") String storeName,
             @PageableDefault(size = 15, sort = "storeName", direction = Direction.ASC) Pageable pageable
     ) {
-        final var response = storeService.searchStoresByName(storeName, pageable);
+        final List<StoreSearchResponse> response = storeService.searchStoresByName(storeName, pageable);
 
         return ResponseEntity.ok(response);
     }

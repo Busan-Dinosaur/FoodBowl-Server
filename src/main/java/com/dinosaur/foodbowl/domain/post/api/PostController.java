@@ -39,7 +39,8 @@ public class PostController {
     ) {
         Long postId = postService.createPost(me, request, images);
 
-        return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
+        return ResponseEntity
+                .created(URI.create("/api/v1/posts/" + postId))
                 .build();
     }
 
@@ -67,9 +68,7 @@ public class PostController {
             @PathVariable("id") Long userId,
             @PageableDefault(size = 18, sort = "createdAt", direction = Direction.DESC) Pageable pageable
     ) {
-        List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(
-                userId, pageable
-        );
+        List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(userId, pageable);
 
         return ResponseEntity.ok(response);
     }

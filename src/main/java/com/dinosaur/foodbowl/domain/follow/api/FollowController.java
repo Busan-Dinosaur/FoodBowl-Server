@@ -23,18 +23,14 @@ public class FollowController {
     private final FollowService followService;
 
     @PostMapping("/{userId}")
-    public ResponseEntity<Void> follow(
-            @PathVariable("userId") @NotMe Long userId, @LoginUser User me
-    ) {
+    public ResponseEntity<Void> follow(@PathVariable("userId") @NotMe Long userId, @LoginUser User me) {
         followService.follow(me, userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> unFollow(
-            @PathVariable("userId") @NotMe Long userId, @LoginUser User me
-    ) {
+    public ResponseEntity<Void> unFollow(@PathVariable("userId") @NotMe Long userId, @LoginUser User me) {
         followService.unfollow(me, userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

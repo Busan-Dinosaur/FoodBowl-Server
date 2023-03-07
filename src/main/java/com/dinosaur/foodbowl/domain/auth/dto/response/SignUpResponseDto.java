@@ -27,8 +27,7 @@ public class SignUpResponseDto {
     }
 
     @Builder
-    private SignUpResponseDto(Long userId, String loginId, Nickname nickname, String introduce,
-            String thumbnailURL) {
+    private SignUpResponseDto(Long userId, String loginId, Nickname nickname, String introduce, String thumbnailURL) {
         this.userId = userId;
         this.loginId = loginId;
         this.nickname = nickname;

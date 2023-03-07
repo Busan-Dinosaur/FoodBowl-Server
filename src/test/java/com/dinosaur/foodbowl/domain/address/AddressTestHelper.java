@@ -19,8 +19,7 @@ public class AddressTestHelper {
     private AddressRepository addressRepository;
 
     private String getRandomUUIDLengthWith(int length) {
-        String randomString = UUID.randomUUID()
-                .toString();
+        String randomString = UUID.randomUUID().toString();
         length = Math.min(length, randomString.length());
         return randomString.substring(0, length);
     }
@@ -91,24 +90,16 @@ public class AddressTestHelper {
 
         public Address build() {
             return addressRepository.save(Address.builder()
-                    .addressName(addressName != null ?
-                            addressName : getRandomUUIDLengthWith(MAX_ADDRESS_NAME_LENGTH)
-                    )
-                    .region1depthName(region1depthName != null ?
-                            region1depthName : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH)
-                    )
-                    .region2depthName(region2depthName != null ?
-                            region2depthName : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH)
-                    )
-                    .region3depthName(region3depthName != null ?
-                            region3depthName : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH)
-                    )
-                    .roadName(roadName != null ?
-                            roadName : getRandomUUIDLengthWith(MAX_ROAD_NAME_LENGTH)
-                    )
-                    .mainBuildingNo(mainBuildingNo != null ?
-                            mainBuildingNo : getRandomUUIDLengthWith(MAX_BUILDING_NO_LENGTH)
-                    )
+                    .addressName(addressName != null ? addressName : getRandomUUIDLengthWith(MAX_ADDRESS_NAME_LENGTH))
+                    .region1depthName(region1depthName != null ? region1depthName
+                            : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH))
+                    .region2depthName(region2depthName != null ? region2depthName
+                            : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH))
+                    .region3depthName(region3depthName != null ? region3depthName
+                            : getRandomUUIDLengthWith(MAX_REGION_DEPTH_NAME_LENGTH))
+                    .roadName(roadName != null ? roadName : getRandomUUIDLengthWith(MAX_ROAD_NAME_LENGTH))
+                    .mainBuildingNo(
+                            mainBuildingNo != null ? mainBuildingNo : getRandomUUIDLengthWith(MAX_BUILDING_NO_LENGTH))
                     .subBuildingNo(subBuildingNo)
                     .longitude(longitude)
                     .latitude(latitude)

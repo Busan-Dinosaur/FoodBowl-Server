@@ -32,8 +32,7 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (RuntimeException | IOException e) {
-            String message =
-                    "썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: " + multipartFile.getOriginalFilename();
+            String message = "썸네일을 저장하는 도중 오류가 발생하였습니다. 파일명: " + multipartFile.getOriginalFilename();
             log.warn(message, e);
             throw new ThumbnailException(message, e);
         }
@@ -45,16 +44,14 @@ public class ThumbnailFileUtil extends ThumbnailUtil {
         return saveThumbnailEntity(thumbnail.getFullPath(), type);
     }
 
-    private static void tryResizingAndSave(ThumbnailFileDto thumbnailFileDto, ThumbnailType type)
-            throws IOException {
+    private static void tryResizingAndSave(ThumbnailFileDto thumbnailFileDto, ThumbnailType type) throws IOException {
         BufferedImage bufferedImage = ImageIO.read(thumbnailFileDto.getOriginalInputStream());
         BufferedImage resizingBufferedImage = type.resizing(bufferedImage);
         File thumbnail = new File(thumbnailFileDto.getFullPath());
         ImageIO.write(resizingBufferedImage, "jpeg", thumbnail);
     }
 
-    private Thumbnail saveThumbnailEntity(String thumbnailFullPath, ThumbnailType type)
-            throws IOException {
+    private Thumbnail saveThumbnailEntity(String thumbnailFullPath, ThumbnailType type) throws IOException {
         try {
             return trySaveThumbnailEntity(thumbnailFullPath, type);
         } catch (RuntimeException e) {

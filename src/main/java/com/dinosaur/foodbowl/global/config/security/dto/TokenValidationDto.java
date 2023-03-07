@@ -16,9 +16,7 @@ public class TokenValidationDto {
         this.token = token;
     }
 
-    public static TokenValidationDto of(boolean isValid, JwtValidationType tokenType,
-            String token
-    ) {
+    public static TokenValidationDto of(boolean isValid, JwtValidationType tokenType, String token) {
         return new TokenValidationDto(isValid, tokenType, token);
     }
 

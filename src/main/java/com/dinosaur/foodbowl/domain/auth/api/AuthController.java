@@ -44,7 +44,8 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpResponseDto> signUp(
-            @Valid @ModelAttribute SignUpRequestDto request, HttpServletResponse response
+            @Valid @ModelAttribute SignUpRequestDto request,
+            HttpServletResponse response
     ) {
         SignUpResponseDto signUpResponseDto = authService.signUp(request);
 
@@ -59,7 +60,8 @@ public class AuthController {
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        return ResponseEntity.created(URI.create("/api/v1/users/" + signUpResponseDto.getUserId()))
+        return ResponseEntity
+                .created(URI.create("/api/v1/users/" + signUpResponseDto.getUserId()))
                 .body(signUpResponseDto);
     }
 
@@ -72,7 +74,8 @@ public class AuthController {
 
     @PostMapping("/log-in")
     public ResponseEntity<Void> login(
-            @Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response
+            @Valid @RequestBody LoginRequestDto loginRequestDto,
+            HttpServletResponse response
     ) {
         long userId = authService.login(loginRequestDto);
 

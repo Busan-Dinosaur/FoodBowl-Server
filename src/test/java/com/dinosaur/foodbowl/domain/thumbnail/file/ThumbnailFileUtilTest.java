@@ -30,8 +30,7 @@ class ThumbnailFileUtilTest extends IntegrationTest {
                     "image/png",
                     new FileInputStream("src/test/resources/images/testImage_210x210.png")
             );
-            Thumbnail savedThumbnail = thumbnailFileUtil.saveIfExist(validMultipartFile)
-                    .orElseThrow();
+            Thumbnail savedThumbnail = thumbnailFileUtil.saveIfExist(validMultipartFile).orElseThrow();
 
             assertThat(Files.exists(Path.of(ROOT_PATH + savedThumbnail.getPath()))).isTrue();
 
@@ -63,8 +62,7 @@ class ThumbnailFileUtilTest extends IntegrationTest {
 
         @Test
         void 썸네일_파일이_유효하면_사이즈_변환에_성공한다() throws IOException {
-            Thumbnail savedThumbnailEntity = thumbnailFileUtil.saveIfExist(validMultipartFile)
-                    .orElseThrow();
+            Thumbnail savedThumbnailEntity = thumbnailFileUtil.saveIfExist(validMultipartFile).orElseThrow();
             File result = new File(ROOT_PATH + savedThumbnailEntity.getPath());
 
             assertThat(result).exists();

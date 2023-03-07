@@ -241,8 +241,7 @@ public class IntegrationTest {
     }
 
     private static String getTodayThumbnailFilesPath() {
-        return new ClassPathResource("static").getPath() + separator + "thumbnail"
-                + separator + LocalDate.now();
+        return new ClassPathResource("static").getPath() + separator + "thumbnail" + separator + LocalDate.now();
     }
 
     protected String asJsonString(final Object obj) {
@@ -258,13 +257,9 @@ public class IntegrationTest {
     protected void mockingAuth() {
         User user = userTestHelper.builder().build();
         ReflectionTestUtils.setField(user, "id", 1L);
-        UserDetails userDetails = new JwtUserEntity(
-                String.valueOf(user.getId()), List.of("ROLE_회원")
-        );
+        UserDetails userDetails = new JwtUserEntity(String.valueOf(user.getId()), List.of("ROLE_회원"));
         TokenValidationDto tokenDto = TokenValidationDto.of(true, VALID, "token");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                userDetails, "", userDetails.getAuthorities()
-        );
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 
         doReturn(tokenDto).when(jwtTokenProvider)
                 .tryCheckTokenValid(any(HttpServletRequest.class), any(JwtToken.class));

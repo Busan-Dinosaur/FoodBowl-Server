@@ -32,14 +32,17 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<Void> deleteAccount(@LoginUser User me) {
         deleteAccountService.deleteMySelf(me);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .build();
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping
     public ResponseEntity<Void> updateProfile(
-            @ModelAttribute @Valid UpdateProfileRequestDto requestDto, @LoginUser User me) {
+            @ModelAttribute @Valid UpdateProfileRequestDto requestDto,
+            @LoginUser User me
+    ) {
         long userId = updateProfileService.updateProfile(me, requestDto);
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .location(URI.create("/api/v1/users/" + userId))
                 .build();
@@ -48,7 +51,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<ProfileResponseDto> getProfile(@PathVariable long userId) {
         ProfileResponseDto profile = getProfileService.getProfile(userId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(profile);
+
+        return ResponseEntity.status(HttpStatus.OK).body(profile);
     }
 }

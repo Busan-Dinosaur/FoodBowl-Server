@@ -39,16 +39,13 @@ class ThumbnailFileDto {
     private static void checkThumbnailFullPathLength(String thumbnailFullPath, String fileName) {
         if (thumbnailFullPath.length() > MAX_PATH_LENGTH) {
             throw new IllegalArgumentException("파일 이름 길이가 너무 깁니다. 가능한 파일 이름 길이: " +
-                    (MAX_PATH_LENGTH - thumbnailFullPath.length() + fileName.length())
-            );
+                    (MAX_PATH_LENGTH - thumbnailFullPath.length() + fileName.length()));
         }
     }
 
     private static void checkInvalidImageFile(MultipartFile file) throws IOException {
         if (isNotImageFile(file)) {
-            throw new IllegalArgumentException(
-                    "파일이 이미지가 아닙니다. 파일 이름: " + file.getOriginalFilename()
-            );
+            throw new IllegalArgumentException("파일이 이미지가 아닙니다. 파일 이름: " + file.getOriginalFilename());
         }
     }
 

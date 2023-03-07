@@ -28,8 +28,7 @@ class UserFindServiceTest extends IntegrationTest {
         void 로그인_아이디가_존재하지_않으면_예외가_발생한다() {
             String loginId = "testLoginId";
 
-            assertThatThrownBy(() -> userFindService.findByLoginId(loginId))
-                    .isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> userFindService.findByLoginId(loginId)).isInstanceOf(BusinessException.class);
         }
     }
 }

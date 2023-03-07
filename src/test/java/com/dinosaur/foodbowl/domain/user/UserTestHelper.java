@@ -70,12 +70,8 @@ public class UserTestHelper {
         public User build() {
             return userRepository.save(User.builder()
                     .thumbnail(thumbnail)
-                    .loginId(loginId != null ?
-                            loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH)
-                    )
-                    .password(password != null ?
-                            password : getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH)
-                    )
+                    .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
+                    .password(password != null ? password : getRandomUUIDLengthWith(MAX_PASSWORD_LENGTH))
                     .nickname(nickname != null ?
                             Nickname.from(nickname)
                             : Nickname.from(getRandomUUIDLengthWith(Nickname.MAX_NICKNAME_LENGTH))

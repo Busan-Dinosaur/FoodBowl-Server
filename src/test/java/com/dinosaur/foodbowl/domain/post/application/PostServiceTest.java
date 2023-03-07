@@ -55,10 +55,8 @@ class PostServiceTest extends IntegrationTest {
             // then
             Post post = postRepository.getReferenceById(postId);
             assertThat(post).isNotNull();
-            assertThat(post.getStore().getStoreName())
-                    .isEqualTo(storeRequestDto.getStoreName());
-            assertThat(post.getStore().getAddress().getAddressName())
-                    .isEqualTo(addressRequestDto.getAddressName());
+            assertThat(post.getStore().getStoreName()).isEqualTo(storeRequestDto.getStoreName());
+            assertThat(post.getStore().getAddress().getAddressName()).isEqualTo(addressRequestDto.getAddressName());
             assertThat(post.getPhotos()).isNotEmpty();
 
             post.getPhotos().forEach(photoTestHelper::deleteTestFile);
@@ -88,7 +86,9 @@ class PostServiceTest extends IntegrationTest {
             List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
             List<Long> categoryIds = List.of(CategoryType.샐러드.getId(), CategoryType.양식.getId());
             PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
-                    storeRequestDto, addressRequestDto, categoryIds
+                    storeRequestDto,
+                    addressRequestDto,
+                    categoryIds
             );
 
             // when
@@ -97,14 +97,14 @@ class PostServiceTest extends IntegrationTest {
 
             // then
             assertThat(after.getContent()).isEqualTo(requestDto.getContent());
-            assertThat(after.getStore().getStoreName())
-                    .isEqualTo(requestDto.getStore().getStoreName());
-            assertThat(after.getStore().getAddress().getAddressName())
-                    .isEqualTo(requestDto.getAddress().getAddressName());
+            assertThat(after.getStore().getStoreName()).isEqualTo(requestDto.getStore().getStoreName());
+            assertThat(after.getStore().getAddress().getAddressName()).isEqualTo(
+                    requestDto.getAddress().getAddressName());
             assertThat(after.getPhotos().size()).isEqualTo(1);
             assertThat(after.getThumbnail()).isNotNull();
             List<Long> afterCategoryIds = after.getPostCategories().stream()
-                    .map(postCategory -> postCategory.getCategory().getId()).toList();
+                    .map(postCategory -> postCategory.getCategory().getId())
+                    .toList();
             assertThat(afterCategoryIds.size()).isEqualTo(2);
             assertThat(afterCategoryIds).containsAll(categoryIds);
 
@@ -132,7 +132,9 @@ class PostServiceTest extends IntegrationTest {
             AddressRequestDto addressRequestDto = postTestHelper.generateAddressDto();
             List<MultipartFile> images = List.of(photoTestHelper.getImageFile());
             PostUpdateRequestDto requestDto = postTestHelper.getPostUpdateRequestDto(
-                    storeRequestDto, addressRequestDto, List.of(1L, 2L)
+                    storeRequestDto,
+                    addressRequestDto,
+                    List.of(1L, 2L)
             );
 
             // when
@@ -142,8 +144,7 @@ class PostServiceTest extends IntegrationTest {
             em.clear();
 
             // then
-            Optional<Thumbnail> deletedThumbnail = thumbnailRepository.findById(
-                    beforeThumbnail.getId());
+            Optional<Thumbnail> deletedThumbnail = thumbnailRepository.findById(beforeThumbnail.getId());
             assertThat(deletedThumbnail).isEmpty();
             Optional<Photo> deletedPhoto1 = photoRepository.findById(beforePhoto1.getId());
             assertThat(deletedPhoto1).isEmpty();
@@ -168,8 +169,7 @@ class PostServiceTest extends IntegrationTest {
             PostUpdateRequestDto requestDto = postTestHelper.getValidPostUpdateRequestDto();
 
             // then
-            assertThatThrownBy(() -> postService.updatePost(
-                    user, before.getId(), requestDto, Collections.emptyList()))
+            assertThatThrownBy(() -> postService.updatePost(user, before.getId(), requestDto, Collections.emptyList()))
                     .isInstanceOf(BusinessException.class)
                     .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
         }
@@ -184,9 +184,11 @@ class PostServiceTest extends IntegrationTest {
 
             // then
             assertThatThrownBy(() -> postService.updatePost(
-                    another, before.getId(), requestDto, List.of(photoTestHelper.getImageFile())))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining(POST_NOT_WRITER.getMessage());
+                    another,
+                    before.getId(),
+                    requestDto,
+                    List.of(photoTestHelper.getImageFile())
+            )).isInstanceOf(BusinessException.class).hasMessageContaining(POST_NOT_WRITER.getMessage());
         }
 
         @Test
@@ -198,9 +200,11 @@ class PostServiceTest extends IntegrationTest {
 
             // then
             assertThatThrownBy(() -> postService.updatePost(
-                    user, before.getId(), requestDto, Collections.emptyList()))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
+                    user,
+                    before.getId(),
+                    requestDto,
+                    Collections.emptyList()
+            )).isInstanceOf(BusinessException.class).hasMessageContaining(POST_HAS_NOT_IMAGE.getMessage());
         }
     }
 
@@ -262,9 +266,7 @@ class PostServiceTest extends IntegrationTest {
             }
 
             Pageable pageable = PageRequest.of(1, 2, Sort.by("id").descending());
-            List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(
-                    user.getId(), pageable
-            );
+            List<PostThumbnailResponse> response = postService.getWrittenPostThumbnails(user.getId(), pageable);
 
             assertThat(response.size()).isEqualTo(2);
         }
@@ -338,12 +340,9 @@ class PostServiceTest extends IntegrationTest {
 
             //then
             assertThat(result).hasSize(2);
-            assertThat(result).extracting(PostThumbnailResponse::postId)
-                    .containsExactly(post2.getId(), post1.getId());
+            assertThat(result).extracting(PostThumbnailResponse::postId).containsExactly(post2.getId(), post1.getId());
             assertThat(result).extracting(PostThumbnailResponse::thumbnailPath)
-                    .containsExactly(
-                            post2.getThumbnail().getPath(), post1.getThumbnail().getPath()
-                    );
+                    .containsExactly(post2.getThumbnail().getPath(), post1.getThumbnail().getPath());
         }
     }
 }

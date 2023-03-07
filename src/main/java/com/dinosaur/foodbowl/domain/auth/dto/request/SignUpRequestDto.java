@@ -36,8 +36,7 @@ public class SignUpRequestDto {
 
     @Builder
     private SignUpRequestDto(String loginId, String password, Nickname nickname, String introduce,
-            MultipartFile thumbnail
-    ) {
+            MultipartFile thumbnail) {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;

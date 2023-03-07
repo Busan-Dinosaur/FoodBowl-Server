@@ -99,8 +99,7 @@ public class PhotoFileService extends PhotoService {
                     fileName,
                     "fileName",
                     HttpStatus.BAD_REQUEST,
-                    "파일 이름 길이가 너무 깁니다. 가능한 파일 이름 길이: "
-                            + (MAX_PATH_LENGTH - photoFullPath.length() + fileName.length())
+                    "파일 이름 길이가 너무 깁니다. 가능한 파일 이름 길이: " + (MAX_PATH_LENGTH - photoFullPath.length() + fileName.length())
             );
         }
     }

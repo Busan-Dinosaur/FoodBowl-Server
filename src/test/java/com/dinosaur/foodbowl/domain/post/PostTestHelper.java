@@ -76,9 +76,7 @@ public class PostTestHelper {
         public Post build() {
             return postRepository.save(Post.builder()
                     .user(user != null ? user : userTestHelper.builder().build())
-                    .thumbnail(thumbnail != null ?
-                            thumbnail : thumbnailTestHelper.generateThumbnail()
-                    )
+                    .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
                     .store(store != null ? store : storeTestHelper.builder().build())
                     .content(content != null ? content : getRandomUUIDLengthWith(100))
                     .build());

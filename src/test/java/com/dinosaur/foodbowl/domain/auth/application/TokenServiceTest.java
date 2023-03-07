@@ -22,9 +22,7 @@ class TokenServiceTest extends IntegrationTest {
         void 엑세스_토큰_생성에_성공한다() {
             String accessToken = tokenService.createAccessToken(userId, RoleType.ROLE_회원);
 
-            Long result = Long.parseLong(
-                    jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString()
-            );
+            Long result = Long.parseLong(jwtTokenProvider.extractPayload(accessToken, CLAIMS_SUB.getName()).toString());
 
             assertThat(result).isEqualTo(userId);
         }

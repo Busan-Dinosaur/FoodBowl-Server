@@ -40,10 +40,9 @@ public class CommentController {
     ) {
         commentService.writeComment(user, commentWriteRequestDto);
 
-        return ResponseEntity.status(HttpStatus.SEE_OTHER)
-                .location(
-                        URI.create("/api/v1/comments/posts/" + commentWriteRequestDto.getPostId())
-                )
+        return ResponseEntity
+                .status(HttpStatus.SEE_OTHER)
+                .location(URI.create("/api/v1/comments/posts/" + commentWriteRequestDto.getPostId()))
                 .build();
     }
 
@@ -55,15 +54,14 @@ public class CommentController {
     ) {
         long postId = commentService.updateComment(user, commentId, message);
 
-        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+        return ResponseEntity
+                .status(HttpStatus.SEE_OTHER)
                 .location(URI.create("/api/v1/comments/posts/" + postId))
                 .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(
-            @LoginUser User user, @PathVariable("id") Long commentId
-    ) {
+    public ResponseEntity<Void> deleteComment(@LoginUser User user, @PathVariable("id") Long commentId) {
         commentService.deleteComment(user, commentId);
 
         return ResponseEntity.noContent().build();

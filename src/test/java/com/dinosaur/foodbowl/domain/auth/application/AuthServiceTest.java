@@ -47,23 +47,17 @@ class AuthServiceTest extends IntegrationTest {
         @Test
         void 중복되는_아이디가_존재하면_예외가_발생한다() {
             User existUser = userTestHelper.builder().loginId("TestLoginId").build();
-            SignUpRequestDto request = SignUpRequestDto.builder()
-                    .loginId(existUser.getLoginId())
-                    .build();
+            SignUpRequestDto request = SignUpRequestDto.builder().loginId(existUser.getLoginId()).build();
 
-            assertThatThrownBy(() -> authService.signUp(request))
-                    .isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> authService.signUp(request)).isInstanceOf(BusinessException.class);
         }
 
         @Test
         void 중복되는_닉네임이_존재하면_예외가_발생한다() {
             User existUser = userTestHelper.builder().loginId("TestNickname").build();
-            SignUpRequestDto request = SignUpRequestDto.builder()
-                    .nickname(existUser.getNickname())
-                    .build();
+            SignUpRequestDto request = SignUpRequestDto.builder().nickname(existUser.getNickname()).build();
 
-            assertThatThrownBy(() -> authService.signUp(request))
-                    .isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> authService.signUp(request)).isInstanceOf(BusinessException.class);
         }
     }
 
@@ -134,8 +128,9 @@ class AuthServiceTest extends IntegrationTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank",
-                "01234567890123456", "         ", "012345678901234567890"})
+        @ValueSource(strings = {"", "abcde###", "oh-my-zsh", "한글을_사랑합시다", "cant blank", "01234567890123456",
+                "         ", "012345678901234567890"}
+        )
         void 유효하지_않은_닉네임이라면_유효성_검사에_실패한다(String nickname) {
             CheckResponseDto checkResponseDto = authService.checkNickname(nickname);
 

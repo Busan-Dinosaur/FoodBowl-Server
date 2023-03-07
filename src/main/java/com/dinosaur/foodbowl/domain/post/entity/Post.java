@@ -95,8 +95,8 @@ public class Post extends BaseEntity {
         this.postCategories = postCategories;
     }
 
-    public Post update(Thumbnail thumbnail, List<Photo> photos, List<Category> categories,
-            Store store, String content) {
+    public Post update(Thumbnail thumbnail, List<Photo> photos, List<Category> categories, Store store,
+            String content) {
         this.content = content;
         this.store = store;
         this.thumbnail = thumbnail;
